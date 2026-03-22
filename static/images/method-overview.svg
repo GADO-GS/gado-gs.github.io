@@ -1,0 +1,319 @@
+<svg width="1600" height="730" viewBox="0 0 1600 730" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sceneFade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f2f7e4"/>
+      <stop offset="0.55" stop-color="#f8fbef"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="geoFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef6c8"/>
+      <stop offset="1" stop-color="#f8fbe5"/>
+    </linearGradient>
+    <linearGradient id="appFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dcecf8"/>
+      <stop offset="1" stop-color="#eff6fb"/>
+    </linearGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8f1d1"/>
+      <stop offset="1" stop-color="#f7f5dd"/>
+    </linearGradient>
+    <linearGradient id="warmNode" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f9eee1"/>
+      <stop offset="1" stop-color="#f4d8d1"/>
+    </linearGradient>
+    <linearGradient id="lossFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff3e6"/>
+      <stop offset="1" stop-color="#fff8ef"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#33485f"/>
+    </marker>
+    <marker id="arrowSoft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b93a2"/>
+    </marker>
+    <style>
+      .panel { fill: white; stroke: #536d83; stroke-width: 4; stroke-dasharray: 15 12; }
+      .panel-title { font: 700 42px Georgia, 'Times New Roman', serif; fill: #2f3744; }
+      .small-title { font: italic 28px Georgia, 'Times New Roman', serif; fill: #40464f; }
+      .label { font: 500 24px Georgia, 'Times New Roman', serif; fill: #2f3744; }
+      .strong { font: 700 32px Georgia, 'Times New Roman', serif; fill: #2f3744; }
+      .math { font: italic 34px Georgia, 'Times New Roman', serif; fill: #2f3744; }
+      .node-text { font: 500 24px Georgia, 'Times New Roman', serif; fill: #2f2b29; }
+      .tiny { font: italic 18px Georgia, 'Times New Roman', serif; fill: #5d6473; }
+      .edge { stroke: #33485f; stroke-width: 3.5; fill: none; marker-end: url(#arrow); }
+      .edge-soft { stroke: #8b93a2; stroke-width: 3.5; fill: none; stroke-dasharray: 14 10; marker-end: url(#arrowSoft); }
+      .grid-line-geo { stroke: #b6c33a; stroke-width: 5; }
+      .grid-line-app { stroke: #4c97c7; stroke-width: 5; }
+      .grid-node-geo { fill: #f7fae7; stroke: #b6c33a; stroke-width: 5; }
+      .grid-node-app { fill: #eef6fb; stroke: #4c97c7; stroke-width: 5; }
+      .box { stroke: #2f3744; stroke-width: 3; }
+      .note { fill: #fff4e7; stroke: #c69663; stroke-width: 6; }
+    </style>
+  </defs>
+
+  <rect x="6" y="6" width="600" height="718" rx="26" class="panel"/>
+  <rect x="618" y="6" width="976" height="718" rx="26" class="panel"/>
+
+  <text x="155" y="52" text-anchor="middle" class="panel-title">Scenes Representation</text>
+  <text x="1276" y="52" text-anchor="middle" class="panel-title">View Rendering</text>
+
+  <rect x="54" y="96" width="450" height="128" rx="12" fill="url(#sceneFade)"/>
+  <g opacity="0.38">
+    <circle cx="150" cy="152" r="5" fill="#c9d96f"/>
+    <circle cx="190" cy="140" r="6" fill="#c9d96f"/>
+    <circle cx="240" cy="132" r="5" fill="#c9d96f"/>
+    <circle cx="285" cy="150" r="6" fill="#c9d96f"/>
+    <circle cx="330" cy="138" r="6" fill="#c9d96f"/>
+    <circle cx="374" cy="126" r="6" fill="#c9d96f"/>
+    <circle cx="160" cy="172" r="5" fill="#85b7d8"/>
+    <circle cx="212" cy="182" r="6" fill="#85b7d8"/>
+    <circle cx="260" cy="172" r="5" fill="#85b7d8"/>
+    <circle cx="314" cy="180" r="6" fill="#85b7d8"/>
+    <circle cx="352" cy="166" r="5" fill="#85b7d8"/>
+    <circle cx="400" cy="174" r="6" fill="#85b7d8"/>
+  </g>
+  <text x="279" y="228" text-anchor="middle" class="strong" font-size="28">Gaussians</text>
+
+  <line x1="279" y1="242" x2="279" y2="314" class="edge"/>
+  <line x1="279" y1="314" x2="124" y2="314" class="edge"/>
+  <line x1="279" y1="314" x2="430" y2="314" class="edge"/>
+  <line x1="124" y1="314" x2="124" y2="372" class="edge"/>
+  <line x1="430" y1="314" x2="430" y2="372" class="edge"/>
+
+  <rect x="28" y="374" width="192" height="182" rx="10" fill="url(#geoFill)"/>
+  <g>
+    <line x1="124" y1="374" x2="124" y2="556" class="grid-line-geo"/>
+    <line x1="76" y1="374" x2="76" y2="556" class="grid-line-geo"/>
+    <line x1="172" y1="374" x2="172" y2="556" class="grid-line-geo"/>
+    <line x1="28" y1="420" x2="220" y2="420" class="grid-line-geo"/>
+    <line x1="28" y1="466" x2="220" y2="466" class="grid-line-geo"/>
+    <line x1="28" y1="512" x2="220" y2="512" class="grid-line-geo"/>
+    <g>
+      <circle cx="28" cy="374" r="7" class="grid-node-geo"/>
+      <circle cx="76" cy="374" r="7" class="grid-node-geo"/>
+      <circle cx="124" cy="374" r="7" class="grid-node-geo"/>
+      <circle cx="172" cy="374" r="7" class="grid-node-geo"/>
+      <circle cx="220" cy="374" r="7" class="grid-node-geo"/>
+      <circle cx="28" cy="420" r="7" class="grid-node-geo"/>
+      <circle cx="76" cy="420" r="7" class="grid-node-geo"/>
+      <circle cx="124" cy="420" r="7" class="grid-node-geo"/>
+      <circle cx="172" cy="420" r="7" class="grid-node-geo"/>
+      <circle cx="220" cy="420" r="7" class="grid-node-geo"/>
+      <circle cx="28" cy="466" r="7" class="grid-node-geo"/>
+      <circle cx="76" cy="466" r="7" class="grid-node-geo"/>
+      <circle cx="124" cy="466" r="7" class="grid-node-geo"/>
+      <circle cx="172" cy="466" r="7" class="grid-node-geo"/>
+      <circle cx="220" cy="466" r="7" class="grid-node-geo"/>
+      <circle cx="28" cy="512" r="7" class="grid-node-geo"/>
+      <circle cx="76" cy="512" r="7" class="grid-node-geo"/>
+      <circle cx="124" cy="512" r="7" class="grid-node-geo"/>
+      <circle cx="172" cy="512" r="7" class="grid-node-geo"/>
+      <circle cx="220" cy="512" r="7" class="grid-node-geo"/>
+      <circle cx="28" cy="556" r="7" class="grid-node-geo"/>
+      <circle cx="76" cy="556" r="7" class="grid-node-geo"/>
+      <circle cx="124" cy="556" r="7" class="grid-node-geo"/>
+      <circle cx="172" cy="556" r="7" class="grid-node-geo"/>
+      <circle cx="220" cy="556" r="7" class="grid-node-geo"/>
+    </g>
+  </g>
+  <text x="124" y="600" text-anchor="middle" class="small-title">Geo. Field</text>
+
+  <rect x="316" y="374" width="192" height="182" rx="10" fill="url(#appFill)"/>
+  <g>
+    <line x1="412" y1="374" x2="412" y2="556" class="grid-line-app"/>
+    <line x1="364" y1="374" x2="364" y2="556" class="grid-line-app"/>
+    <line x1="460" y1="374" x2="460" y2="556" class="grid-line-app"/>
+    <line x1="316" y1="420" x2="508" y2="420" class="grid-line-app"/>
+    <line x1="316" y1="466" x2="508" y2="466" class="grid-line-app"/>
+    <line x1="316" y1="512" x2="508" y2="512" class="grid-line-app"/>
+    <g>
+      <circle cx="316" cy="374" r="7" class="grid-node-app"/>
+      <circle cx="364" cy="374" r="7" class="grid-node-app"/>
+      <circle cx="412" cy="374" r="7" class="grid-node-app"/>
+      <circle cx="460" cy="374" r="7" class="grid-node-app"/>
+      <circle cx="508" cy="374" r="7" class="grid-node-app"/>
+      <circle cx="316" cy="420" r="7" class="grid-node-app"/>
+      <circle cx="364" cy="420" r="7" class="grid-node-app"/>
+      <circle cx="412" cy="420" r="7" class="grid-node-app"/>
+      <circle cx="460" cy="420" r="7" class="grid-node-app"/>
+      <circle cx="508" cy="420" r="7" class="grid-node-app"/>
+      <circle cx="316" cy="466" r="7" class="grid-node-app"/>
+      <circle cx="364" cy="466" r="7" class="grid-node-app"/>
+      <circle cx="412" cy="466" r="7" class="grid-node-app"/>
+      <circle cx="460" cy="466" r="7" class="grid-node-app"/>
+      <circle cx="508" cy="466" r="7" class="grid-node-app"/>
+      <circle cx="316" cy="512" r="7" class="grid-node-app"/>
+      <circle cx="364" cy="512" r="7" class="grid-node-app"/>
+      <circle cx="412" cy="512" r="7" class="grid-node-app"/>
+      <circle cx="460" cy="512" r="7" class="grid-node-app"/>
+      <circle cx="508" cy="512" r="7" class="grid-node-app"/>
+      <circle cx="316" cy="556" r="7" class="grid-node-app"/>
+      <circle cx="364" cy="556" r="7" class="grid-node-app"/>
+      <circle cx="412" cy="556" r="7" class="grid-node-app"/>
+      <circle cx="460" cy="556" r="7" class="grid-node-app"/>
+      <circle cx="508" cy="556" r="7" class="grid-node-app"/>
+    </g>
+  </g>
+  <text x="412" y="600" text-anchor="middle" class="small-title">App. Field</text>
+
+  <text x="319" y="654" text-anchor="middle" class="panel-title" font-size="36">Geometry-Appearance Decoupled</text>
+
+  <text x="634" y="104" class="small-title">Geo. Field</text>
+  <rect x="610" y="112" width="176" height="174" rx="10" fill="url(#geoFill)"/>
+  <g>
+    <line x1="698" y1="112" x2="698" y2="286" class="grid-line-geo"/>
+    <line x1="654" y1="112" x2="654" y2="286" class="grid-line-geo"/>
+    <line x1="742" y1="112" x2="742" y2="286" class="grid-line-geo"/>
+    <line x1="610" y1="156" x2="786" y2="156" class="grid-line-geo"/>
+    <line x1="610" y1="200" x2="786" y2="200" class="grid-line-geo"/>
+    <line x1="610" y1="244" x2="786" y2="244" class="grid-line-geo"/>
+    <circle cx="610" cy="112" r="7" class="grid-node-geo"/>
+    <circle cx="654" cy="112" r="7" class="grid-node-geo"/>
+    <circle cx="698" cy="112" r="7" class="grid-node-geo"/>
+    <circle cx="742" cy="112" r="7" class="grid-node-geo"/>
+    <circle cx="786" cy="112" r="7" class="grid-node-geo"/>
+    <circle cx="610" cy="156" r="7" class="grid-node-geo"/>
+    <circle cx="654" cy="156" r="7" class="grid-node-geo"/>
+    <circle cx="698" cy="156" r="7" class="grid-node-geo"/>
+    <circle cx="742" cy="156" r="7" class="grid-node-geo"/>
+    <circle cx="786" cy="156" r="7" class="grid-node-geo"/>
+    <circle cx="610" cy="200" r="7" class="grid-node-geo"/>
+    <circle cx="654" cy="200" r="7" class="grid-node-geo"/>
+    <circle cx="698" cy="200" r="7" class="grid-node-geo"/>
+    <circle cx="742" cy="200" r="7" class="grid-node-geo"/>
+    <circle cx="786" cy="200" r="7" class="grid-node-geo"/>
+    <circle cx="610" cy="244" r="7" class="grid-node-geo"/>
+    <circle cx="654" cy="244" r="7" class="grid-node-geo"/>
+    <circle cx="698" cy="244" r="7" class="grid-node-geo"/>
+    <circle cx="742" cy="244" r="7" class="grid-node-geo"/>
+    <circle cx="786" cy="244" r="7" class="grid-node-geo"/>
+    <circle cx="610" cy="286" r="7" class="grid-node-geo"/>
+    <circle cx="654" cy="286" r="7" class="grid-node-geo"/>
+    <circle cx="698" cy="286" r="7" class="grid-node-geo"/>
+    <circle cx="742" cy="286" r="7" class="grid-node-geo"/>
+    <circle cx="786" cy="286" r="7" class="grid-node-geo"/>
+  </g>
+
+  <rect x="844" y="78" width="218" height="64" rx="12" fill="url(#nodeFill)" class="box"/>
+  <rect x="844" y="168" width="218" height="64" rx="12" fill="url(#nodeFill)" class="box"/>
+  <rect x="844" y="258" width="218" height="64" rx="12" fill="url(#nodeFill)" class="box"/>
+  <text x="953" y="116" text-anchor="middle" class="node-text">Rotation ∈ q⁴</text>
+  <text x="953" y="206" text-anchor="middle" class="node-text">Scale ∈ s³</text>
+  <text x="953" y="296" text-anchor="middle" class="node-text">Opacity ∈ α</text>
+
+  <rect x="1126" y="168" width="180" height="64" rx="12" fill="url(#nodeFill)" class="box"/>
+  <rect x="1126" y="258" width="180" height="64" rx="12" fill="url(#nodeFill)" class="box"/>
+  <text x="1216" y="194" text-anchor="middle" class="node-text">Explicit</text>
+  <text x="1216" y="220" text-anchor="middle" class="node-text">Scale ∈ s</text>
+  <text x="1216" y="284" text-anchor="middle" class="node-text">Explicit</text>
+  <text x="1216" y="310" text-anchor="middle" class="node-text">Scale ∈ s</text>
+
+  <rect x="1360" y="78" width="212" height="64" rx="12" fill="url(#warmNode)" class="box"/>
+  <rect x="1360" y="168" width="212" height="64" rx="12" fill="url(#warmNode)" class="box"/>
+  <rect x="1360" y="258" width="212" height="64" rx="12" fill="url(#warmNode)" class="box"/>
+  <text x="1466" y="116" text-anchor="middle" class="node-text">Rotation ∈ q⁴</text>
+  <text x="1466" y="206" text-anchor="middle" class="node-text">Scale ∈ s³</text>
+  <text x="1466" y="296" text-anchor="middle" class="node-text">Opacity ∈ α</text>
+
+  <path d="M786 112 H844" class="edge"/>
+  <path d="M786 198 H844" class="edge"/>
+  <path d="M786 286 H844" class="edge"/>
+  <path d="M1062 110 H1360" class="edge"/>
+  <path d="M1062 198 H1126" class="edge"/>
+  <path d="M1062 288 H1126" class="edge"/>
+  <path d="M1306 198 H1360" class="edge"/>
+  <path d="M1306 288 H1360" class="edge"/>
+
+  <text x="1184" y="76" text-anchor="middle" class="small-title">Normalize</text>
+  <text x="1110" y="176" text-anchor="middle" class="small-title">Add</text>
+  <text x="1110" y="266" text-anchor="middle" class="small-title">Add</text>
+  <text x="1343" y="190" text-anchor="end" class="small-title">σ(·)</text>
+  <text x="1343" y="280" text-anchor="end" class="small-title">σ(·)</text>
+
+  <text x="634" y="364" class="small-title">App. Field</text>
+  <rect x="610" y="372" width="176" height="172" rx="10" fill="url(#appFill)"/>
+  <g>
+    <line x1="698" y1="372" x2="698" y2="544" class="grid-line-app"/>
+    <line x1="654" y1="372" x2="654" y2="544" class="grid-line-app"/>
+    <line x1="742" y1="372" x2="742" y2="544" class="grid-line-app"/>
+    <line x1="610" y1="415" x2="786" y2="415" class="grid-line-app"/>
+    <line x1="610" y1="458" x2="786" y2="458" class="grid-line-app"/>
+    <line x1="610" y1="501" x2="786" y2="501" class="grid-line-app"/>
+    <circle cx="610" cy="372" r="7" class="grid-node-app"/>
+    <circle cx="654" cy="372" r="7" class="grid-node-app"/>
+    <circle cx="698" cy="372" r="7" class="grid-node-app"/>
+    <circle cx="742" cy="372" r="7" class="grid-node-app"/>
+    <circle cx="786" cy="372" r="7" class="grid-node-app"/>
+    <circle cx="610" cy="415" r="7" class="grid-node-app"/>
+    <circle cx="654" cy="415" r="7" class="grid-node-app"/>
+    <circle cx="698" cy="415" r="7" class="grid-node-app"/>
+    <circle cx="742" cy="415" r="7" class="grid-node-app"/>
+    <circle cx="786" cy="415" r="7" class="grid-node-app"/>
+    <circle cx="610" cy="458" r="7" class="grid-node-app"/>
+    <circle cx="654" cy="458" r="7" class="grid-node-app"/>
+    <circle cx="698" cy="458" r="7" class="grid-node-app"/>
+    <circle cx="742" cy="458" r="7" class="grid-node-app"/>
+    <circle cx="786" cy="458" r="7" class="grid-node-app"/>
+    <circle cx="610" cy="501" r="7" class="grid-node-app"/>
+    <circle cx="654" cy="501" r="7" class="grid-node-app"/>
+    <circle cx="698" cy="501" r="7" class="grid-node-app"/>
+    <circle cx="742" cy="501" r="7" class="grid-node-app"/>
+    <circle cx="786" cy="501" r="7" class="grid-node-app"/>
+    <circle cx="610" cy="544" r="7" class="grid-node-app"/>
+    <circle cx="654" cy="544" r="7" class="grid-node-app"/>
+    <circle cx="698" cy="544" r="7" class="grid-node-app"/>
+    <circle cx="742" cy="544" r="7" class="grid-node-app"/>
+    <circle cx="786" cy="544" r="7" class="grid-node-app"/>
+  </g>
+
+  <path d="M786 458 H844" class="edge"/>
+  <rect x="844" y="392" width="154" height="118" class="note"/>
+  <circle cx="921" cy="449" r="28" fill="#ffefc2" stroke="#d28b43" stroke-width="6"/>
+  <path d="M920 421 V479" stroke="#d28b43" stroke-width="8" stroke-linecap="round"/>
+  <path d="M891 449 H949" stroke="#d28b43" stroke-width="8" stroke-linecap="round"/>
+  <path d="M900 430 L940 468" stroke="#d28b43" stroke-width="6" stroke-linecap="round"/>
+  <text x="921" y="384" text-anchor="middle" class="strong">PSA</text>
+
+  <path d="M998 451 H1126" class="edge"/>
+  <rect x="1126" y="420" width="160" height="64" rx="12" fill="url(#warmNode)" class="box"/>
+  <text x="1206" y="460" text-anchor="middle" class="node-text">Color ∈ C</text>
+  <text x="1090" y="438" text-anchor="middle" class="small-title">Active</text>
+  <text x="1090" y="470" text-anchor="middle" class="small-title">Color</text>
+
+  <rect x="1350" y="364" width="220" height="264" rx="110" fill="#fae6de" stroke="#536d83" stroke-width="2" stroke-dasharray="8 8"/>
+  <ellipse cx="1414" cy="438" rx="25" ry="46" transform="rotate(60 1414 438)" fill="#bfdcee" stroke="#6a84a0" stroke-width="3"/>
+  <ellipse cx="1486" cy="438" rx="25" ry="46" transform="rotate(-28 1486 438)" fill="#e8ecef" stroke="#8f97a0" stroke-width="3"/>
+  <ellipse cx="1418" cy="524" rx="25" ry="46" transform="rotate(-30 1418 524)" fill="#d5e38a" stroke="#96a742" stroke-width="3"/>
+  <ellipse cx="1492" cy="526" rx="25" ry="46" transform="rotate(30 1492 526)" fill="#ffc15d" stroke="#de8d2a" stroke-width="3"/>
+  <text x="1460" y="702" text-anchor="middle" class="panel-title" font-size="34">Optimized 3D Gaussians</text>
+
+  <path d="M1286 452 H1350" class="edge"/>
+  <path d="M1466 322 V364" class="edge-soft"/>
+
+  <path d="M820 560 C858 616, 930 634, 1008 622" class="edge-soft"/>
+  <path d="M1286 622 C1332 622, 1344 602, 1350 586" class="edge-soft"/>
+
+  <rect x="878" y="576" width="370" height="96" rx="18" fill="url(#lossFill)" stroke="#2f3744" stroke-width="3" stroke-dasharray="10 8"/>
+  <text x="1063" y="706" text-anchor="middle" class="panel-title" font-size="34">Multi-view Consistency Loss</text>
+
+  <path d="M890 596 V648" stroke="#2f3744" stroke-width="3"/>
+  <path d="M960 596 V648" stroke="#2f3744" stroke-width="3"/>
+  <path d="M1030 596 V648" stroke="#2f3744" stroke-width="3"/>
+  <path d="M1100 596 V648" stroke="#2f3744" stroke-width="3"/>
+  <path d="M1170 596 V648" stroke="#2f3744" stroke-width="3"/>
+  <text x="906" y="624" text-anchor="middle" class="tiny">C<tspan dy="8" font-size="14">fg</tspan></text>
+  <text x="1170" y="624" text-anchor="middle" class="tiny">C<tspan dy="8" font-size="14">bg</tspan></text>
+  <text x="888" y="646" text-anchor="end" class="tiny">Cam.</text>
+
+  <ellipse cx="958" cy="624" rx="22" ry="38" transform="rotate(62 958 624)" fill="#bfdcee" stroke="#6a84a0" stroke-width="3"/>
+  <ellipse cx="1042" cy="624" rx="22" ry="38" transform="rotate(18 1042 624)" fill="#d5e38a" stroke="#96a742" stroke-width="3"/>
+  <ellipse cx="1124" cy="624" rx="22" ry="38" transform="rotate(56 1124 624)" fill="#f8d88f" stroke="#d4aa5f" stroke-width="3"/>
+  <circle cx="1204" cy="624" r="12" fill="#f6d48e" stroke="#be9b58" stroke-width="2.5"/>
+
+  <g opacity="0.72" stroke="#5b5b5b" stroke-width="3">
+    <path d="M898 530 l28 -24 l4 34 l-32 -10 z" fill="none"/>
+    <path d="M980 520 l30 3 l0 34 l-27 -9 z" fill="none"/>
+    <path d="M1080 530 l26 -18 l-1 34 l-25 -3 z" fill="none"/>
+    <path d="M1182 528 l28 18 l-2 24 l-26 -10 z" fill="none"/>
+  </g>
+</svg>

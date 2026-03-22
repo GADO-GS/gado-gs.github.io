@@ -1,0 +1,33 @@
+<svg width="960" height="560" viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="560" rx="24" fill="#fbfcff"/>
+  <text x="64" y="78" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#243044">PSNR Across Representative Scenes ↑</text>
+  <text x="64" y="112" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7c">Ours stays competitive in quality while substantially improving efficiency.</text>
+  <line x1="92" y1="450" x2="882" y2="450" stroke="#cfd8e5" stroke-width="2"/>
+  <line x1="92" y1="170" x2="92" y2="450" stroke="#cfd8e5" stroke-width="2"/>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#6b7482">
+    <text x="70" y="455" text-anchor="end">25</text>
+    <text x="70" y="385" text-anchor="end">27</text>
+    <text x="70" y="315" text-anchor="end">29</text>
+    <text x="70" y="245" text-anchor="end">31</text>
+    <text x="70" y="175" text-anchor="end">33</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#5b6677" text-anchor="middle">
+    <text x="170" y="484">Bicycle</text>
+    <text x="300" y="484">Garden</text>
+    <text x="430" y="484">Stump</text>
+    <text x="560" y="484">Kitchen</text>
+    <text x="690" y="484">Room</text>
+    <text x="820" y="484">Counter</text>
+  </g>
+  <polyline points="170,306 300,278 430,292 560,250 690,264 820,236" fill="none" stroke="#86a6ca" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="170,294 300,266 430,282 560,238 690,254 820,224" fill="none" stroke="#f39b5a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#86a6ca">
+    <circle cx="170" cy="306" r="8"/><circle cx="300" cy="278" r="8"/><circle cx="430" cy="292" r="8"/><circle cx="560" cy="250" r="8"/><circle cx="690" cy="264" r="8"/><circle cx="820" cy="236" r="8"/>
+  </g>
+  <g fill="#f39b5a">
+    <circle cx="170" cy="294" r="8"/><circle cx="300" cy="266" r="8"/><circle cx="430" cy="282" r="8"/><circle cx="560" cy="238" r="8"/><circle cx="690" cy="254" r="8"/><circle cx="820" cy="224" r="8"/>
+  </g>
+  <rect x="672" y="146" width="192" height="72" rx="14" fill="#ffffff" stroke="#d9e0ea"/>
+  <circle cx="706" cy="172" r="8" fill="#86a6ca"/><text x="726" y="178" font-family="Arial, sans-serif" font-size="20" fill="#334055">3DGS</text>
+  <circle cx="706" cy="198" r="8" fill="#f39b5a"/><text x="726" y="204" font-family="Arial, sans-serif" font-size="20" fill="#334055" font-weight="700">Ours</text>
+</svg>

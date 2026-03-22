@@ -1,0 +1,31 @@
+<svg width="960" height="560" viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="560" rx="24" fill="#fbfcff"/>
+  <text x="64" y="78" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#243044">Rendering Throughput (FPS ↑)</text>
+  <text x="64" y="112" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7c">Rasterization performance on a representative evaluation scene.</text>
+  <line x1="92" y1="450" x2="882" y2="450" stroke="#cfd8e5" stroke-width="2"/>
+  <line x1="92" y1="160" x2="92" y2="450" stroke="#cfd8e5" stroke-width="2"/>
+  <g font-family="Arial, sans-serif" font-size="18" fill="#6b7482">
+    <text x="70" y="455" text-anchor="end">0</text>
+    <text x="70" y="380" text-anchor="end">150</text>
+    <text x="70" y="305" text-anchor="end">300</text>
+    <text x="70" y="230" text-anchor="end">450</text>
+    <text x="70" y="155" text-anchor="end">600</text>
+  </g>
+  <rect x="170" y="350" width="110" height="100" rx="14" fill="#b9c7dc"/>
+  <rect x="340" y="314" width="110" height="136" rx="14" fill="#9ab8da"/>
+  <rect x="510" y="260" width="110" height="190" rx="14" fill="#7aa6d1"/>
+  <rect x="680" y="116" width="110" height="334" rx="14" fill="#f39b5a"/>
+  <g font-family="Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">
+    <text x="225" y="338" fill="#3b4c63">201</text>
+    <text x="395" y="302" fill="#3b4c63">272</text>
+    <text x="565" y="248" fill="#3b4c63">380</text>
+    <text x="735" y="104" fill="#b05e21">1447</text>
+  </g>
+  <g font-family="Arial, sans-serif" font-size="20" fill="#334055" text-anchor="middle">
+    <text x="225" y="486">Kerbl et al.</text>
+    <text x="395" y="486">Scaffold-GS</text>
+    <text x="565" y="486">CompactGS</text>
+    <text x="735" y="486" font-weight="700">Ours</text>
+  </g>
+  <text x="735" y="520" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#f39b5a" text-anchor="middle">7.2x faster rendering than vanilla 3DGS</text>
+</svg>

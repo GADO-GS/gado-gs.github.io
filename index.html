@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Anonymous project page for GADO-GS under double-blind review.">
+  <meta name="keywords" content="GADO-GS, 3D Gaussian Splatting, Anonymous Submission, Project Page">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GADO-GS: Geometry-Appearance Decoupled Optimization for Efficient and Compact 3D Gaussian Splatting</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<body>
+  <section class="hero publication-hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-2 publication-title">
+              <span class="publication-title__line">GADO-GS: Geometry-Appearance Decoupled Optimization</span>
+              <span class="publication-title__line">for Efficient and Compact 3D Gaussian Splatting</span>
+            </h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Anonymous Submission</span>
+            </div>
+
+            <div class="is-size-6 publication-authors">
+              <span class="author-block">Project page for double-blind review</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <span class="link-block">
+                  <a href="#" class="external-link button is-normal is-rounded is-dark" data-placeholder-link>
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+                <span class="link-block">
+                  <a href="#" class="external-link button is-normal is-rounded is-dark" data-placeholder-link>
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser scene-showcase-section" data-scene-showcase>
+    <div class="container is-max-fullhd scene-showcase-container">
+      <div class="hero-body">
+        <div class="scene-showcase-shell">
+          <div class="scene-selector" role="group" aria-label="Scene selector">
+            <button class="scene-selector__item is-active" type="button" data-scene-key="bicycle"
+              data-left-video-1="./static/videos/bicycle_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/bicycle_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/bicycle_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/bicycle_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Bicycle" aria-pressed="true">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/bicycle_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Bicycle</span>
+            </button>
+            <button class="scene-selector__item" type="button" data-scene-key="garden"
+              data-left-video-1="./static/videos/garden_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/garden_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/garden_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/garden_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Garden" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/garden_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Garden</span>
+            </button>
+            <button class="scene-selector__item" type="button" data-scene-key="stump"
+              data-left-video-1="./static/videos/stump_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/stump_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/stump_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/stump_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Stump" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/stump_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Stump</span>
+            </button>
+            <button class="scene-selector__item" type="button" data-scene-key="kitchen"
+              data-left-video-1="./static/videos/kitchen_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/kitchen_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/kitchen_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/kitchen_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Kitchen" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/kitchen_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Kitchen</span>
+            </button>
+            <button class="scene-selector__item" type="button" data-scene-key="bonsai"
+              data-left-video-1="./static/videos/bonsai_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/bonsai_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/bonsai_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/bonsai_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Bonsai" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/bonsai_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Bonsai</span>
+            </button>
+            <button class="scene-selector__item" type="button" data-scene-key="truck"
+              data-left-video-1="./static/videos/truck_ours_pingpong.mp4"
+              data-right-video-1="./static/videos/truck_3dgs_pingpong.mp4" data-left-label-1="Ours"
+              data-right-label-1="3DGS" data-left-video-2="./static/videos/truck_ours_pingpong.mp4"
+              data-right-video-2="./static/videos/truck_speedySplat_pingpong.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Truck" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/truck_thumb.jpg" alt="">
+              </span>
+              <span class="is-sr-only">Truck</span>
+            </button>
+          </div>
+          <div class="scene-showcase-media-wrap">
+            <div class="scene-showcase-content-shell">
+              <div class="scene-showcase-stage">
+                <div class="scene-compare-grid">
+                  <div class="scene-compare-card" data-compare-card="1">
+                    <div class="scene-compare-wrapper">
+                      <div class="scene-compare-layer scene-compare-layer--base">
+                        <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
+                          poster="./static/videos/bicycle_3dgs.jpg" preload="none">
+                          <source class="scene-compare-source scene-compare-source--right"
+                            data-src="./static/videos/bicycle_3dgs_pingpong.mp4" type="video/mp4">
+                        </video>
+                        <div class="scene-compare-metrics scene-compare-metrics--right">
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
+                              class="scene-compare-metrics__value">4.90M</span><span
+                              class="scene-compare-metrics__label">Gaussians</span></span>
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
+                              class="scene-compare-metrics__value">74</span><span
+                              class="scene-compare-metrics__label">FPS</span></span>
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
+                              class="scene-compare-metrics__value">66.2 min</span><span
+                              class="scene-compare-metrics__label">Train</span></span>
+                        </div>
+                        <span class="scene-compare-badge scene-compare-badge--right"
+                          data-compare-right-label>3DGS</span>
+                      </div>
+                      <div class="scene-compare-overlay" data-compare-overlay>
+                        <div class="scene-compare-layer scene-compare-layer--overlay">
+                          <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
+                            poster="./static/videos/bicycle_ours.jpg" preload="none">
+                            <source class="scene-compare-source scene-compare-source--left"
+                              data-src="./static/videos/bicycle_ours_pingpong.mp4" type="video/mp4">
+                          </video>
+                          <div class="scene-compare-metrics scene-compare-metrics--left">
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
+                                class="scene-compare-metrics__value">0.48M</span><span
+                                class="scene-compare-metrics__label">Gaussians</span></span>
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
+                                class="scene-compare-metrics__value">964</span><span
+                                class="scene-compare-metrics__label">FPS</span></span>
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
+                                class="scene-compare-metrics__value">2.8 min</span><span
+                                class="scene-compare-metrics__label">Train</span></span>
+                          </div>
+                          <span class="scene-compare-badge scene-compare-badge--left"
+                            data-compare-left-label>Ours</span>
+                        </div>
+                      </div>
+                      <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                        aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                        <span class="scene-compare-handle"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="scene-compare-card" data-compare-card="2">
+                    <div class="scene-compare-wrapper">
+                      <div class="scene-compare-layer scene-compare-layer--base">
+                        <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
+                          poster="./static/videos/bicycle_speedySplat.jpg" preload="none">
+                          <source class="scene-compare-source scene-compare-source--right"
+                            data-src="./static/videos/bicycle_speedySplat_pingpong.mp4" type="video/mp4">
+                        </video>
+                        <div class="scene-compare-metrics scene-compare-metrics--right">
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
+                              class="scene-compare-metrics__value">0.62M</span><span
+                              class="scene-compare-metrics__label">Gaussians</span></span>
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
+                              class="scene-compare-metrics__value">643</span><span
+                              class="scene-compare-metrics__label">FPS</span></span>
+                          <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
+                              class="scene-compare-metrics__value">18.6 min</span><span
+                              class="scene-compare-metrics__label">Train</span></span>
+                        </div>
+                        <span class="scene-compare-badge scene-compare-badge--right"
+                          data-compare-right-label>SpeedySplat</span>
+                      </div>
+                      <div class="scene-compare-overlay" data-compare-overlay>
+                        <div class="scene-compare-layer scene-compare-layer--overlay">
+                          <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
+                            poster="./static/videos/bicycle_ours.jpg" preload="none">
+                            <source class="scene-compare-source scene-compare-source--left"
+                              data-src="./static/videos/bicycle_ours_pingpong.mp4" type="video/mp4">
+                          </video>
+                          <div class="scene-compare-metrics scene-compare-metrics--left">
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
+                                class="scene-compare-metrics__value">0.48M</span><span
+                                class="scene-compare-metrics__label">Gaussians</span></span>
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
+                                class="scene-compare-metrics__value">964</span><span
+                                class="scene-compare-metrics__label">FPS</span></span>
+                            <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
+                                class="scene-compare-metrics__value">2.8 min</span><span
+                                class="scene-compare-metrics__label">Train</span></span>
+                          </div>
+                          <span class="scene-compare-badge scene-compare-badge--left"
+                            data-compare-left-label>Ours</span>
+                        </div>
+                      </div>
+                      <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                        aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                        <span class="scene-compare-handle"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="scene-showcase-note-shell">
+                    <p class="scene-showcase-note">
+                      Compared with 3DGS and SpeedySplat, GADO-GS retains competitive visual fidelity while training
+                      much faster and often using fewer Gaussians.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column abstract-panel">
+          <h2 class="title is-3 abstract-title">Abstract</h2>
+          <div class="abstract-divider" aria-hidden="true"></div>
+          <div class="content has-text-justified abstract-copy">
+            <p>
+              3D Gaussian Splatting (3DGS) has emerged as a compelling representation for real-time novel view synthesis
+              due to its high rendering quality and efficient rasterization. However, vanilla 3DGS jointly optimizes
+              geometry and appearance under a photometric objective, often leading to geometry-appearance ambiguity
+              during training, where appearance compensates for inaccurate geometry by fitting view-dependent effects.
+              This ambiguity leads to unstable optimization, texture-baked geometry, and redundant primitive growth,
+              hurting both efficiency and compactness. To address this issue, we propose GADO-GS, a structure-first
+              training framework that reduces this ambiguity within the standard 3DGS pipeline. The core idea is to let
+              scene structure stabilize before high-frequency appearance is fully expressed, while using cross-view
+              geometric consistency to constrain Gaussian growth. By improving training dynamics at the source instead
+              of relying on post-hoc compression, GADO-GS learns a more coherent and less redundant Gaussian
+              representation. Across the three benchmark datasets, GADO-GS delivers on average 10.1x faster training,
+              7.2x higher rendering throughput, and 8.4x smaller models than vanilla 3DGS, while maintaining competitive
+              reconstruction quality.
+            </p>
+          </div>
+          <div class="publication-video">
+            <video controls playsinline preload="none">
+              <source src="./static/videos/teaser.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column method-overview-panel">
+          <h2 class="title is-3 method-overview-title">Method Overview</h2>
+          <figure class="method-overview-figure">
+            <img src="./static/images/method-pipeline.png" alt="Overview of the GADO-GS pipeline." loading="lazy"
+              decoding="async">
+          </figure>
+          <div class="content method-overview-copy">
+            <p class="method-overview-legend">
+              <span class="method-overview-legend__geo">Geometry-first optimization</span> stabilizes scene structure
+              early, while
+              <span class="method-overview-legend__app">appearance-aware rendering</span> progressively refines color
+              and compactness under cross-view constraints.
+            </p>
+            <div class="method-overview-steps">
+              <div class="method-overview-step">
+                <div class="method-overview-step__marker" aria-hidden="true">
+                  <span class="method-overview-step__label">Step</span>
+                  <span class="method-overview-step__number">1</span>
+                </div>
+                <p class="method-overview-step__text">
+                  <strong>Decouple the Gaussian representation.</strong> The scene is split into geometry and
+                  appearance fields so that coarse structure can stabilize before high-frequency appearance begins to
+                  dominate training.
+                </p>
+              </div>
+              <div class="method-overview-step">
+                <div class="method-overview-step__marker" aria-hidden="true">
+                  <span class="method-overview-step__label">Step</span>
+                  <span class="method-overview-step__number">2</span>
+                </div>
+                <p class="method-overview-step__text">
+                  <strong>Constrain view rendering explicitly.</strong> Rotation, scale, and opacity are normalized or
+                  controlled explicitly, reducing geometry-appearance ambiguity and preventing redundant Gaussian
+                  growth.
+                </p>
+              </div>
+              <div class="method-overview-step">
+                <div class="method-overview-step__marker" aria-hidden="true">
+                  <span class="method-overview-step__label">Step</span>
+                  <span class="method-overview-step__number">3</span>
+                </div>
+                <p class="method-overview-step__text">
+                  <strong>Regularize with cross-view consistency.</strong> Multi-view geometric consistency and PSA
+                  color prediction work together to produce cleaner geometry, fewer artifacts, and a more compact final
+                  3D Gaussian representation.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column results-panel" data-results-gallery>
+          <h2 class="title is-3 results-title">Results（待修改，数据对比图（主表、消融实验等））</h2>
+          <div class="results-divider" aria-hidden="true"></div>
+          <div class="content has-text-justified results-summary">
+            <p>
+              We evaluate GADO-GS on diverse benchmark and real-world scenes. Across the representative metrics below,
+              our method consistently improves training efficiency, rendering throughput, and model compactness while
+              preserving competitive reconstruction quality. Use the selector to browse different charts and summary
+              tables comparing Ours against common baselines.
+            </p>
+          </div>
+
+          <div class="results-selector-shell">
+            <button class="results-selector__arrow" type="button" data-results-prev aria-label="Show previous results">
+              <span aria-hidden="true">&#10094;</span>
+            </button>
+            <div class="results-selector">
+              <div class="results-selector__viewport">
+                <div class="results-selector__track">
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-01-compression.svg"
+                    data-caption="Average model size across representative real scenes (lower is better).">
+                    <img src="./static/images/results/chart-01-compression.svg" alt="Compression results thumbnail."
+                      loading="lazy" decoding="async">
+                    <span class="is-sr-only">Compression Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-02-training.svg"
+                    data-caption="Average training time comparison across benchmark datasets (lower is better).">
+                    <img src="./static/images/results/chart-02-training.svg" alt="Training time results thumbnail."
+                      loading="lazy" decoding="async">
+                    <span class="is-sr-only">Training Time Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-03-fps.svg"
+                    data-caption="Rendering throughput comparison on representative scenes (higher is better).">
+                    <img src="./static/images/results/chart-03-fps.svg" alt="Rendering FPS results thumbnail."
+                      loading="lazy" decoding="async">
+                    <span class="is-sr-only">Rendering Throughput Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-04-psnr.svg"
+                    data-caption="PSNR comparison across representative scenes.">
+                    <img src="./static/images/results/chart-04-psnr.svg" alt="PSNR results thumbnail." loading="lazy"
+                      decoding="async">
+                    <span class="is-sr-only">PSNR Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-05-ssim.svg"
+                    data-caption="SSIM comparison across representative scenes.">
+                    <img src="./static/images/results/chart-05-ssim.svg" alt="SSIM results thumbnail." loading="lazy"
+                      decoding="async">
+                    <span class="is-sr-only">SSIM Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-06-lpips.svg"
+                    data-caption="LPIPS comparison across representative scenes (lower is better).">
+                    <img src="./static/images/results/chart-06-lpips.svg" alt="LPIPS results thumbnail." loading="lazy"
+                      decoding="async">
+                    <span class="is-sr-only">LPIPS Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-full-src="./static/images/results/chart-07-breakdown.svg"
+                    data-caption="Overall efficiency summary comparing Ours with representative baselines.">
+                    <img src="./static/images/results/chart-07-breakdown.svg" alt="Efficiency summary thumbnail."
+                      loading="lazy" decoding="async">
+                    <span class="is-sr-only">Efficiency Summary</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button class="results-selector__arrow" type="button" data-results-next aria-label="Show next results">
+              <span aria-hidden="true">&#10095;</span>
+            </button>
+          </div>
+
+          <div class="results-display" data-results-display>
+            <div class="results-display__viewport">
+              <div class="results-display__stage is-current" data-results-display-stage>
+                <img class="results-display__image" data-results-display-image
+                  src="./static/images/results/chart-03-fps.svg"
+                  alt="Rendering throughput comparison on representative scenes." loading="lazy" decoding="async">
+                <p class="results-display__caption" data-results-display-caption>
+                  Rendering throughput comparison on representative scenes (higher is better).
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-visual-comparisons>
+    <div class="container is-max-widescreen visual-comparisons-container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column visual-comparisons-panel">
+          <h2 class="title is-3 visual-comparisons-title">Visual Comparisons</h2>
+          <div class="content has-text-justified visual-comparisons-summary">
+            <p>
+              Image-based comparisons highlight the visual differences between Ours and representative baselines across
+              challenging scenes.
+            </p>
+          </div>
+
+          <div class="visual-comparisons-stage">
+            <div class="scene-selector visual-scene-selector" role="group"
+              aria-label="Visual comparison scene selector">
+              <button class="scene-selector__item is-active" type="button"
+                data-left-image-1="./static/images/comparisons/bicycle_ours.png"
+                data-right-image-1="./static/images/comparisons/bicycle_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/bicycle_ours.png"
+                data-right-image-2="./static/images/comparisons/bicycle_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Bicycle" aria-pressed="true">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/bicycle_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Bicycle</span>
+              </button>
+              <button class="scene-selector__item" type="button"
+                data-left-image-1="./static/images/comparisons/garden_ours.png"
+                data-right-image-1="./static/images/comparisons/garden_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/garden_ours.png"
+                data-right-image-2="./static/images/comparisons/garden_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Garden" aria-pressed="false">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/garden_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Garden</span>
+              </button>
+              <button class="scene-selector__item" type="button"
+                data-left-image-1="./static/images/comparisons/stump_ours.png"
+                data-right-image-1="./static/images/comparisons/stump_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/stump_ours.png"
+                data-right-image-2="./static/images/comparisons/stump_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Stump" aria-pressed="false">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/stump_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Stump</span>
+              </button>
+              <button class="scene-selector__item" type="button"
+                data-left-image-1="./static/images/comparisons/kitchen_ours.png"
+                data-right-image-1="./static/images/comparisons/kitchen_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/kitchen_ours.png"
+                data-right-image-2="./static/images/comparisons/kitchen_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Kitchen" aria-pressed="false">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/kitchen_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Kitchen</span>
+              </button>
+              <button class="scene-selector__item" type="button"
+                data-left-image-1="./static/images/comparisons/bonsai_ours.png"
+                data-right-image-1="./static/images/comparisons/bonsai_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/bonsai_ours.png"
+                data-right-image-2="./static/images/comparisons/bonsai_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Bonsai" aria-pressed="false">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/bonsai_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Bonsai</span>
+              </button>
+              <button class="scene-selector__item" type="button"
+                data-left-image-1="./static/images/comparisons/truck_ours.png"
+                data-right-image-1="./static/images/comparisons/truck_3dgs.png" data-left-label-1="Ours"
+                data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/truck_ours.png"
+                data-right-image-2="./static/images/comparisons/truck_speedySplat.png" data-left-label-2="Ours"
+                data-right-label-2="SpeedySplat" data-label="Truck" aria-pressed="false">
+                <span class="scene-selector__preview" aria-hidden="true">
+                  <img src="./static/videos/truck_thumb.jpg" alt="" loading="lazy" decoding="async">
+                </span>
+                <span class="is-sr-only">Truck</span>
+              </button>
+            </div>
+
+            <div class="scene-compare-grid visual-compare-grid">
+              <div class="scene-compare-card visual-compare-card" data-image-compare-card="1">
+                <div class="scene-compare-wrapper visual-compare-wrapper">
+                  <div class="scene-compare-layer scene-compare-layer--base">
+                    <img class="scene-compare-image scene-compare-image--right" data-compare-image-right
+                      src="./static/videos/bicycle_thumb.jpg" alt="3DGS qualitative comparison image." loading="lazy"
+                      decoding="async">
+                    <span class="scene-compare-badge scene-compare-badge--right" data-compare-right-label>3DGS</span>
+                  </div>
+                  <div class="scene-compare-overlay" data-compare-overlay>
+                    <div class="scene-compare-layer scene-compare-layer--overlay">
+                      <img class="scene-compare-image scene-compare-image--left" data-compare-image-left
+                        src="./static/videos/bicycle_thumb.jpg" alt="Ours qualitative comparison image." loading="lazy"
+                        decoding="async">
+                      <span class="scene-compare-badge scene-compare-badge--left" data-compare-left-label>Ours</span>
+                    </div>
+                  </div>
+                  <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                    aria-label="Image comparison divider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                    <span class="scene-compare-handle"></span>
+                  </div>
+                </div>
+                <p class="scene-compare-caption" data-compare-caption>Ours vs. 3DGS</p>
+              </div>
+
+              <div class="scene-compare-card visual-compare-card" data-image-compare-card="2">
+                <div class="scene-compare-wrapper visual-compare-wrapper">
+                  <div class="scene-compare-layer scene-compare-layer--base">
+                    <img class="scene-compare-image scene-compare-image--right" data-compare-image-right
+                      src="./static/videos/bicycle_thumb.jpg" alt="SpeedySplat qualitative comparison image."
+                      loading="lazy" decoding="async">
+                    <span class="scene-compare-badge scene-compare-badge--right"
+                      data-compare-right-label>SpeedySplat</span>
+                  </div>
+                  <div class="scene-compare-overlay" data-compare-overlay>
+                    <div class="scene-compare-layer scene-compare-layer--overlay">
+                      <img class="scene-compare-image scene-compare-image--left" data-compare-image-left
+                        src="./static/videos/bicycle_thumb.jpg" alt="Ours qualitative comparison image." loading="lazy"
+                        decoding="async">
+                      <span class="scene-compare-badge scene-compare-badge--left" data-compare-left-label>Ours</span>
+                    </div>
+                  </div>
+                  <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                    aria-label="Image comparison divider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                    <span class="scene-compare-handle"></span>
+                  </div>
+                </div>
+                <p class="scene-compare-caption" data-compare-caption>Ours vs. SpeedySplat</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer project-footer">
+    <div class="container is-max-desktop">
+      <div class="content has-text-centered">
+        <div class="project-footer__icons">
+          <a class="icon-link" href="#" aria-label="Paper" data-placeholder-link>
+            <i class="fas fa-file-pdf"></i>
+          </a>
+          <a class="icon-link" href="#" aria-label="Code" data-placeholder-link>
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+        <p class="project-footer__note">
+          Website template adapted from the open-sourced Nerfies project page template.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
