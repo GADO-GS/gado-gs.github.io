@@ -616,6 +616,7 @@ function initImageComparisons() {
   var activeButton;
 
   function createImageCompareCard(card) {
+    var headerInner = card.querySelector('.visual-compare-header__inner');
     var wrapper = card.querySelector('.scene-compare-wrapper');
     var overlay = card.querySelector('[data-compare-overlay]');
     var divider = card.querySelector('[data-compare-handle]');
@@ -623,12 +624,19 @@ function initImageComparisons() {
     var rightImage = card.querySelector('[data-compare-image-right]');
     var leftLabel = card.querySelector('[data-compare-left-label]');
     var rightLabel = card.querySelector('[data-compare-right-label]');
-    var compareCaption = card.querySelector('[data-compare-caption]');
+    var baselineChip = card.querySelector('[data-compare-baseline-chip]');
+    var selectorValue = card.querySelector('[data-compare-method-value]');
+    var prevMethodButton = card.querySelector('[data-compare-method-prev]');
+    var nextMethodButton = card.querySelector('[data-compare-method-next]');
     var compareInteraction;
     var layoutFrame = null;
     var lastKnownRatio = 16 / 9;
+    var activeMethodIndex = 0;
+    var latestContent = null;
+    var latestShouldLoadMedia = false;
+    var switchTextTimer = null;
 
-    if (!wrapper || !overlay || !divider || !leftImage || !rightImage || !leftLabel || !rightLabel || !compareCaption) {
+    if (!wrapper || !overlay || !divider || !leftImage || !rightImage || !leftLabel || !rightLabel) {
       return null;
     }
 
@@ -687,6 +695,10 @@ function initImageComparisons() {
         height = width / ratio;
       }
 
+      if (headerInner) {
+        headerInner.style.width = Math.round(width) + 'px';
+      }
+
       wrapper.style.width = Math.round(width) + 'px';
       wrapper.style.height = Math.round(height) + 'px';
     }
@@ -702,7 +714,109 @@ function initImageComparisons() {
       });
     }
 
-    function setContent(content, shouldLoadMedia) {
+    function getEnabledMethodIndexes(methodOptions) {
+      return methodOptions.reduce(function(enabledIndexes, option, index) {
+        if (option && !option.disabled) {
+          enabledIndexes.push(index);
+        }
+
+        return enabledIndexes;
+      }, []);
+    }
+
+    function resolveActiveMethodIndex(methodOptions) {
+      var enabledMethodIndexes = getEnabledMethodIndexes(methodOptions);
+      var firstEnabledIndex;
+
+      if (!enabledMethodIndexes.length) {
+        return 0;
+      }
+
+      if (enabledMethodIndexes.indexOf(activeMethodIndex) !== -1) {
+        return activeMethodIndex;
+      }
+
+      firstEnabledIndex = enabledMethodIndexes[0];
+      return firstEnabledIndex;
+    }
+
+    function animateMethodText(nextLabel) {
+      var animatedNodes = [baselineChip, selectorValue].filter(function(node) {
+        return !!node;
+      });
+
+      if (!animatedNodes.length) {
+        return;
+      }
+
+      if (switchTextTimer) {
+        window.clearTimeout(switchTextTimer);
+        switchTextTimer = null;
+      }
+
+      if (animatedNodes.every(function(node) {
+        return node.textContent === nextLabel;
+      })) {
+        return;
+      }
+
+      card.classList.add('is-method-switching');
+      animatedNodes.forEach(function(node) {
+        node.classList.add('is-updating');
+      });
+
+      switchTextTimer = window.setTimeout(function() {
+        animatedNodes.forEach(function(node) {
+          node.textContent = nextLabel;
+        });
+
+        window.requestAnimationFrame(function() {
+          card.classList.remove('is-method-switching');
+          animatedNodes.forEach(function(node) {
+            node.classList.remove('is-updating');
+          });
+        });
+      }, 120);
+    }
+
+    function setMethodSwitcher(methodOptions) {
+      var enabledMethodIndexes = getEnabledMethodIndexes(methodOptions);
+      var currentOption = methodOptions[activeMethodIndex];
+      var currentLabel = currentOption ? currentOption.rightLabel || 'Method' : 'Method';
+      var hasMultipleOptions = enabledMethodIndexes.length > 1;
+
+      animateMethodText(currentLabel);
+
+      if (prevMethodButton) {
+        prevMethodButton.disabled = !hasMultipleOptions;
+      }
+
+      if (nextMethodButton) {
+        nextMethodButton.disabled = !hasMultipleOptions;
+      }
+    }
+
+    function cycleMethod(methodOptions, direction) {
+      var enabledMethodIndexes = getEnabledMethodIndexes(methodOptions);
+      var currentEnabledIndex;
+      var nextEnabledIndex;
+
+      if (enabledMethodIndexes.length <= 1) {
+        return;
+      }
+
+      currentEnabledIndex = enabledMethodIndexes.indexOf(activeMethodIndex);
+      if (currentEnabledIndex === -1) {
+        currentEnabledIndex = 0;
+      }
+
+      nextEnabledIndex = (currentEnabledIndex + direction + enabledMethodIndexes.length) % enabledMethodIndexes.length;
+      activeMethodIndex = enabledMethodIndexes[nextEnabledIndex];
+      setMethodSwitcher(methodOptions);
+      applyResolvedContent(methodOptions[activeMethodIndex], latestShouldLoadMedia);
+    }
+
+    function applyResolvedContent(content, shouldLoadMedia) {
       var nextLeftImage = content.leftImage || '';
       var nextRightImage = content.rightImage || nextLeftImage;
       var resolvedLeftLabel = content.leftLabel || 'Ours';
@@ -710,7 +824,6 @@ function initImageComparisons() {
 
       leftLabel.textContent = resolvedLeftLabel;
       rightLabel.textContent = resolvedRightLabel;
-      compareCaption.textContent = resolvedLeftLabel + ' vs. ' + resolvedRightLabel;
 
       if (shouldLoadMedia && nextLeftImage) {
         leftImage.setAttribute('src', nextLeftImage);
@@ -727,10 +840,46 @@ function initImageComparisons() {
       scheduleWrapperSize();
     }
 
+    function setContent(content, shouldLoadMedia) {
+      var methodOptions = content.methodOptions || [];
+      var resolvedContent = content;
+
+      latestContent = content;
+      latestShouldLoadMedia = shouldLoadMedia;
+
+      if (methodOptions.length && (baselineChip || selectorValue || prevMethodButton || nextMethodButton)) {
+        activeMethodIndex = resolveActiveMethodIndex(methodOptions);
+        setMethodSwitcher(methodOptions);
+        resolvedContent = methodOptions[activeMethodIndex];
+      }
+
+      applyResolvedContent(resolvedContent, shouldLoadMedia);
+    }
+
     leftImage.addEventListener('load', scheduleWrapperSize);
     rightImage.addEventListener('load', scheduleWrapperSize);
     window.addEventListener('resize', scheduleWrapperSize);
     scheduleWrapperSize();
+
+    if (prevMethodButton) {
+      prevMethodButton.addEventListener('click', function() {
+        if (!latestContent || !latestContent.methodOptions) {
+          return;
+        }
+
+        cycleMethod(latestContent.methodOptions, -1);
+      });
+    }
+
+    if (nextMethodButton) {
+      nextMethodButton.addEventListener('click', function() {
+        if (!latestContent || !latestContent.methodOptions) {
+          return;
+        }
+
+        cycleMethod(latestContent.methodOptions, 1);
+      });
+    }
 
     return {
       setContent: setContent
@@ -754,6 +903,26 @@ function initImageComparisons() {
   }
 
   function activateScene(button) {
+    function buildSelectableMethodOption(slot, fallbackLabel) {
+      var leftImage = button.getAttribute('data-left-image-' + slot) ||
+        button.getAttribute('data-left-image-2') ||
+        button.getAttribute('data-left-image-1');
+      var rightImage = button.getAttribute('data-right-image-' + slot) ||
+        button.getAttribute('data-right-image-2') ||
+        button.getAttribute('data-right-image-1');
+      var leftLabel = button.getAttribute('data-left-label-' + slot) ||
+        button.getAttribute('data-left-label-2') ||
+        button.getAttribute('data-left-label-1');
+      var rightLabel = button.getAttribute('data-right-label-' + slot) || fallbackLabel;
+
+      return {
+        leftImage: leftImage,
+        rightImage: rightImage,
+        leftLabel: leftLabel,
+        rightLabel: rightLabel
+      };
+    }
+
     var compareConfigs = [
       {
         leftImage: button.getAttribute('data-left-image-1'),
@@ -762,10 +931,12 @@ function initImageComparisons() {
         rightLabel: button.getAttribute('data-right-label-1')
       },
       {
-        leftImage: button.getAttribute('data-left-image-2') || button.getAttribute('data-left-image-1'),
-        rightImage: button.getAttribute('data-right-image-2') || button.getAttribute('data-right-image-1'),
-        leftLabel: button.getAttribute('data-left-label-2') || button.getAttribute('data-left-label-1'),
-        rightLabel: button.getAttribute('data-right-label-2') || button.getAttribute('data-right-label-1')
+        methodOptions: [
+          buildSelectableMethodOption(2, button.getAttribute('data-right-label-2') || button.getAttribute('data-right-label-1') || 'SpeedySplat'),
+          buildSelectableMethodOption(3, 'Compact-3DGS'),
+          buildSelectableMethodOption(4, 'LightGaussian'),
+          buildSelectableMethodOption(5, 'Scaffold-GS')
+        ]
       }
     ];
 
@@ -871,11 +1042,9 @@ function initResultsGallery() {
 
   function applyItemVisualState(item, relativeIndex, frontRadius, viewportWidth, cardWidth) {
     var absIndex;
-    var isMobile;
     var isFront;
     var visibleSlots;
     var slotSpacing;
-    var arcLift;
     var x;
     var y;
     var scale;
@@ -887,7 +1056,6 @@ function initResultsGallery() {
     var layer;
 
     absIndex = Math.abs(relativeIndex);
-    isMobile = window.innerWidth <= 768;
     isFront = absIndex <= frontRadius;
 
     if (!isFront) {
@@ -908,17 +1076,16 @@ function initResultsGallery() {
 
     visibleSlots = (frontRadius * 2) + 1;
     slotSpacing = Math.max(0, (viewportWidth - cardWidth) / Math.max(1, visibleSlots - 1));
-    arcLift = isMobile ? 4.2 : 5.4;
     x = relativeIndex * slotSpacing;
-    y = absIndex * absIndex * arcLift;
-    scale = absIndex === 0 ? 1.17 : (absIndex === 1 ? 0.93 : 0.77);
-    opacity = absIndex === 0 ? 1 : (absIndex === 1 ? 0.95 : 0.82);
-    rotate = relativeIndex * (isMobile ? -14 : -18);
-    tilt = relativeIndex * (isMobile ? 0.45 : 0.65);
-    item.style.setProperty('--results-z', absIndex === 0 ? '120px' : (absIndex === 1 ? '60px' : '0px'));
-    saturate = absIndex === 0 ? 1.06 : (absIndex === 1 ? 0.98 : 0.9);
+    y = 0;
+    scale = absIndex === 0 ? 1 : (absIndex === 1 ? 0.92 : 0.84);
+    opacity = absIndex === 0 ? 1 : (absIndex === 1 ? 0.8 : 0.58);
+    rotate = 0;
+    tilt = 0;
+    item.style.setProperty('--results-z', '0px');
+    saturate = absIndex === 0 ? 1 : (absIndex === 1 ? 0.94 : 0.88);
     blur = 0;
-    layer = absIndex === 0 ? 320 : (absIndex === 1 ? 220 : 140);
+    layer = absIndex === 0 ? 180 : (absIndex === 1 ? 140 : 100);
 
     item.hidden = false;
     item.classList.toggle('is-edge', absIndex === frontRadius);

@@ -357,7 +357,7 @@
     <div class="container is-max-desktop">
       <div class="columns is-centered has-text-centered">
         <div class="column results-panel" data-results-gallery>
-          <h2 class="title is-3 results-title">Results（待修改，数据对比图（主表、消融实验等））</h2>
+          <h2 class="title is-3 results-title">Results</h2>
           <div class="results-divider" aria-hidden="true"></div>
           <div class="content has-text-justified results-summary">
             <p>
@@ -534,6 +534,11 @@
 
             <div class="scene-compare-grid visual-compare-grid">
               <div class="scene-compare-card visual-compare-card" data-image-compare-card="1">
+                <div class="visual-compare-header visual-compare-header--centered">
+                  <div class="visual-compare-header__inner visual-compare-header__inner--centered">
+                    <p class="visual-compare-header__title visual-compare-header__title--centered">Ours vs. 3DGS</p>
+                  </div>
+                </div>
                 <div class="scene-compare-wrapper visual-compare-wrapper">
                   <div class="scene-compare-layer scene-compare-layer--base">
                     <img class="scene-compare-image scene-compare-image--right" data-compare-image-right
@@ -554,10 +559,30 @@
                     <span class="scene-compare-handle"></span>
                   </div>
                 </div>
-                <p class="scene-compare-caption" data-compare-caption>Ours vs. 3DGS</p>
               </div>
 
               <div class="scene-compare-card visual-compare-card" data-image-compare-card="2">
+                <div class="visual-compare-header visual-compare-header--selectable">
+                  <div class="visual-compare-header__inner visual-compare-header__inner--selectable">
+                    <p class="visual-compare-header__title">
+                      Ours vs.
+                      <span class="visual-compare-header__chip" data-compare-baseline-chip>SpeedySplat</span>
+                    </p>
+                    <div class="visual-compare-selector" role="group" aria-label="Alternative baseline selector">
+                      <button class="visual-compare-selector__button visual-compare-selector__button--prev" type="button" data-compare-method-prev
+                        aria-label="Previous baseline">
+                        <span class="visual-compare-selector__button-icon" aria-hidden="true">&#10094;</span>
+                      </button>
+                      <div class="visual-compare-selector__window" aria-live="polite" aria-atomic="true">
+                        <span class="visual-compare-selector__value" data-compare-method-value>SpeedySplat</span>
+                      </div>
+                      <button class="visual-compare-selector__button visual-compare-selector__button--next" type="button" data-compare-method-next
+                        aria-label="Next baseline">
+                        <span class="visual-compare-selector__button-icon" aria-hidden="true">&#10095;</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div class="scene-compare-wrapper visual-compare-wrapper">
                   <div class="scene-compare-layer scene-compare-layer--base">
                     <img class="scene-compare-image scene-compare-image--right" data-compare-image-right
@@ -579,7 +604,6 @@
                     <span class="scene-compare-handle"></span>
                   </div>
                 </div>
-                <p class="scene-compare-caption" data-compare-caption>Ours vs. SpeedySplat</p>
               </div>
             </div>
           </div>
