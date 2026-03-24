@@ -351,6 +351,7 @@ function initSceneShowcase() {
     var wrapper = card.querySelector('.scene-compare-wrapper');
     var overlay = card.querySelector('[data-compare-overlay]');
     var divider = card.querySelector('[data-compare-handle]');
+    var loadingOverlay = card.querySelector('[data-compare-loading]');
     var leftVideo = card.querySelector('.scene-compare-video--left');
     var rightVideo = card.querySelector('.scene-compare-video--right');
     var leftSource = card.querySelector('.scene-compare-source--left');
@@ -367,6 +368,11 @@ function initSceneShowcase() {
     var compareInteraction;
     var layoutFrame = null;
     var lastKnownRatio = 16 / 9;
+    var loadingVisibleSince = 0;
+    var loadingShowTimer = null;
+    var loadingHideTimer = null;
+    var LOADING_SHOW_DELAY = 140;
+    var LOADING_MIN_VISIBLE = 220;
 
     if (!wrapper || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric) {
       return null;
@@ -382,6 +388,74 @@ function initSceneShowcase() {
           rightVideo.currentTime = leftVideo.currentTime;
         } catch (error) {}
       }
+    }
+
+    function isVideoReady(videoElement) {
+      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 2;
+    }
+
+    function clearLoadingTimers() {
+      if (loadingShowTimer) {
+        window.clearTimeout(loadingShowTimer);
+        loadingShowTimer = null;
+      }
+
+      if (loadingHideTimer) {
+        window.clearTimeout(loadingHideTimer);
+        loadingHideTimer = null;
+      }
+    }
+
+    function revealLoadingOverlay() {
+      if (wrapper.classList.contains('is-video-loading-visible')) {
+        return;
+      }
+
+      loadingVisibleSince = Date.now();
+      wrapper.classList.add('is-video-loading-visible');
+      if (loadingOverlay) {
+        loadingOverlay.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function setLoadingState(isLoading) {
+      clearLoadingTimers();
+
+      if (isLoading) {
+        wrapper.classList.add('is-video-loading');
+
+        if (!wrapper.classList.contains('is-video-loading-visible')) {
+          loadingShowTimer = window.setTimeout(function() {
+            loadingShowTimer = null;
+            if (wrapper.classList.contains('is-video-loading')) {
+              revealLoadingOverlay();
+            }
+          }, LOADING_SHOW_DELAY);
+        }
+
+        return;
+      }
+
+      wrapper.classList.remove('is-video-loading');
+
+      if (!wrapper.classList.contains('is-video-loading-visible')) {
+        if (loadingOverlay) {
+          loadingOverlay.setAttribute('aria-hidden', 'true');
+        }
+        return;
+      }
+
+      loadingHideTimer = window.setTimeout(function() {
+        loadingHideTimer = null;
+        wrapper.classList.remove('is-video-loading-visible');
+        if (loadingOverlay) {
+          loadingOverlay.setAttribute('aria-hidden', 'true');
+        }
+      }, Math.max(0, LOADING_MIN_VISIBLE - (Date.now() - loadingVisibleSince)));
+    }
+
+    function syncLoadingState() {
+      setLoadingState(!(isVideoReady(leftVideo) && isVideoReady(rightVideo)));
     }
 
     function getPosterPath(videoPath) {
@@ -460,18 +534,25 @@ function initSceneShowcase() {
     }
 
     function ensureVideoSource(videoElement, sourceElement, nextVideoPath) {
+      var currentSource;
+
       if (!nextVideoPath) {
         return;
       }
 
-      if (sourceElement.getAttribute('src') === nextVideoPath) {
-        return;
+      currentSource = sourceElement.getAttribute('src');
+      if (currentSource === nextVideoPath) {
+        if (videoElement.readyState < 2 && videoElement.networkState === 0) {
+          videoElement.load();
+        }
+        return videoElement.readyState < 2;
       }
 
       videoElement.setAttribute('preload', 'auto');
       sourceElement.setAttribute('src', nextVideoPath);
       sourceElement.setAttribute('data-src', nextVideoPath);
       videoElement.load();
+      return true;
     }
 
     function setMetricBlock(sceneKey, methodKey, labelElement, gaussianElement, fpsElement, trainElement, fallbackLabel) {
@@ -506,6 +587,7 @@ function initSceneShowcase() {
         compareCaption.textContent = resolvedLeftLabel + ' vs. ' + resolvedRightLabel;
       }
 
+      setLoadingState(true);
       leftVideo.setAttribute('poster', getPosterPath(nextLeftVideo));
       rightVideo.setAttribute('poster', getPosterPath(nextRightVideo));
 
@@ -527,6 +609,7 @@ function initSceneShowcase() {
         rightVideo.pause();
       }
       scheduleWrapperSize();
+      syncLoadingState();
     }
 
     leftVideo.addEventListener('play', function() {
@@ -551,9 +634,25 @@ function initSceneShowcase() {
       rightVideo.playbackRate = leftVideo.playbackRate;
     });
 
+    [leftVideo, rightVideo].forEach(function(videoElement) {
+      videoElement.addEventListener('loadstart', function() {
+        setLoadingState(true);
+      });
+      videoElement.addEventListener('emptied', function() {
+        setLoadingState(true);
+      });
+      videoElement.addEventListener('loadeddata', syncLoadingState);
+      videoElement.addEventListener('canplay', syncLoadingState);
+      videoElement.addEventListener('playing', syncLoadingState);
+      videoElement.addEventListener('error', function() {
+        setLoadingState(false);
+      });
+    });
+
     leftVideo.addEventListener('loadedmetadata', scheduleWrapperSize);
     rightVideo.addEventListener('loadedmetadata', scheduleWrapperSize);
     window.addEventListener('resize', scheduleWrapperSize);
+    syncLoadingState();
     scheduleWrapperSize();
 
     return {

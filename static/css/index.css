@@ -365,6 +365,75 @@ body {
   object-fit: cover;
   background: #0f1218;
   pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.24s ease;
+}
+
+.scene-compare-wrapper.is-video-loading .scene-compare-video {
+  opacity: 0;
+}
+
+.scene-compare-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(10, 14, 20, 0.18), rgba(10, 14, 20, 0) 26%),
+    linear-gradient(180deg, rgba(9, 13, 20, 0.12), rgba(10, 14, 20, 0.2));
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+  pointer-events: none;
+}
+
+.scene-compare-wrapper.is-video-loading-visible .scene-compare-loading {
+  opacity: 1;
+  visibility: visible;
+}
+
+.scene-compare-loading__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 999px;
+  background: rgba(10, 14, 20, 0.28);
+  box-shadow: 0 6px 18px rgba(8, 12, 18, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.scene-compare-loading__spinner {
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 2.4px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  box-shadow: none;
+  animation: scene-compare-spinner 0.85s linear infinite;
+}
+
+.scene-compare-loading__title {
+  display: none;
+}
+
+.scene-compare-loading__bar {
+  display: none;
+}
+
+.scene-compare-loading__bar-fill {
+  display: none;
+}
+
+@keyframes scene-compare-spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .scene-showcase-stage .scene-compare-video {
@@ -739,6 +808,16 @@ body {
   .scene-compare-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .scene-compare-loading__panel {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .scene-compare-loading__spinner {
+    width: 1.55rem;
+    height: 1.55rem;
   }
 
   .scene-showcase-stage .scene-compare-grid {
