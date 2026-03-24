@@ -480,8 +480,25 @@ function initSceneShowcase() {
       return lastKnownRatio;
     }
 
+    function getContentWidth(element) {
+      var style;
+      var paddingLeft;
+      var paddingRight;
+
+      if (!element) {
+        return 0;
+      }
+
+      style = window.getComputedStyle(element);
+      paddingLeft = parseFloat(style.paddingLeft) || 0;
+      paddingRight = parseFloat(style.paddingRight) || 0;
+
+      return Math.max(0, element.clientWidth - paddingLeft - paddingRight);
+    }
+
     function updateWrapperSize() {
-      var availableWidth = card.clientWidth;
+      var frame = wrapper.parentElement;
+      var availableWidth = getContentWidth(frame) || card.clientWidth;
       var isMobile = window.innerWidth <= 768;
       var minWidth = Math.min(availableWidth, isMobile ? 265 : 360);
       var minHeight = isMobile ? 180 : 250;
@@ -518,8 +535,8 @@ function initSceneShowcase() {
         height = width / ratio;
       }
 
-      wrapper.style.width = Math.round(width) + 'px';
-      wrapper.style.height = Math.round(height) + 'px';
+      wrapper.style.width = width.toFixed(2) + 'px';
+      wrapper.style.height = height.toFixed(2) + 'px';
     }
 
     function scheduleWrapperSize() {

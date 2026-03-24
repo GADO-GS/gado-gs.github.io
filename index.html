@@ -74,7 +74,7 @@
     <div class="container is-max-fullhd scene-showcase-container">
       <div class="hero-body">
         <div class="scene-showcase-shell">
-          <div class="scene-selector" role="group" aria-label="Scene selector">
+          <div class="scene-selector scene-selector--showcase" role="group" aria-label="Scene selector">
             <button class="scene-selector__item is-active" type="button" data-scene-key="bicycle"
               data-left-video-1="./static/videos/bicycle_ours.mp4" data-right-video-1="./static/videos/bicycle_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bicycle_ours.mp4"
@@ -83,7 +83,7 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/bicycle_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Bicycle</span>
+              <span class="scene-selector__label">Bicycle</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="garden"
               data-left-video-1="./static/videos/garden_ours.mp4" data-right-video-1="./static/videos/garden_3dgs.mp4"
@@ -93,7 +93,7 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/garden_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Garden</span>
+              <span class="scene-selector__label">Garden</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="stump"
               data-left-video-1="./static/videos/stump_ours.mp4" data-right-video-1="./static/videos/stump_3dgs.mp4"
@@ -103,7 +103,7 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/stump_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Stump</span>
+              <span class="scene-selector__label">Stump</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="kitchen"
               data-left-video-1="./static/videos/kitchen_ours.mp4" data-right-video-1="./static/videos/kitchen_3dgs.mp4"
@@ -113,7 +113,7 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/kitchen_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Kitchen</span>
+              <span class="scene-selector__label">Kitchen</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="bonsai"
               data-left-video-1="./static/videos/bonsai_ours.mp4" data-right-video-1="./static/videos/bonsai_3dgs.mp4"
@@ -123,7 +123,7 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/bonsai_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Bonsai</span>
+              <span class="scene-selector__label">Bonsai</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="truck"
               data-left-video-1="./static/videos/truck_ours.mp4" data-right-video-1="./static/videos/truck_3dgs.mp4"
@@ -133,148 +133,158 @@
               <span class="scene-selector__preview" aria-hidden="true">
                 <img src="./static/videos/truck_thumb.jpg" alt="">
               </span>
-              <span class="is-sr-only">Truck</span>
+              <span class="scene-selector__label">Truck</span>
             </button>
           </div>
+
           <div class="scene-showcase-media-wrap">
             <div class="scene-showcase-content-shell">
               <div class="scene-showcase-stage">
                 <div class="scene-compare-grid">
                   <div class="scene-compare-card" data-compare-card="1">
-                    <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
-                      <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
-                        <div class="scene-compare-loading__panel">
-                          <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
-                          <span class="scene-compare-loading__title">Preparing Comparison</span>
-                          <span class="scene-compare-loading__bar" aria-hidden="true">
-                            <span class="scene-compare-loading__bar-fill"></span>
-                          </span>
+                    <div class="scene-compare-frame">
+                      <p class="scene-compare-frame__title">Ours vs 3DGS</p>
+                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
+                        <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
+                          <div class="scene-compare-loading__panel">
+                            <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
+                            <span class="scene-compare-loading__title">Preparing Comparison</span>
+                            <span class="scene-compare-loading__bar" aria-hidden="true">
+                              <span class="scene-compare-loading__bar-fill"></span>
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <div class="scene-compare-layer scene-compare-layer--base">
-                        <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
-                          poster="./static/videos/bicycle_3dgs.jpg" preload="auto">
-                          <source class="scene-compare-source scene-compare-source--right"
-                            src="./static/videos/bicycle_3dgs.mp4" data-src="./static/videos/bicycle_3dgs.mp4"
-                            type="video/mp4">
-                        </video>
-                        <div class="scene-compare-metrics scene-compare-metrics--right">
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
-                              class="scene-compare-metrics__value">4.90M</span><span
-                              class="scene-compare-metrics__label">Gaussians</span></span>
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
-                              class="scene-compare-metrics__value">74</span><span
-                              class="scene-compare-metrics__label">FPS</span></span>
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
-                              class="scene-compare-metrics__value">66.2 min</span><span
-                              class="scene-compare-metrics__label">Train</span></span>
-                        </div>
-                        <span class="scene-compare-badge scene-compare-badge--right"
-                          data-compare-right-label>3DGS</span>
-                      </div>
-                      <div class="scene-compare-overlay" data-compare-overlay>
-                        <div class="scene-compare-layer scene-compare-layer--overlay">
-                          <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
-                            poster="./static/videos/bicycle_ours.jpg" preload="auto">
-                            <source class="scene-compare-source scene-compare-source--left"
-                              src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
+                        <div class="scene-compare-layer scene-compare-layer--base">
+                          <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
+                            poster="./static/videos/bicycle_3dgs.jpg" preload="auto">
+                            <source class="scene-compare-source scene-compare-source--right"
+                              src="./static/videos/bicycle_3dgs.mp4" data-src="./static/videos/bicycle_3dgs.mp4"
                               type="video/mp4">
                           </video>
-                          <div class="scene-compare-metrics scene-compare-metrics--left">
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
-                                class="scene-compare-metrics__value">0.48M</span><span
+                          <div class="scene-compare-metrics scene-compare-metrics--right">
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
+                                class="scene-compare-metrics__value">4.90M</span><span
                                 class="scene-compare-metrics__label">Gaussians</span></span>
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
-                                class="scene-compare-metrics__value">964</span><span
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
+                                class="scene-compare-metrics__value">74</span><span
                                 class="scene-compare-metrics__label">FPS</span></span>
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
-                                class="scene-compare-metrics__value">2.8 min</span><span
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
+                                class="scene-compare-metrics__value">66.2 min</span><span
                                 class="scene-compare-metrics__label">Train</span></span>
                           </div>
-                          <span class="scene-compare-badge scene-compare-badge--left"
-                            data-compare-left-label>Ours</span>
+                          <span class="scene-compare-badge scene-compare-badge--right"
+                            data-compare-right-label>3DGS</span>
                         </div>
-                      </div>
-                      <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
-                        aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-                        <span class="scene-compare-handle"></span>
+                        <div class="scene-compare-overlay" data-compare-overlay>
+                          <div class="scene-compare-layer scene-compare-layer--overlay">
+                            <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
+                              poster="./static/videos/bicycle_ours.jpg" preload="auto">
+                              <source class="scene-compare-source scene-compare-source--left"
+                                src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
+                                type="video/mp4">
+                            </video>
+                            <div class="scene-compare-metrics scene-compare-metrics--left">
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
+                                  class="scene-compare-metrics__value">0.48M</span><span
+                                  class="scene-compare-metrics__label">Gaussians</span></span>
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
+                                  class="scene-compare-metrics__value">964</span><span
+                                  class="scene-compare-metrics__label">FPS</span></span>
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
+                                  class="scene-compare-metrics__value">2.8 min</span><span
+                                  class="scene-compare-metrics__label">Train</span></span>
+                            </div>
+                            <span class="scene-compare-badge scene-compare-badge--left"
+                              data-compare-left-label>Ours</span>
+                          </div>
+                        </div>
+                        <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                          aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                          <span class="scene-compare-handle"></span>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div class="scene-compare-card" data-compare-card="2">
-                    <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
-                      <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
-                        <div class="scene-compare-loading__panel">
-                          <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
-                          <span class="scene-compare-loading__title">Preparing Comparison</span>
-                          <span class="scene-compare-loading__bar" aria-hidden="true">
-                            <span class="scene-compare-loading__bar-fill"></span>
-                          </span>
+                    <div class="scene-compare-frame">
+                      <p class="scene-compare-frame__title">Ours vs SpeedySplat</p>
+                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
+                        <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
+                          <div class="scene-compare-loading__panel">
+                            <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
+                            <span class="scene-compare-loading__title">Preparing Comparison</span>
+                            <span class="scene-compare-loading__bar" aria-hidden="true">
+                              <span class="scene-compare-loading__bar-fill"></span>
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                      <div class="scene-compare-layer scene-compare-layer--base">
-                        <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
-                          poster="./static/videos/bicycle_speedySplat.jpg" preload="auto">
-                          <source class="scene-compare-source scene-compare-source--right"
-                            src="./static/videos/bicycle_speedySplat.mp4"
-                            data-src="./static/videos/bicycle_speedySplat.mp4" type="video/mp4">
-                        </video>
-                        <div class="scene-compare-metrics scene-compare-metrics--right">
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
-                              class="scene-compare-metrics__value">0.62M</span><span
-                              class="scene-compare-metrics__label">Gaussians</span></span>
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
-                              class="scene-compare-metrics__value">643</span><span
-                              class="scene-compare-metrics__label">FPS</span></span>
-                          <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
-                              class="scene-compare-metrics__value">18.6 min</span><span
-                              class="scene-compare-metrics__label">Train</span></span>
-                        </div>
-                        <span class="scene-compare-badge scene-compare-badge--right"
-                          data-compare-right-label>SpeedySplat</span>
-                      </div>
-                      <div class="scene-compare-overlay" data-compare-overlay>
-                        <div class="scene-compare-layer scene-compare-layer--overlay">
-                          <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
-                            poster="./static/videos/bicycle_ours.jpg" preload="auto">
-                            <source class="scene-compare-source scene-compare-source--left"
-                              src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
-                              type="video/mp4">
+                        <div class="scene-compare-layer scene-compare-layer--base">
+                          <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
+                            poster="./static/videos/bicycle_speedySplat.jpg" preload="auto">
+                            <source class="scene-compare-source scene-compare-source--right"
+                              src="./static/videos/bicycle_speedySplat.mp4"
+                              data-src="./static/videos/bicycle_speedySplat.mp4" type="video/mp4">
                           </video>
-                          <div class="scene-compare-metrics scene-compare-metrics--left">
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
-                                class="scene-compare-metrics__value">0.48M</span><span
+                          <div class="scene-compare-metrics scene-compare-metrics--right">
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
+                                class="scene-compare-metrics__value">0.62M</span><span
                                 class="scene-compare-metrics__label">Gaussians</span></span>
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
-                                class="scene-compare-metrics__value">964</span><span
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-fps><span
+                                class="scene-compare-metrics__value">643</span><span
                                 class="scene-compare-metrics__label">FPS</span></span>
-                            <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
-                                class="scene-compare-metrics__value">2.8 min</span><span
+                            <span class="scene-compare-metrics__line" data-compare-right-metric-train><span
+                                class="scene-compare-metrics__value">18.6 min</span><span
                                 class="scene-compare-metrics__label">Train</span></span>
                           </div>
-                          <span class="scene-compare-badge scene-compare-badge--left"
-                            data-compare-left-label>Ours</span>
+                          <span class="scene-compare-badge scene-compare-badge--right"
+                            data-compare-right-label>SpeedySplat</span>
+                        </div>
+                        <div class="scene-compare-overlay" data-compare-overlay>
+                          <div class="scene-compare-layer scene-compare-layer--overlay">
+                            <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
+                              poster="./static/videos/bicycle_ours.jpg" preload="auto">
+                              <source class="scene-compare-source scene-compare-source--left"
+                                src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
+                                type="video/mp4">
+                            </video>
+                            <div class="scene-compare-metrics scene-compare-metrics--left">
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
+                                  class="scene-compare-metrics__value">0.48M</span><span
+                                  class="scene-compare-metrics__label">Gaussians</span></span>
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-fps><span
+                                  class="scene-compare-metrics__value">964</span><span
+                                  class="scene-compare-metrics__label">FPS</span></span>
+                              <span class="scene-compare-metrics__line" data-compare-left-metric-train><span
+                                  class="scene-compare-metrics__value">2.8 min</span><span
+                                  class="scene-compare-metrics__label">Train</span></span>
+                            </div>
+                            <span class="scene-compare-badge scene-compare-badge--left"
+                              data-compare-left-label>Ours</span>
+                          </div>
+                        </div>
+                        <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
+                          aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                          <span class="scene-compare-handle"></span>
                         </div>
                       </div>
-                      <div class="scene-compare-divider" data-compare-handle tabindex="0" role="slider"
-                        aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-                        <span class="scene-compare-handle"></span>
-                      </div>
                     </div>
-                  </div>
-                  <div class="scene-showcase-note-shell">
-                    <p class="scene-showcase-note">
-                      Compared with 3DGS and SpeedySplat, GADO-GS retains competitive visual fidelity while training
-                      much faster and frequently requiring fewer Gaussians to represent the scene.
-                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div class="scene-showcase-note-shell">
+            <div class="scene-showcase-note-panel">
+              <p class="scene-showcase-note">
+                Compared with 3DGS and SpeedySplat, GADO-GS retains competitive visual fidelity while training
+                much faster and frequently requiring fewer Gaussians to represent the scene.
+              </p>
+            </div>
+          </div>
         </div>
+
       </div>
-    </div>
   </section>
 
   <section class="section">
