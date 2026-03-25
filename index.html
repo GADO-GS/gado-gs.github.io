@@ -72,6 +72,7 @@
         <div class="scene-showcase-shell">
           <div class="scene-selector scene-selector--showcase" role="group" aria-label="Scene selector">
             <button class="scene-selector__item is-active" type="button" data-scene-key="bicycle"
+              data-aspect-ratio="1.507538"
               data-left-video-1="./static/videos/bicycle_ours.mp4" data-right-video-1="./static/videos/bicycle_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bicycle_ours.mp4"
               data-right-video-2="./static/videos/bicycle_speedySplat.mp4" data-left-label-2="Ours"
@@ -82,6 +83,7 @@
               <span class="scene-selector__label">Bicycle</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="garden"
+              data-aspect-ratio="1.546392"
               data-left-video-1="./static/videos/garden_ours.mp4" data-right-video-1="./static/videos/garden_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/garden_ours.mp4"
               data-right-video-2="./static/videos/garden_speedySplat.mp4" data-left-label-2="Ours"
@@ -92,6 +94,7 @@
               <span class="scene-selector__label">Garden</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="stump"
+              data-aspect-ratio="1.511335"
               data-left-video-1="./static/videos/stump_ours.mp4" data-right-video-1="./static/videos/stump_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/stump_ours.mp4"
               data-right-video-2="./static/videos/stump_speedySplat.mp4" data-left-label-2="Ours"
@@ -102,6 +105,7 @@
               <span class="scene-selector__label">Stump</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="kitchen"
+              data-aspect-ratio="1.5"
               data-left-video-1="./static/videos/kitchen_ours.mp4" data-right-video-1="./static/videos/kitchen_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/kitchen_ours.mp4"
               data-right-video-2="./static/videos/kitchen_speedySplat.mp4" data-left-label-2="Ours"
@@ -112,6 +116,7 @@
               <span class="scene-selector__label">Kitchen</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="bonsai"
+              data-aspect-ratio="1.503759"
               data-left-video-1="./static/videos/bonsai_ours.mp4" data-right-video-1="./static/videos/bonsai_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bonsai_ours.mp4"
               data-right-video-2="./static/videos/bonsai_speedySplat.mp4" data-left-label-2="Ours"
@@ -122,6 +127,7 @@
               <span class="scene-selector__label">Bonsai</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="truck"
+              data-aspect-ratio="1.796407"
               data-left-video-1="./static/videos/truck_ours.mp4" data-right-video-1="./static/videos/truck_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/truck_ours.mp4"
               data-right-video-2="./static/videos/truck_speedySplat.mp4" data-left-label-2="Ours"
@@ -145,7 +151,8 @@
                               class="visual-compare-selector__vs">vs</span> 3DGS</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
+                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible"
+                        style="--scene-compare-aspect-ratio: 1.507538;">
                         <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
@@ -157,7 +164,7 @@
                         </div>
                         <div class="scene-compare-layer scene-compare-layer--base">
                           <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
-                            poster="./static/videos/bicycle_3dgs.jpg" preload="auto">
+                            poster="./static/videos/bicycle_3dgs.jpg" preload="metadata">
                             <source class="scene-compare-source scene-compare-source--right"
                               src="./static/videos/bicycle_3dgs.mp4" data-src="./static/videos/bicycle_3dgs.mp4"
                               type="video/mp4">
@@ -179,7 +186,7 @@
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
                             <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
-                              poster="./static/videos/bicycle_ours.jpg" preload="auto">
+                              poster="./static/videos/bicycle_ours.jpg" preload="metadata">
                               <source class="scene-compare-source scene-compare-source--left"
                                 src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
                                 type="video/mp4">
@@ -204,6 +211,44 @@
                           <span class="scene-compare-handle"></span>
                         </div>
                       </div>
+                      <div class="scene-compare-controls" data-compare-controls>
+                        <button class="scene-compare-control scene-compare-control--play" type="button"
+                          data-compare-play-toggle aria-label="Pause comparison videos" aria-pressed="false">
+                          <span class="scene-compare-control__icon" aria-hidden="true">
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--pause"
+                              viewBox="0 0 20 20" focusable="false">
+                              <rect x="4.5" y="3.5" width="4.1" height="13" rx="1.2"></rect>
+                              <rect x="11.4" y="3.5" width="4.1" height="13" rx="1.2"></rect>
+                            </svg>
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--play"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M6.1 4.1L15.4 10L6.1 15.9Z"></path>
+                            </svg>
+                          </span>
+                          <span class="is-sr-only" data-compare-play-text>Pause comparison videos</span>
+                        </button>
+                        <label class="scene-compare-progress">
+                          <span class="is-sr-only">Comparison playback progress</span>
+                          <input class="scene-compare-progress__input" type="range" min="0" max="1000" step="1"
+                            value="0" data-compare-progress aria-label="Comparison playback progress">
+                        </label>
+                        <button class="scene-compare-control scene-compare-control--fullscreen" type="button"
+                          data-compare-fullscreen-toggle aria-label="Enter fullscreen">
+                          <span class="scene-compare-control__icon" aria-hidden="true">
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--expand"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M7.2 2.9H2.9V7.2M12.8 2.9H17.1V7.2M17.1 12.8V17.1H12.8M7.2 17.1H2.9V12.8">
+                              </path>
+                            </svg>
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--compress"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M8.2 4.3H4.3V8.2M11.8 4.3H15.7V8.2M15.7 11.8V15.7H11.8M8.2 15.7H4.3V11.8">
+                              </path>
+                            </svg>
+                          </span>
+                          <span class="is-sr-only" data-compare-fullscreen-text>Enter fullscreen</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div class="scene-compare-card" data-compare-card="2">
@@ -214,7 +259,8 @@
                               class="visual-compare-selector__vs">vs</span> SpeedySplat</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible">
+                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible"
+                        style="--scene-compare-aspect-ratio: 1.507538;">
                         <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
@@ -226,7 +272,7 @@
                         </div>
                         <div class="scene-compare-layer scene-compare-layer--base">
                           <video class="scene-compare-video scene-compare-video--right" autoplay muted loop playsinline
-                            poster="./static/videos/bicycle_speedySplat.jpg" preload="auto">
+                            poster="./static/videos/bicycle_speedySplat.jpg" preload="metadata">
                             <source class="scene-compare-source scene-compare-source--right"
                               src="./static/videos/bicycle_speedySplat.mp4"
                               data-src="./static/videos/bicycle_speedySplat.mp4" type="video/mp4">
@@ -248,7 +294,7 @@
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
                             <video class="scene-compare-video scene-compare-video--left" autoplay muted loop playsinline
-                              poster="./static/videos/bicycle_ours.jpg" preload="auto">
+                              poster="./static/videos/bicycle_ours.jpg" preload="metadata">
                               <source class="scene-compare-source scene-compare-source--left"
                                 src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
                                 type="video/mp4">
@@ -272,6 +318,44 @@
                           aria-label="Comparison slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
                           <span class="scene-compare-handle"></span>
                         </div>
+                      </div>
+                      <div class="scene-compare-controls" data-compare-controls>
+                        <button class="scene-compare-control scene-compare-control--play" type="button"
+                          data-compare-play-toggle aria-label="Pause comparison videos" aria-pressed="false">
+                          <span class="scene-compare-control__icon" aria-hidden="true">
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--pause"
+                              viewBox="0 0 20 20" focusable="false">
+                              <rect x="4.5" y="3.5" width="4.1" height="13" rx="1.2"></rect>
+                              <rect x="11.4" y="3.5" width="4.1" height="13" rx="1.2"></rect>
+                            </svg>
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--play"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M6.1 4.1L15.4 10L6.1 15.9Z"></path>
+                            </svg>
+                          </span>
+                          <span class="is-sr-only" data-compare-play-text>Pause comparison videos</span>
+                        </button>
+                        <label class="scene-compare-progress">
+                          <span class="is-sr-only">Comparison playback progress</span>
+                          <input class="scene-compare-progress__input" type="range" min="0" max="1000" step="1"
+                            value="0" data-compare-progress aria-label="Comparison playback progress">
+                        </label>
+                        <button class="scene-compare-control scene-compare-control--fullscreen" type="button"
+                          data-compare-fullscreen-toggle aria-label="Enter fullscreen">
+                          <span class="scene-compare-control__icon" aria-hidden="true">
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--expand"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M7.2 2.9H2.9V7.2M12.8 2.9H17.1V7.2M17.1 12.8V17.1H12.8M7.2 17.1H2.9V12.8">
+                              </path>
+                            </svg>
+                            <svg class="scene-compare-control__glyph scene-compare-control__glyph--compress"
+                              viewBox="0 0 20 20" focusable="false">
+                              <path d="M8.2 4.3H4.3V8.2M11.8 4.3H15.7V8.2M15.7 11.8V15.7H11.8M8.2 15.7H4.3V11.8">
+                              </path>
+                            </svg>
+                          </span>
+                          <span class="is-sr-only" data-compare-fullscreen-text>Enter fullscreen</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -411,10 +495,12 @@
               competitive reconstruction quality.
             </p>
           </div>
-          <div class="publication-video">
-            <video controls playsinline preload="metadata">
-              <source src="./static/videos/teaser.mp4" type="video/mp4">
-            </video>
+          <div class="publication-video publication-video--placeholder" aria-label="Teaser video placeholder">
+            <div class="publication-video__placeholder">
+              <span class="publication-video__eyebrow">Placeholder</span>
+              <span class="publication-video__title">Teaser Video</span>
+              <span class="publication-video__subtitle">Content will be updated later.</span>
+            </div>
           </div>
         </div>
       </div>

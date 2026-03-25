@@ -349,7 +349,7 @@ body {
 }
 
 .scene-showcase-stage {
-  --scene-showcase-grid-reserved-height: 25.6rem;
+  --scene-showcase-grid-reserved-height: 28rem;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -393,13 +393,219 @@ body {
   border-radius: var(--compare-corner-radius);
   background: #0f1218;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.07);
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--scene-compare-aspect-ratio, 16 / 9);
 }
 
 .scene-showcase-stage .scene-compare-wrapper {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
+}
+
+.scene-compare-controls {
+  --scene-compare-control-size: 2.5rem;
+  --scene-compare-control-radius: 0.86rem;
+  --scene-compare-control-icon-size: 1.08rem;
+  --scene-compare-progress-height: 0.48rem;
+  --scene-compare-progress-thumb-size: 1rem;
+  --scene-compare-control-bg-start: rgba(255, 255, 255, 0.96);
+  --scene-compare-control-bg-end: rgba(246, 249, 253, 0.92);
+  --scene-compare-control-border: rgba(104, 119, 144, 0.16);
+  --scene-compare-control-color: #2a4669;
+  --scene-compare-progress-fill-start: #2d6bff;
+  --scene-compare-progress-fill-end: #8ab4ff;
+  --scene-compare-progress-track: rgba(161, 174, 196, 0.34);
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  width: 100%;
+  max-width: 100%;
+  align-self: center;
+  margin-top: 0.12rem;
+}
+
+.scene-compare-control {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: var(--scene-compare-control-size);
+  height: var(--scene-compare-control-size);
+  padding: 0;
+  border: 1px solid var(--scene-compare-control-border);
+  border-radius: var(--scene-compare-control-radius);
+  background: linear-gradient(180deg, var(--scene-compare-control-bg-start), var(--scene-compare-control-bg-end));
+  color: var(--scene-compare-control-color);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease,
+    background 0.18s ease;
+}
+
+.scene-compare-control:focus-visible {
+  border-color: rgba(61, 136, 255, 0.24);
+  color: #23456f;
+  box-shadow: 0 0 0 3px rgba(61, 136, 255, 0.1);
+  outline: none;
+}
+
+@media (hover: hover) {
+  .scene-compare-control:hover {
+    border-color: rgba(61, 136, 255, 0.24);
+    color: #23456f;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08), 0 0 0 2px rgba(61, 136, 255, 0.08);
+    outline: none;
+  }
+}
+
+@media (hover: none) {
+  .scene-compare-control:hover {
+    border-color: var(--scene-compare-control-border);
+    color: var(--scene-compare-control-color);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  }
+}
+
+.scene-compare-control:active {
+  border-color: rgba(61, 136, 255, 0.28);
+  color: #23456f;
+  box-shadow: none;
+  filter: saturate(0.96) brightness(0.99);
+  transform: translateY(1px) scale(0.985);
+}
+
+.scene-compare-control--fullscreen {
+  margin-left: 0.3rem;
+}
+
+.scene-compare-control__icon {
+  position: relative;
+  width: var(--scene-compare-control-icon-size);
+  height: var(--scene-compare-control-icon-size);
+}
+
+.scene-compare-control__glyph {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(0.84);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.scene-compare-control__glyph--pause,
+.scene-compare-control__glyph--play {
+  fill: currentColor;
+}
+
+.scene-compare-control__glyph--expand,
+.scene-compare-control__glyph--compress {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.95;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scene-compare-control--play .scene-compare-control__glyph--pause,
+.scene-compare-control--fullscreen .scene-compare-control__glyph--expand {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scene-compare-control--play.is-paused .scene-compare-control__glyph--pause,
+.scene-compare-control--fullscreen.is-fullscreen .scene-compare-control__glyph--expand {
+  opacity: 0;
+  transform: scale(0.84);
+}
+
+.scene-compare-control--play.is-paused .scene-compare-control__glyph--play,
+.scene-compare-control--fullscreen.is-fullscreen .scene-compare-control__glyph--compress {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.scene-compare-progress {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.scene-compare-progress__input {
+  --compare-progress-percent: 0%;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: var(--scene-compare-control-size);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.scene-compare-progress__input:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.scene-compare-progress__input::-webkit-slider-runnable-track {
+  height: var(--scene-compare-progress-height);
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+      var(--scene-compare-progress-fill-start) 0%,
+      var(--scene-compare-progress-fill-end) var(--compare-progress-percent),
+      var(--scene-compare-progress-track) var(--compare-progress-percent),
+      var(--scene-compare-progress-track) 100%);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.scene-compare-progress__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--scene-compare-progress-thumb-size);
+  height: var(--scene-compare-progress-thumb-size);
+  margin-top: calc((var(--scene-compare-progress-thumb-size) - var(--scene-compare-progress-height)) * -0.5);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  background: #2d6bff;
+  box-shadow: 0 6px 14px rgba(45, 107, 255, 0.22), 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.scene-compare-progress__input::-moz-range-track {
+  height: var(--scene-compare-progress-height);
+  border: none;
+  border-radius: 999px;
+  background: var(--scene-compare-progress-track);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.scene-compare-progress__input::-moz-range-progress {
+  height: var(--scene-compare-progress-height);
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--scene-compare-progress-fill-start), var(--scene-compare-progress-fill-end));
+}
+
+.scene-compare-progress__input::-moz-range-thumb {
+  width: var(--scene-compare-progress-thumb-size);
+  height: var(--scene-compare-progress-thumb-size);
+  border: 3px solid #ffffff;
+  border-radius: 999px;
+  background: #2d6bff;
+  box-shadow: 0 6px 14px rgba(45, 107, 255, 0.22), 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.scene-compare-progress__input:focus-visible {
+  outline: none;
+}
+
+.scene-compare-progress__input:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(61, 136, 255, 0.18), 0 6px 14px rgba(45, 107, 255, 0.24);
+}
+
+.scene-compare-progress__input:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba(61, 136, 255, 0.18), 0 6px 14px rgba(45, 107, 255, 0.24);
 }
 
 .scene-compare-layer {
@@ -428,7 +634,7 @@ body {
 }
 
 .scene-compare-wrapper.is-video-loading .scene-compare-video {
-  opacity: 0;
+  opacity: 1;
 }
 
 .scene-compare-loading {
@@ -439,9 +645,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(10, 14, 20, 0.18), rgba(10, 14, 20, 0) 26%),
-    linear-gradient(180deg, rgba(9, 13, 20, 0.12), rgba(10, 14, 20, 0.2));
+  background: transparent;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.22s ease, visibility 0.22s ease;
@@ -837,7 +1041,7 @@ body {
   }
 
   .scene-showcase-stage {
-    --scene-showcase-grid-reserved-height: 39.45rem;
+    --scene-showcase-grid-reserved-height: 41.85rem;
   }
 
   .scene-selector {
@@ -1722,6 +1926,58 @@ body {
   object-fit: cover;
 }
 
+.publication-video--placeholder {
+  border: 1px solid rgba(128, 143, 167, 0.18);
+  background:
+    radial-gradient(circle at top, rgba(214, 224, 239, 0.72), rgba(214, 224, 239, 0) 58%),
+    linear-gradient(180deg, rgba(247, 249, 252, 0.98), rgba(238, 243, 249, 0.95));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 8px 18px rgba(15, 23, 42, 0.04);
+}
+
+.publication-video__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.58rem;
+  padding: 1.6rem;
+  text-align: center;
+}
+
+.publication-video__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.34rem 0.7rem 0.38rem;
+  border: 1px solid rgba(118, 136, 165, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: #5d6b82;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.publication-video__title {
+  color: #23456f;
+  font-size: clamp(1.2rem, 2vw, 1.58rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.publication-video__subtitle {
+  max-width: 24rem;
+  color: #5f6e86;
+  font-size: 0.96rem;
+  font-weight: 520;
+  line-height: 1.5;
+}
+
 
 .results-carousel {
   overflow: hidden;
@@ -2134,7 +2390,7 @@ body {
 }
 
 .scene-showcase-stage {
-  --scene-showcase-grid-reserved-height: clamp(24.8rem, 32vw, 26.8rem);
+  --scene-showcase-grid-reserved-height: clamp(27.2rem, calc(32vw + 2.4rem), 29.2rem);
 }
 
 .scene-showcase-content-shell {
@@ -2170,9 +2426,10 @@ body {
   gap: 0.32rem;
   width: 100%;
   padding: 0.72rem;
+  border: 1px solid rgba(128, 143, 167, 0.18);
   border-radius: 1.08rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 250, 254, 0.92));
-  box-shadow: inset 0 0 0 1px rgba(132, 147, 171, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(247, 250, 254, 0.95));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 6px 14px rgba(15, 23, 42, 0.035);
 }
 
 .scene-showcase-stage .scene-compare-wrapper {
@@ -2180,6 +2437,127 @@ body {
   border: 0;
   background: transparent;
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen,
+.scene-showcase-stage .scene-compare-frame:fullscreen,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding: clamp(1rem, 2.2vw, 1.4rem);
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top, rgba(34, 45, 64, 0.96), rgba(9, 13, 20, 0.98) 66%),
+    linear-gradient(180deg, rgba(11, 15, 23, 0.96), rgba(9, 13, 20, 0.99));
+  box-shadow: none;
+  overflow: auto;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .visual-compare-header__title,
+.scene-showcase-stage .scene-compare-frame:fullscreen .visual-compare-header__title,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .visual-compare-header__title {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(245, 248, 252, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  color: #f4f7fb;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .visual-compare-selector__vs,
+.scene-showcase-stage .scene-compare-frame:fullscreen .visual-compare-selector__vs,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .visual-compare-selector__vs {
+  color: rgba(231, 237, 247, 0.58);
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-wrapper,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-wrapper,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-wrapper {
+  --compare-corner-radius: 1.08rem;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #05070b;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-controls,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-controls,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-controls {
+  --scene-compare-control-size: 3rem;
+  --scene-compare-control-radius: 1rem;
+  --scene-compare-control-icon-size: 1.24rem;
+  --scene-compare-progress-height: 0.56rem;
+  --scene-compare-progress-thumb-size: 1.08rem;
+  --scene-compare-control-bg-start: rgba(245, 248, 252, 0.14);
+  --scene-compare-control-bg-end: rgba(245, 248, 252, 0.08);
+  --scene-compare-control-border: rgba(255, 255, 255, 0.14);
+  --scene-compare-control-color: #f4f7fb;
+  --scene-compare-progress-track: rgba(226, 234, 245, 0.18);
+  width: min(100%, 1600px);
+  margin: 0 auto;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-badge,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-badge,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-badge {
+  bottom: 1.08rem;
+  max-width: calc(50% - 1.4rem);
+  padding: 0.42rem 0.84rem 0.48rem;
+  border-radius: 0.64rem;
+  font-size: 1.34rem;
+  font-weight: 720;
+  text-shadow: 0 2px 9px rgba(0, 0, 0, 0.42);
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-badge--left,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-badge--left,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-badge--left {
+  left: 1.08rem;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-badge--right,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-badge--right,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-badge--right {
+  right: 1.08rem;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-metrics,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-metrics,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-metrics {
+  top: 1.08rem;
+  max-width: min(15rem, calc(50% - 1.4rem));
+  gap: 0.24rem;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-metrics--left,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-metrics--left,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-metrics--left {
+  left: 1.08rem;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-metrics--right,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-metrics--right,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-metrics--right {
+  right: 1.08rem;
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-metrics__line,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-metrics__line,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-metrics__line {
+  gap: 0.46rem;
+  padding: 0.34rem 0.68rem 0.38rem;
+  border-radius: 0.58rem;
+  font-size: 1.12rem;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.02);
+}
+
+.scene-showcase-stage .scene-compare-frame.is-card-fullscreen .scene-compare-metrics__value,
+.scene-showcase-stage .scene-compare-frame:fullscreen .scene-compare-metrics__value,
+.scene-showcase-stage .scene-compare-frame:-webkit-full-screen .scene-compare-metrics__value {
+  padding: 0.12rem 0.44rem 0.16rem;
 }
 
 .scene-showcase-note-shell {
@@ -2908,7 +3286,7 @@ body {
   }
 
   .scene-showcase-stage {
-    --scene-showcase-grid-reserved-height: 36.6rem;
+    --scene-showcase-grid-reserved-height: 39rem;
   }
 
   .visual-scene-selector {
@@ -3045,7 +3423,7 @@ body {
 
 @media screen and (max-width: 768px) {
   .scene-showcase-stage {
-    --scene-showcase-grid-reserved-height: clamp(30rem, 88vw, 40.2rem);
+    --scene-showcase-grid-reserved-height: clamp(32.4rem, calc(88vw + 2.4rem), 42.6rem);
   }
 
   .scene-showcase-shell>.scene-selector.scene-selector--showcase {
@@ -3103,6 +3481,20 @@ body {
 
   .scene-showcase-stage .scene-compare-wrapper {
     --compare-corner-radius: 0.88rem;
+  }
+
+  .scene-compare-controls {
+    --scene-compare-control-size: 2.28rem;
+    --scene-compare-control-radius: 0.82rem;
+    --scene-compare-control-icon-size: 0.98rem;
+    --scene-compare-progress-height: 0.42rem;
+    --scene-compare-progress-thumb-size: 0.92rem;
+    gap: 0.56rem;
+    margin-top: 0.08rem;
+  }
+
+  .scene-compare-control--fullscreen {
+    margin-left: 0.16rem;
   }
 
   .scene-showcase-media-wrap {

@@ -229,7 +229,6 @@ function initSceneShowcase() {
   var caption = document.getElementById('scene-showcase-caption');
   var activeButton;
   var preloadedVideoElements = Object.create(null);
-  var backgroundVideoPreloadStarted = false;
   var showcaseViewportActive = true;
   var showcasePageVisible = !document.hidden;
 
@@ -270,7 +269,7 @@ function initSceneShowcase() {
     return uniquePaths;
   }
 
-  function preloadVideoPath(videoPath, eager) {
+  function preloadVideoPath(videoPath) {
     var preloader = preloadedVideoElements[videoPath];
 
     if (!videoPath) {
@@ -278,17 +277,13 @@ function initSceneShowcase() {
     }
 
     if (preloader) {
-      if (eager && preloader.preload !== 'auto') {
-        preloader.preload = 'auto';
-        preloader.load();
-      }
       return;
     }
 
     preloader = document.createElement('video');
     preloader.muted = true;
     preloader.playsInline = true;
-    preloader.preload = eager ? 'auto' : 'metadata';
+    preloader.preload = 'metadata';
     preloader.src = videoPath;
     preloader.load();
 
@@ -301,26 +296,7 @@ function initSceneShowcase() {
     }
 
     collectSceneVideoPaths(button).forEach(function(videoPath) {
-      preloadVideoPath(videoPath, eager);
-    });
-  }
-
-  function preloadRemainingScenes() {
-    var remainingButtons;
-
-    if (backgroundVideoPreloadStarted) {
-      return;
-    }
-
-    backgroundVideoPreloadStarted = true;
-    remainingButtons = Array.prototype.filter.call(buttons, function(button) {
-      return button !== activeButton;
-    });
-
-    remainingButtons.forEach(function(button, index) {
-      window.setTimeout(function() {
-        preloadSceneVideos(button, false);
-      }, 1200 + (index * 950));
+      preloadVideoPath(videoPath);
     });
   }
 
@@ -348,7 +324,9 @@ function initSceneShowcase() {
   }
 
   function createCompareCard(card) {
+    var frame = card.querySelector('.scene-compare-frame');
     var wrapper = card.querySelector('.scene-compare-wrapper');
+    var controls = card.querySelector('[data-compare-controls]');
     var overlay = card.querySelector('[data-compare-overlay]');
     var divider = card.querySelector('[data-compare-handle]');
     var loadingOverlay = card.querySelector('[data-compare-loading]');
@@ -365,16 +343,25 @@ function initSceneShowcase() {
     var rightFpsMetric = card.querySelector('[data-compare-right-metric-fps]');
     var rightTrainMetric = card.querySelector('[data-compare-right-metric-train]');
     var compareCaption = card.querySelector('[data-compare-caption]');
+    var playToggle = card.querySelector('[data-compare-play-toggle]');
+    var playToggleText = card.querySelector('[data-compare-play-text]');
+    var progressInput = card.querySelector('[data-compare-progress]');
+    var fullscreenToggle = card.querySelector('[data-compare-fullscreen-toggle]');
+    var fullscreenToggleText = card.querySelector('[data-compare-fullscreen-text]');
     var compareInteraction;
     var layoutFrame = null;
-    var lastKnownRatio = 16 / 9;
+    var initialAspectRatio = parseFloat(wrapper.style.getPropertyValue('--scene-compare-aspect-ratio')) || 0;
+    var lastKnownRatio = initialAspectRatio > 0 ? initialAspectRatio : 16 / 9;
     var loadingVisibleSince = 0;
     var loadingShowTimer = null;
     var loadingHideTimer = null;
     var LOADING_SHOW_DELAY = 140;
     var LOADING_MIN_VISIBLE = 220;
+    var userPaused = false;
+    var isScrubbing = false;
+    var resumeAfterScrub = false;
 
-    if (!wrapper || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric) {
+    if (!frame || !wrapper || !controls || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
       return null;
     }
     compareInteraction = attachCompareInteraction(wrapper, overlay, divider);
@@ -391,7 +378,183 @@ function initSceneShowcase() {
     }
 
     function isVideoReady(videoElement) {
-      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 2;
+      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 1;
+    }
+
+    function isFrameFullscreen() {
+      return document.fullscreenElement === frame || document.webkitFullscreenElement === frame;
+    }
+
+    function isPlaybackPaused() {
+      return userPaused || leftVideo.paused || rightVideo.paused;
+    }
+
+    function getActiveDuration() {
+      return leftVideo.duration || rightVideo.duration || 0;
+    }
+
+    function getActiveCurrentTime() {
+      return leftVideo.currentTime || rightVideo.currentTime || 0;
+    }
+
+    function getFrameReservedHeight() {
+      var reserved = 0;
+
+      Array.prototype.forEach.call(frame.children, function(child) {
+        var childStyle;
+
+        if (child === wrapper) {
+          return;
+        }
+
+        childStyle = window.getComputedStyle(child);
+        reserved += child.offsetHeight;
+        reserved += (parseFloat(childStyle.marginTop) || 0) + (parseFloat(childStyle.marginBottom) || 0);
+      });
+
+      return reserved;
+    }
+
+    function updatePlayToggleState() {
+      var paused = isPlaybackPaused();
+      var label = paused ? 'Play comparison videos' : 'Pause comparison videos';
+
+      playToggle.classList.toggle('is-paused', paused);
+      playToggle.setAttribute('aria-label', label);
+      playToggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      if (playToggleText) {
+        playToggleText.textContent = label;
+      }
+    }
+
+    function updateFullscreenToggleState() {
+      var fullscreenActive = isFrameFullscreen();
+      var label = fullscreenActive ? 'Exit fullscreen' : 'Enter fullscreen';
+
+      frame.classList.toggle('is-card-fullscreen', fullscreenActive);
+      fullscreenToggle.classList.toggle('is-fullscreen', fullscreenActive);
+      fullscreenToggle.setAttribute('aria-label', label);
+      if (fullscreenToggleText) {
+        fullscreenToggleText.textContent = label;
+      }
+    }
+
+    function updateProgressState() {
+      var duration = getActiveDuration();
+      var currentTime = Math.min(getActiveCurrentTime(), duration || 0);
+      var value = duration > 0 ? Math.round((currentTime / duration) * 1000) : 0;
+      var percentage = duration > 0 ? ((currentTime / duration) * 100).toFixed(3) + '%' : '0%';
+
+      progressInput.value = String(value);
+      progressInput.style.setProperty('--compare-progress-percent', percentage);
+      progressInput.disabled = duration <= 0;
+    }
+
+    function syncControlState() {
+      updatePlayToggleState();
+      updateFullscreenToggleState();
+      if (!isScrubbing) {
+        updateProgressState();
+      }
+    }
+
+    function pauseBothVideos() {
+      leftVideo.pause();
+      rightVideo.pause();
+      syncControlState();
+    }
+
+    function playBothVideos() {
+      playVideo(leftVideo);
+      playVideo(rightVideo);
+      syncControlState();
+    }
+
+    function applyPlaybackState() {
+      if (userPaused || !shouldPlayShowcaseMedia()) {
+        pauseBothVideos();
+        return;
+      }
+
+      playBothVideos();
+    }
+
+    function seekToProgress(progressValue) {
+      var duration = getActiveDuration();
+      var clampedValue;
+      var nextTime;
+
+      if (!(duration > 0)) {
+        updateProgressState();
+        return;
+      }
+
+      clampedValue = Math.max(0, Math.min(1000, progressValue));
+      nextTime = (clampedValue / 1000) * duration;
+
+      try {
+        leftVideo.currentTime = nextTime;
+      } catch (error) {}
+
+      try {
+        rightVideo.currentTime = nextTime;
+      } catch (error) {}
+
+      progressInput.value = String(Math.round(clampedValue));
+      progressInput.style.setProperty('--compare-progress-percent', ((clampedValue / 1000) * 100).toFixed(3) + '%');
+    }
+
+    function beginScrub() {
+      if (isScrubbing) {
+        return;
+      }
+
+      isScrubbing = true;
+      resumeAfterScrub = !userPaused && !leftVideo.paused && !rightVideo.paused;
+      if (resumeAfterScrub) {
+        leftVideo.pause();
+        rightVideo.pause();
+      }
+      syncControlState();
+    }
+
+    function endScrub() {
+      if (!isScrubbing) {
+        return;
+      }
+
+      isScrubbing = false;
+
+      if (resumeAfterScrub && !userPaused && shouldPlayShowcaseMedia()) {
+        playBothVideos();
+      }
+
+      resumeAfterScrub = false;
+      syncControlState();
+    }
+
+    function requestCardFullscreen() {
+      if (frame.requestFullscreen) {
+        return frame.requestFullscreen();
+      }
+
+      if (frame.webkitRequestFullscreen) {
+        return frame.webkitRequestFullscreen();
+      }
+
+      return null;
+    }
+
+    function exitCardFullscreen() {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        return document.exitFullscreen();
+      }
+
+      if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+        return document.webkitExitFullscreen();
+      }
+
+      return null;
     }
 
     function clearLoadingTimers() {
@@ -498,11 +661,16 @@ function initSceneShowcase() {
 
     function updateWrapperSize() {
       var frame = wrapper.parentElement;
+      var frameStyle = window.getComputedStyle(frame);
       var availableWidth = getContentWidth(frame) || card.clientWidth;
       var isMobile = window.innerWidth <= 768;
+      var fullscreenActive = isFrameFullscreen();
       var minWidth = Math.min(availableWidth, isMobile ? 265 : 360);
       var minHeight = isMobile ? 180 : 250;
       var maxHeight = isMobile ? 290 : 450;
+      var paddingTop = parseFloat(frameStyle.paddingTop) || 0;
+      var paddingBottom = parseFloat(frameStyle.paddingBottom) || 0;
+      var availableHeight = 0;
       var ratio = getVideoRatio();
       var width;
       var height;
@@ -512,6 +680,12 @@ function initSceneShowcase() {
       }
 
       lastKnownRatio = ratio;
+      if (fullscreenActive) {
+        availableHeight = Math.max(220, window.innerHeight - getFrameReservedHeight() - paddingTop - paddingBottom - 24);
+        maxHeight = availableHeight;
+        minHeight = Math.min(maxHeight, isMobile ? 210 : 300);
+      }
+
       width = availableWidth;
       height = width / ratio;
 
@@ -537,6 +711,7 @@ function initSceneShowcase() {
 
       wrapper.style.width = width.toFixed(2) + 'px';
       wrapper.style.height = height.toFixed(2) + 'px';
+      controls.style.width = width.toFixed(2) + 'px';
     }
 
     function scheduleWrapperSize() {
@@ -559,13 +734,13 @@ function initSceneShowcase() {
 
       currentSource = sourceElement.getAttribute('src');
       if (currentSource === nextVideoPath) {
-        if (videoElement.readyState < 2 && videoElement.networkState === 0) {
+        if (videoElement.readyState < 1 && videoElement.networkState === 0) {
           videoElement.load();
         }
-        return videoElement.readyState < 2;
+        return videoElement.readyState < 1;
       }
 
-      videoElement.setAttribute('preload', 'auto');
+      videoElement.setAttribute('preload', 'metadata');
       sourceElement.setAttribute('src', nextVideoPath);
       sourceElement.setAttribute('data-src', nextVideoPath);
       videoElement.load();
@@ -595,6 +770,12 @@ function initSceneShowcase() {
       var resolvedRightLabel = content.rightLabel || 'Method B';
       var leftMetricMethod = content.leftMetricMethod || 'ours';
       var rightMetricMethod = content.rightMetricMethod || 'gaussian_splatting';
+      var nextAspectRatio = content.aspectRatio;
+
+      if (nextAspectRatio > 0) {
+        lastKnownRatio = nextAspectRatio;
+        wrapper.style.setProperty('--scene-compare-aspect-ratio', String(nextAspectRatio));
+      }
 
       leftLabel.textContent = resolvedLeftLabel;
       rightLabel.textContent = resolvedRightLabel;
@@ -618,15 +799,11 @@ function initSceneShowcase() {
         rightVideo.currentTime = 0;
       } catch (error) {}
 
-      if (shouldPlayShowcaseMedia()) {
-        playVideo(leftVideo);
-        playVideo(rightVideo);
-      } else {
-        leftVideo.pause();
-        rightVideo.pause();
-      }
+      updateProgressState();
+      applyPlaybackState();
       scheduleWrapperSize();
       syncLoadingState();
+      syncControlState();
     }
 
     leftVideo.addEventListener('play', function() {
@@ -650,6 +827,52 @@ function initSceneShowcase() {
     leftVideo.addEventListener('ratechange', function() {
       rightVideo.playbackRate = leftVideo.playbackRate;
     });
+    leftVideo.addEventListener('play', syncControlState);
+    rightVideo.addEventListener('play', syncControlState);
+    leftVideo.addEventListener('pause', syncControlState);
+    rightVideo.addEventListener('pause', syncControlState);
+    leftVideo.addEventListener('timeupdate', function() {
+      if (!isScrubbing) {
+        updateProgressState();
+      }
+    });
+    leftVideo.addEventListener('durationchange', updateProgressState);
+    rightVideo.addEventListener('durationchange', updateProgressState);
+    progressInput.addEventListener('pointerdown', beginScrub);
+    progressInput.addEventListener('pointerup', endScrub);
+    progressInput.addEventListener('pointercancel', endScrub);
+    progressInput.addEventListener('change', endScrub);
+    progressInput.addEventListener('blur', endScrub);
+    progressInput.addEventListener('input', function() {
+      if (!isScrubbing) {
+        beginScrub();
+      }
+      seekToProgress(parseFloat(progressInput.value) || 0);
+    });
+    playToggle.addEventListener('click', function() {
+      if (isPlaybackPaused()) {
+        userPaused = false;
+        applyPlaybackState();
+      } else {
+        userPaused = true;
+        pauseBothVideos();
+      }
+    });
+    fullscreenToggle.addEventListener('click', function() {
+      if (isFrameFullscreen()) {
+        exitCardFullscreen();
+      } else {
+        requestCardFullscreen();
+      }
+    });
+    document.addEventListener('fullscreenchange', function() {
+      syncControlState();
+      scheduleWrapperSize();
+    });
+    document.addEventListener('webkitfullscreenchange', function() {
+      syncControlState();
+      scheduleWrapperSize();
+    });
 
     [leftVideo, rightVideo].forEach(function(videoElement) {
       videoElement.addEventListener('loadstart', function() {
@@ -658,6 +881,7 @@ function initSceneShowcase() {
       videoElement.addEventListener('emptied', function() {
         setLoadingState(true);
       });
+      videoElement.addEventListener('loadedmetadata', syncLoadingState);
       videoElement.addEventListener('loadeddata', syncLoadingState);
       videoElement.addEventListener('canplay', syncLoadingState);
       videoElement.addEventListener('playing', syncLoadingState);
@@ -671,16 +895,21 @@ function initSceneShowcase() {
     window.addEventListener('resize', scheduleWrapperSize);
     syncLoadingState();
     scheduleWrapperSize();
+    syncControlState();
 
     return {
       setContent: setContent,
-      play: function() {
-        playVideo(leftVideo);
-        playVideo(rightVideo);
+      play: function(forceUser) {
+        if (forceUser) {
+          userPaused = false;
+        }
+        applyPlaybackState();
       },
-      pause: function() {
-        leftVideo.pause();
-        rightVideo.pause();
+      pause: function(forceUser) {
+        if (forceUser) {
+          userPaused = true;
+        }
+        pauseBothVideos();
       }
     };
   }
@@ -711,12 +940,18 @@ function initSceneShowcase() {
     });
   }
 
-  function activateScene(button) {
+  function activateScene(button, force) {
+    if (!button || (!force && button === activeButton)) {
+      return;
+    }
+
     var sceneKey = button.getAttribute('data-scene-key') || '';
     var nextLabel = button.getAttribute('data-label');
+    var nextAspectRatio = parseFloat(button.getAttribute('data-aspect-ratio')) || 0;
     var compareConfigs = [
       {
         sceneKey: sceneKey,
+        aspectRatio: nextAspectRatio,
         leftVideo: button.getAttribute('data-left-video-1'),
         rightVideo: button.getAttribute('data-right-video-1'),
         leftLabel: button.getAttribute('data-left-label-1'),
@@ -726,6 +961,7 @@ function initSceneShowcase() {
       },
       {
         sceneKey: sceneKey,
+        aspectRatio: nextAspectRatio,
         leftVideo: button.getAttribute('data-left-video-2') || button.getAttribute('data-left-video-1'),
         rightVideo: button.getAttribute('data-right-video-2') || button.getAttribute('data-right-video-1') || button.getAttribute('data-left-video-2') || button.getAttribute('data-left-video-1'),
         leftLabel: button.getAttribute('data-left-label-2') || button.getAttribute('data-left-label-1'),
@@ -798,15 +1034,7 @@ function initSceneShowcase() {
 
   activeButton = showcase.querySelector('.scene-selector__item.is-active') || buttons[0];
   preloadSceneVideos(activeButton, true);
-  activateScene(activeButton);
-
-  if (document.readyState === 'complete') {
-    runWhenBrowserIsIdle(preloadRemainingScenes, 1800);
-  } else {
-    window.addEventListener('load', function() {
-      runWhenBrowserIsIdle(preloadRemainingScenes, 1800);
-    }, { once: true });
-  }
+  activateScene(activeButton, true);
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function(entries) {
@@ -1263,7 +1491,11 @@ function initImageComparisons() {
     });
   }
 
-  function activateScene(button) {
+  function activateScene(button, force) {
+    if (!button || (!force && button === activeButton)) {
+      return;
+    }
+
     function buildSelectableMethodOption(slot, fallbackLabel) {
       var leftImage = button.getAttribute('data-left-image-' + slot) ||
         button.getAttribute('data-left-image-2') ||
@@ -1379,7 +1611,7 @@ function initImageComparisons() {
 
   activeButton = section.querySelector('.scene-selector__item.is-active') || buttons[0];
   preloadSceneImages(activeButton);
-  activateScene(activeButton);
+  activateScene(activeButton, true);
   scheduleSceneSelectorLayout(true);
   observeOnceNearViewport(section, function() {
     runWhenBrowserIsIdle(preloadRemainingImages, 700);
