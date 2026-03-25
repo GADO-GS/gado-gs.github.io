@@ -974,7 +974,7 @@ function initImageComparisons() {
       }
 
       if (animatedNodes.every(function(node) {
-        return node.textContent === nextLabel;
+        return node.innerHTML === nextLabel;
       })) {
         return;
       }
@@ -986,7 +986,7 @@ function initImageComparisons() {
 
       switchTextTimer = window.setTimeout(function() {
         animatedNodes.forEach(function(node) {
-          node.textContent = nextLabel;
+          node.innerHTML = nextLabel;
         });
 
         window.requestAnimationFrame(function() {
@@ -1002,9 +1002,10 @@ function initImageComparisons() {
       var enabledMethodIndexes = getEnabledMethodIndexes(methodOptions);
       var currentOption = methodOptions[activeMethodIndex];
       var currentLabel = currentOption ? currentOption.rightLabel || 'Method' : 'Method';
+      var displayLabel = 'Ours <span class=\"visual-compare-selector__vs\">vs</span> ' + currentLabel;
       var hasMultipleOptions = enabledMethodIndexes.length > 1;
 
-      animateMethodText(currentLabel);
+      animateMethodText(displayLabel);
 
       if (prevMethodButton) {
         prevMethodButton.disabled = !hasMultipleOptions;
@@ -1111,6 +1112,13 @@ function initImageComparisons() {
     return !!item;
   });
   var buttons = section.querySelectorAll('.scene-selector__item');
+  var sceneSelector = section.querySelector('.visual-scene-selector');
+  var sceneSelectorShell = section.querySelector('.visual-scene-selector-shell');
+  var prevScenePageButton = section.querySelector('[data-visual-scenes-prev]');
+  var nextScenePageButton = section.querySelector('[data-visual-scenes-next]');
+  var sceneSelectorLayoutFrame = null;
+  var currentScenePage = 0;
+  var maxScenePage = 0;
 
   if (!imageCards.length) {
     return;
@@ -1118,6 +1126,80 @@ function initImageComparisons() {
 
   if (!buttons.length) {
     return;
+  }
+
+  function getSceneSelectorPageSize() {
+    return window.innerWidth <= 768 ? 3 : 6;
+  }
+
+  function updateSceneSelectorButtons() {
+    var isSinglePage = maxScenePage === 0;
+
+    if (sceneSelectorShell) {
+      sceneSelectorShell.classList.toggle('is-single-page', isSinglePage);
+    }
+
+    if (prevScenePageButton) {
+      prevScenePageButton.disabled = isSinglePage || currentScenePage <= 0;
+    }
+
+    if (nextScenePageButton) {
+      nextScenePageButton.disabled = isSinglePage || currentScenePage >= maxScenePage;
+    }
+  }
+
+  function applySceneSelectorPage() {
+    var pageSize;
+    var firstButtonOnPage;
+    var targetOffset;
+
+    if (!sceneSelector) {
+      return;
+    }
+
+    pageSize = getSceneSelectorPageSize();
+    firstButtonOnPage = buttons[currentScenePage * pageSize];
+    targetOffset = firstButtonOnPage ? firstButtonOnPage.offsetLeft : 0;
+    sceneSelector.style.transform = 'translate3d(' + (-targetOffset) + 'px, 0, 0)';
+    updateSceneSelectorButtons();
+  }
+
+  function syncSceneSelectorPageToButton(button) {
+    var buttonList = Array.prototype.slice.call(buttons);
+    var buttonIndex = buttonList.indexOf(button);
+    var pageSize = getSceneSelectorPageSize();
+
+    if (buttonIndex === -1) {
+      return;
+    }
+
+    currentScenePage = Math.floor(buttonIndex / pageSize);
+    applySceneSelectorPage();
+  }
+
+  function scheduleSceneSelectorLayout(syncToActiveButton) {
+    if (!sceneSelector) {
+      return;
+    }
+
+    if (sceneSelectorLayoutFrame) {
+      window.cancelAnimationFrame(sceneSelectorLayoutFrame);
+    }
+
+    sceneSelectorLayoutFrame = window.requestAnimationFrame(function() {
+      var pageSize = getSceneSelectorPageSize();
+
+      sceneSelectorLayoutFrame = null;
+      maxScenePage = Math.max(0, Math.ceil(buttons.length / pageSize) - 1);
+      currentScenePage = Math.min(currentScenePage, maxScenePage);
+
+      if (syncToActiveButton && activeButton) {
+        syncSceneSelectorPageToButton(activeButton);
+        return;
+      }
+
+      applySceneSelectorPage();
+    });
   }
 
   function collectSceneImagePaths(button) {
@@ -1227,6 +1309,7 @@ function initImageComparisons() {
       item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
 
+    syncSceneSelectorPageToButton(button);
     preloadSceneImages(button);
     imageCards.forEach(function(compareCard, index) {
       compareCard.setContent(compareConfigs[index] || compareConfigs[0]);
@@ -1276,9 +1359,28 @@ function initImageComparisons() {
     });
   });
 
+  if (prevScenePageButton) {
+    prevScenePageButton.addEventListener('click', function() {
+      currentScenePage = Math.max(0, currentScenePage - 1);
+      applySceneSelectorPage();
+    });
+  }
+
+  if (nextScenePageButton) {
+    nextScenePageButton.addEventListener('click', function() {
+      currentScenePage = Math.min(maxScenePage, currentScenePage + 1);
+      applySceneSelectorPage();
+    });
+  }
+
+  window.addEventListener('resize', function() {
+    scheduleSceneSelectorLayout(true);
+  });
+
   activeButton = section.querySelector('.scene-selector__item.is-active') || buttons[0];
   preloadSceneImages(activeButton);
   activateScene(activeButton);
+  scheduleSceneSelectorLayout(true);
   observeOnceNearViewport(section, function() {
     runWhenBrowserIsIdle(preloadRemainingImages, 700);
   }, '220px 0px');
@@ -1682,7 +1784,9 @@ $(document).ready(function() {
     	});
     }
 
-    bulmaSlider.attach();
+    if (window.bulmaSlider && typeof window.bulmaSlider.attach === 'function') {
+        window.bulmaSlider.attach();
+    }
     initSceneShowcase();
     initImageComparisons();
     initViewportManagedInlineVideos();
