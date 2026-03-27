@@ -380,17 +380,14 @@
           <div class="results-divider" aria-hidden="true"></div>
           <div class="content has-text-justified results-summary">
             <p>
-              We evaluate GADO-GS on diverse benchmark and real-world scenes. Across the representative metrics below,
-              our method consistently improves training efficiency, rendering throughput, and model compactness while
-              preserving competitive reconstruction quality. Use the selector to browse different charts and summary
-              tables comparing Ours against common baselines.
+              We evaluate GADO-GS across diverse benchmark datasets and representative real-world scenes. Across the
+              quantitative comparisons and per-scene analyses below, our method consistently improves training
+              efficiency, rendering throughput, and model compactness while maintaining competitive reconstruction
+              quality.
             </p>
           </div>
 
           <div class="results-selector-shell">
-            <button class="results-selector__arrow" type="button" data-results-prev aria-label="Show previous results">
-              <span aria-hidden="true">&#10094;</span>
-            </button>
             <div class="results-selector">
               <div class="results-selector__viewport">
                 <div class="results-selector__track">
@@ -398,16 +395,19 @@
                     data-display-type="template" data-template-id="results-tradeoff-template"
                     data-display-title="Quality-Speed and Time-Memory Trade-offs"
                     data-caption="Paired trade-off plots compare quality versus speed and training time versus VRAM, highlighting the efficiency balance of different methods across benchmark datasets.">
-                    <img src="./static/images/results/fps_psnr_scatter.svg" alt="Efficiency trade-off results thumbnail."
-                      decoding="async">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Trade-offs</span>
+                      <span class="results-selector__card-meta">Quality-speed and time-memory trade-offs across baselines.</span>
+                    </span>
                     <span class="is-sr-only">Quality-Speed and Time-Memory Trade-Offs</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item data-display-type="template"
                     data-template-id="results-table-mip-template"
                     data-display-title="Mip-NeRF360 Quantitative Comparison"
                     data-caption="Average quantitative results on the Mip-NeRF360 dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
-                    <span class="results-selector__table-thumb" aria-hidden="true">
-                      <span class="results-selector__table-thumb-title">Mip-NeRF360</span>
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Mip-NeRF360</span>
+                      <span class="results-selector__card-meta">Average efficiency and quality metrics on Mip-NeRF360.</span>
                     </span>
                     <span class="is-sr-only">Mip-NeRF360 Quantitative Table</span>
                   </button>
@@ -415,10 +415,9 @@
                     data-template-id="results-table-tnt-template"
                     data-display-title="Tanks and Temples Quantitative Comparison"
                     data-caption="Average quantitative results on the Tanks and Temples dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
-                    <span class="results-selector__table-thumb" aria-hidden="true">
-                      <span
-                        class="results-selector__table-thumb-title results-selector__table-thumb-title--compact">Tanks
-                        &amp; Temples</span>
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Tanks &amp; Temples</span>
+                      <span class="results-selector__card-meta">Average efficiency and quality metrics on Tanks &amp; Temples.</span>
                     </span>
                     <span class="is-sr-only">Tanks and Temples Quantitative Table</span>
                   </button>
@@ -426,8 +425,9 @@
                     data-template-id="results-table-db-template"
                     data-display-title="Deep Blending Quantitative Comparison"
                     data-caption="Average quantitative results on the Deep Blending dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
-                    <span class="results-selector__table-thumb" aria-hidden="true">
-                      <span class="results-selector__table-thumb-title">Deep Blending</span>
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Deep Blending</span>
+                      <span class="results-selector__card-meta">Average efficiency and quality metrics on Deep Blending.</span>
                     </span>
                     <span class="is-sr-only">Deep Blending Quantitative Table</span>
                   </button>
@@ -435,35 +435,35 @@
                     data-display-title="Per-Scene Gaussians"
                     data-full-src="./static/images/results/per_scene_gaussian_count.png"
                     data-caption="Per-scene Gaussian counts across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
-                    <img src="./static/images/results/per_scene_gaussian_count.png"
-                      alt="Per-scene Gaussian count results thumbnail."
-                      decoding="async">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Gaussians</span>
+                      <span class="results-selector__card-meta">Per-scene Gaussian counts for compactness comparison.</span>
+                    </span>
                     <span class="is-sr-only">Per-Scene Gaussians Results</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item
                     data-display-title="Per-Scene Training Time"
                     data-full-src="./static/images/results/per_scene_train_time.png"
                     data-caption="Per-scene training time across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
-                    <img src="./static/images/results/per_scene_train_time.png"
-                      alt="Per-scene training time results thumbnail."
-                      decoding="async">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Train Time</span>
+                      <span class="results-selector__card-meta">Per-scene training time for efficiency comparison.</span>
+                    </span>
                     <span class="is-sr-only">Per-Scene Training Time Results</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item
                     data-display-title="Per-Scene FPS"
                     data-full-src="./static/images/results/per_scene_fps.png"
                     data-caption="Per-scene FPS across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (higher is better).">
-                    <img src="./static/images/results/per_scene_fps.png"
-                      alt="Per-scene FPS results thumbnail."
-                      decoding="async">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">FPS</span>
+                      <span class="results-selector__card-meta">Per-scene rendering FPS for throughput comparison.</span>
+                    </span>
                     <span class="is-sr-only">Per-Scene FPS Results</span>
                   </button>
                 </div>
               </div>
             </div>
-            <button class="results-selector__arrow" type="button" data-results-next aria-label="Show next results">
-              <span aria-hidden="true">&#10095;</span>
-            </button>
           </div>
 
           <div class="results-display" data-results-display>

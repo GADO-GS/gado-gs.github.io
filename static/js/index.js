@@ -1754,52 +1754,23 @@ function initResultsGallery() {
   }
 
   var items = Array.prototype.slice.call(gallery.querySelectorAll('[data-results-item]'));
-  var prevButton = gallery.querySelector('[data-results-prev]');
-  var nextButton = gallery.querySelector('[data-results-next]');
-  var viewport = gallery.querySelector('.results-selector__viewport');
   var displayRoot = gallery.querySelector('[data-results-display]');
   var displayViewport = gallery.querySelector('.results-display__viewport');
   var selectedIndex = 0;
-  var visibleCount = 0;
   var hasRendered = false;
-  var pendingDisplayDirection = 0;
   var displayLayoutFrame = 0;
 
-  if (!items.length || !displayRoot || !displayViewport || !viewport) {
+  if (!items.length || !displayRoot || !displayViewport) {
     return;
-  }
-
-  function getVisibleCount() {
-    return Math.min(window.innerWidth <= 768 ? 3 : 5, items.length);
   }
 
   function clampSelectedIndex(index) {
     return Math.max(0, Math.min(items.length - 1, index));
   }
 
-  function centerOnIndex(index, displayDirection) {
+  function selectIndex(index) {
     selectedIndex = clampSelectedIndex(index);
-    pendingDisplayDirection = displayDirection || 0;
-    renderWindow();
-  }
-
-  function getWindowCenterIndex(frontRadius) {
-    var minCenterIndex = Math.min(frontRadius, items.length - 1);
-    var maxCenterIndex = Math.max(minCenterIndex, items.length - frontRadius - 1);
-
-    return Math.max(minCenterIndex, Math.min(maxCenterIndex, selectedIndex));
-  }
-
-  function updateArrowState() {
-    if (prevButton) {
-      prevButton.disabled = selectedIndex <= 0;
-      prevButton.setAttribute('aria-disabled', prevButton.disabled ? 'true' : 'false');
-    }
-
-    if (nextButton) {
-      nextButton.disabled = selectedIndex >= items.length - 1;
-      nextButton.setAttribute('aria-disabled', nextButton.disabled ? 'true' : 'false');
-    }
+    renderSelection();
   }
 
   function ensureTableFitWrapper(body) {
@@ -1868,68 +1839,6 @@ function initResultsGallery() {
         fitDisplayStage(getCurrentDisplayStage());
       });
     });
-  }
-
-  function applyItemVisualState(item, relativeIndex, frontRadius, viewportWidth, cardWidth) {
-    var absIndex;
-    var isFront;
-    var visibleSlots;
-    var slotSpacing;
-    var x;
-    var y;
-    var scale;
-    var opacity;
-    var rotate;
-    var tilt;
-    var saturate;
-    var blur;
-    var layer;
-
-    absIndex = Math.abs(relativeIndex);
-    isFront = absIndex <= frontRadius;
-
-    if (!isFront) {
-      item.hidden = true;
-      item.classList.remove('is-edge', 'is-peek', 'is-front');
-      item.style.setProperty('--results-x', '0px');
-      item.style.setProperty('--results-y', '0px');
-      item.style.setProperty('--results-scale', '0.001');
-      item.style.setProperty('--results-opacity', '0');
-      item.style.setProperty('--results-rotate', '0deg');
-      item.style.setProperty('--results-tilt', '0deg');
-      item.style.setProperty('--results-z', '0px');
-      item.style.setProperty('--results-saturate', '0.8');
-      item.style.setProperty('--results-blur', '0px');
-      item.style.setProperty('--results-layer', '1');
-      return;
-    }
-
-    visibleSlots = (frontRadius * 2) + 1;
-    slotSpacing = Math.max(0, (viewportWidth - cardWidth) / Math.max(1, visibleSlots - 1));
-    x = relativeIndex * slotSpacing;
-    y = 0;
-    scale = absIndex === 0 ? 1 : (absIndex === 1 ? 0.92 : 0.84);
-    opacity = absIndex === 0 ? 1 : (absIndex === 1 ? 0.8 : 0.58);
-    rotate = 0;
-    tilt = 0;
-    item.style.setProperty('--results-z', '0px');
-    saturate = absIndex === 0 ? 1 : (absIndex === 1 ? 0.94 : 0.88);
-    blur = 0;
-    layer = absIndex === 0 ? 180 : (absIndex === 1 ? 140 : 100);
-
-    item.hidden = false;
-    item.classList.toggle('is-edge', absIndex === frontRadius);
-    item.classList.remove('is-peek');
-    item.classList.toggle('is-front', isFront);
-    item.style.setProperty('--results-x', x.toFixed(1) + 'px');
-    item.style.setProperty('--results-y', y.toFixed(1) + 'px');
-    item.style.setProperty('--results-scale', scale.toFixed(3));
-    item.style.setProperty('--results-opacity', opacity.toFixed(3));
-    item.style.setProperty('--results-rotate', rotate.toFixed(1) + 'deg');
-    item.style.setProperty('--results-tilt', tilt.toFixed(1) + 'deg');
-    item.style.setProperty('--results-saturate', saturate.toFixed(3));
-    item.style.setProperty('--results-blur', blur.toFixed(2) + 'px');
-    item.style.setProperty('--results-layer', String(layer));
   }
 
   function getDisplayDefinition(item) {
@@ -2034,12 +1943,6 @@ function initResultsGallery() {
 
     nextDisplay = getDisplayDefinition(item);
 
-    items.forEach(function(entry, entryIndex) {
-      var isActive = entryIndex === index;
-      entry.classList.toggle('is-active', isActive);
-      entry.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-
     currentStage = getCurrentDisplayStage();
     nextStage = createDisplayStage(nextDisplay, 'is-current');
 
@@ -2055,98 +1958,57 @@ function initResultsGallery() {
     displayViewport.style.height = '';
   }
 
-  function renderWindow() {
-    var frontRadius;
-    var viewportWidth;
-    var cardWidth;
-    var measurementItem;
-    var windowCenterIndex;
-
-    visibleCount = getVisibleCount();
-    gallery.style.setProperty('--results-visible-count', visibleCount);
-    frontRadius = Math.floor((visibleCount - 1) / 2);
-    windowCenterIndex = getWindowCenterIndex(frontRadius);
-    viewportWidth = viewport.getBoundingClientRect().width;
-    measurementItem = items.find(function(item) {
-      return !item.hidden;
-    }) || items[0];
-    cardWidth = measurementItem.offsetWidth || measurementItem.clientWidth || 64;
-
+  function renderSelection() {
     items.forEach(function(item, index) {
-      var relativeIndex = index - windowCenterIndex;
-      var isFront = Math.abs(relativeIndex) <= frontRadius;
-
-      applyItemVisualState(item, relativeIndex, frontRadius, viewportWidth, cardWidth);
-      item.setAttribute('tabindex', isFront ? '0' : '-1');
-      item.setAttribute('aria-hidden', isFront ? 'false' : 'true');
+      var isActive = index === selectedIndex;
+      item.hidden = false;
+      item.classList.remove('is-edge', 'is-peek');
+      item.classList.add('is-front');
+      item.classList.toggle('is-active', isActive);
+      item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      item.setAttribute('aria-hidden', 'false');
+      item.setAttribute('tabindex', '0');
+      item.style.removeProperty('--results-x');
+      item.style.removeProperty('--results-y');
+      item.style.removeProperty('--results-scale');
+      item.style.removeProperty('--results-opacity');
+      item.style.removeProperty('--results-rotate');
+      item.style.removeProperty('--results-tilt');
+      item.style.removeProperty('--results-z');
+      item.style.removeProperty('--results-saturate');
+      item.style.removeProperty('--results-blur');
+      item.style.removeProperty('--results-layer');
     });
 
-    updateArrowState();
-
-    setDisplay(selectedIndex, pendingDisplayDirection, !hasRendered);
+    setDisplay(selectedIndex, 0, !hasRendered);
     hasRendered = true;
-    pendingDisplayDirection = 0;
     scheduleDisplayLayout();
-  }
-
-  function shiftWindow(direction) {
-    centerOnIndex(selectedIndex + direction, direction);
   }
 
   items.forEach(function(item, index) {
     item.addEventListener('click', function(event) {
-      var relativeIndex;
-      var displayDirection;
-      var frontRadius = Math.floor((visibleCount - 1) / 2);
-      var windowCenterIndex = getWindowCenterIndex(frontRadius);
-
       event.preventDefault();
-      event.stopPropagation();
-
-      if (item.getAttribute('aria-hidden') === 'true') {
-        return;
-      }
-
-      relativeIndex = index - windowCenterIndex;
-      displayDirection = relativeIndex > 0 ? -1 : (relativeIndex < 0 ? 1 : 0);
-      centerOnIndex(index, displayDirection);
+      selectIndex(index);
     });
 
     item.addEventListener('keydown', function(event) {
       if (event.key === 'Enter' || event.key === ' ') {
-        var frontRadius = Math.floor((visibleCount - 1) / 2);
-        var windowCenterIndex = getWindowCenterIndex(frontRadius);
-        var relativeIndex = index - windowCenterIndex;
-        var displayDirection = relativeIndex > 0 ? -1 : (relativeIndex < 0 ? 1 : 0);
         event.preventDefault();
-        centerOnIndex(index, displayDirection);
+        selectIndex(index);
       }
     });
   });
-
-  if (prevButton) {
-    prevButton.addEventListener('click', function() {
-      shiftWindow(-1);
-    });
-  }
-
-  if (nextButton) {
-    nextButton.addEventListener('click', function() {
-      shiftWindow(1);
-    });
-  }
-
-  visibleCount = getVisibleCount();
   selectedIndex = items.findIndex(function(item) {
     return item.hasAttribute('data-results-default');
   });
+
   if (selectedIndex < 0) {
     selectedIndex = 0;
   }
-  renderWindow();
+  renderSelection();
 
   window.addEventListener('resize', function() {
-    renderWindow();
+    scheduleDisplayLayout();
   });
 }
 
