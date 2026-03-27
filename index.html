@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -72,9 +72,9 @@
         <div class="scene-showcase-shell">
           <div class="scene-selector scene-selector--showcase" role="group" aria-label="Scene selector">
             <button class="scene-selector__item is-active" type="button" data-scene-key="bicycle"
-              data-aspect-ratio="1.507538"
-              data-left-video-1="./static/videos/bicycle_ours.mp4" data-right-video-1="./static/videos/bicycle_3dgs.mp4"
-              data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bicycle_ours.mp4"
+              data-aspect-ratio="1.507538" data-left-video-1="./static/videos/bicycle_ours.mp4"
+              data-right-video-1="./static/videos/bicycle_3dgs.mp4" data-left-label-1="Ours" data-right-label-1="3DGS"
+              data-left-video-2="./static/videos/bicycle_ours.mp4"
               data-right-video-2="./static/videos/bicycle_speedySplat.mp4" data-left-label-2="Ours"
               data-right-label-2="SpeedySplat" data-label="Bicycle" aria-pressed="true">
               <span class="scene-selector__preview" aria-hidden="true">
@@ -82,8 +82,7 @@
               </span>
               <span class="scene-selector__label">Bicycle</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="garden"
-              data-aspect-ratio="1.546392"
+            <button class="scene-selector__item" type="button" data-scene-key="garden" data-aspect-ratio="1.546392"
               data-left-video-1="./static/videos/garden_ours.mp4" data-right-video-1="./static/videos/garden_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/garden_ours.mp4"
               data-right-video-2="./static/videos/garden_speedySplat.mp4" data-left-label-2="Ours"
@@ -93,8 +92,7 @@
               </span>
               <span class="scene-selector__label">Garden</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="stump"
-              data-aspect-ratio="1.511335"
+            <button class="scene-selector__item" type="button" data-scene-key="stump" data-aspect-ratio="1.511335"
               data-left-video-1="./static/videos/stump_ours.mp4" data-right-video-1="./static/videos/stump_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/stump_ours.mp4"
               data-right-video-2="./static/videos/stump_speedySplat.mp4" data-left-label-2="Ours"
@@ -104,8 +102,7 @@
               </span>
               <span class="scene-selector__label">Stump</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="kitchen"
-              data-aspect-ratio="1.5"
+            <button class="scene-selector__item" type="button" data-scene-key="kitchen" data-aspect-ratio="1.5"
               data-left-video-1="./static/videos/kitchen_ours.mp4" data-right-video-1="./static/videos/kitchen_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/kitchen_ours.mp4"
               data-right-video-2="./static/videos/kitchen_speedySplat.mp4" data-left-label-2="Ours"
@@ -115,8 +112,7 @@
               </span>
               <span class="scene-selector__label">Kitchen</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="bonsai"
-              data-aspect-ratio="1.503759"
+            <button class="scene-selector__item" type="button" data-scene-key="bonsai" data-aspect-ratio="1.503759"
               data-left-video-1="./static/videos/bonsai_ours.mp4" data-right-video-1="./static/videos/bonsai_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bonsai_ours.mp4"
               data-right-video-2="./static/videos/bonsai_speedySplat.mp4" data-left-label-2="Ours"
@@ -126,8 +122,7 @@
               </span>
               <span class="scene-selector__label">Bonsai</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="truck"
-              data-aspect-ratio="1.796407"
+            <button class="scene-selector__item" type="button" data-scene-key="truck" data-aspect-ratio="1.796407"
               data-left-video-1="./static/videos/truck_ours.mp4" data-right-video-1="./static/videos/truck_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/truck_ours.mp4"
               data-right-video-2="./static/videos/truck_speedySplat.mp4" data-left-label-2="Ours"
@@ -377,8 +372,8 @@
       </div>
   </section>
 
-  <section class="section">
-    <div class="container is-max-desktop">
+  <section class="section results-section">
+    <div class="container is-max-fullhd">
       <div class="columns is-centered has-text-centered">
         <div class="column results-panel" data-results-gallery>
           <h2 class="title is-3 results-title">Results</h2>
@@ -399,52 +394,69 @@
             <div class="results-selector">
               <div class="results-selector__viewport">
                 <div class="results-selector__track">
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-01-compression.svg"
-                    data-caption="Average model size across representative real scenes (lower is better).">
-                    <img src="./static/images/results/chart-01-compression.svg" alt="Compression results thumbnail."
+                  <button class="results-selector__item" type="button" data-results-item data-results-default
+                    data-display-type="template" data-template-id="results-tradeoff-template"
+                    data-display-title="Quality-Speed and Time-Memory Trade-offs"
+                    data-caption="Paired trade-off plots compare quality versus speed and training time versus VRAM, highlighting the efficiency balance of different methods across benchmark datasets.">
+                    <img src="./static/images/results/fps_psnr_scatter.svg" alt="Efficiency trade-off results thumbnail."
                       decoding="async">
-                    <span class="is-sr-only">Compression Results</span>
+                    <span class="is-sr-only">Quality-Speed and Time-Memory Trade-Offs</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                    data-template-id="results-table-mip-template"
+                    data-display-title="Mip-NeRF360 Quantitative Comparison"
+                    data-caption="Average quantitative results on the Mip-NeRF360 dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
+                    <span class="results-selector__table-thumb" aria-hidden="true">
+                      <span class="results-selector__table-thumb-title">Mip-NeRF360</span>
+                    </span>
+                    <span class="is-sr-only">Mip-NeRF360 Quantitative Table</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                    data-template-id="results-table-tnt-template"
+                    data-display-title="Tanks and Temples Quantitative Comparison"
+                    data-caption="Average quantitative results on the Tanks and Temples dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
+                    <span class="results-selector__table-thumb" aria-hidden="true">
+                      <span
+                        class="results-selector__table-thumb-title results-selector__table-thumb-title--compact">Tanks
+                        &amp; Temples</span>
+                    </span>
+                    <span class="is-sr-only">Tanks and Temples Quantitative Table</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                    data-template-id="results-table-db-template"
+                    data-display-title="Deep Blending Quantitative Comparison"
+                    data-caption="Average quantitative results on the Deep Blending dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
+                    <span class="results-selector__table-thumb" aria-hidden="true">
+                      <span class="results-selector__table-thumb-title">Deep Blending</span>
+                    </span>
+                    <span class="is-sr-only">Deep Blending Quantitative Table</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-02-training.svg"
-                    data-caption="Average training time comparison across benchmark datasets (lower is better).">
-                    <img src="./static/images/results/chart-02-training.svg" alt="Training time results thumbnail."
+                    data-display-title="Per-Scene Gaussians"
+                    data-full-src="./static/images/results/per_scene_gaussian_count.png"
+                    data-caption="Per-scene Gaussian counts across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
+                    <img src="./static/images/results/per_scene_gaussian_count.png"
+                      alt="Per-scene Gaussian count results thumbnail."
                       decoding="async">
-                    <span class="is-sr-only">Training Time Results</span>
+                    <span class="is-sr-only">Per-Scene Gaussians Results</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-03-fps.svg"
-                    data-caption="Rendering throughput comparison on representative scenes (higher is better).">
-                    <img src="./static/images/results/chart-03-fps.svg" alt="Rendering FPS results thumbnail."
+                    data-display-title="Per-Scene Training Time"
+                    data-full-src="./static/images/results/per_scene_train_time.png"
+                    data-caption="Per-scene training time across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
+                    <img src="./static/images/results/per_scene_train_time.png"
+                      alt="Per-scene training time results thumbnail."
                       decoding="async">
-                    <span class="is-sr-only">Rendering Throughput Results</span>
+                    <span class="is-sr-only">Per-Scene Training Time Results</span>
                   </button>
                   <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-04-psnr.svg"
-                    data-caption="PSNR comparison across representative scenes.">
-                    <img src="./static/images/results/chart-04-psnr.svg" alt="PSNR results thumbnail." decoding="async">
-                    <span class="is-sr-only">PSNR Results</span>
-                  </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-05-ssim.svg"
-                    data-caption="SSIM comparison across representative scenes.">
-                    <img src="./static/images/results/chart-05-ssim.svg" alt="SSIM results thumbnail." decoding="async">
-                    <span class="is-sr-only">SSIM Results</span>
-                  </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-06-lpips.svg"
-                    data-caption="LPIPS comparison across representative scenes (lower is better).">
-                    <img src="./static/images/results/chart-06-lpips.svg" alt="LPIPS results thumbnail."
+                    data-display-title="Per-Scene FPS"
+                    data-full-src="./static/images/results/per_scene_fps.png"
+                    data-caption="Per-scene FPS across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (higher is better).">
+                    <img src="./static/images/results/per_scene_fps.png"
+                      alt="Per-scene FPS results thumbnail."
                       decoding="async">
-                    <span class="is-sr-only">LPIPS Results</span>
-                  </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-full-src="./static/images/results/chart-07-breakdown.svg"
-                    data-caption="Overall efficiency summary comparing Ours with representative baselines.">
-                    <img src="./static/images/results/chart-07-breakdown.svg" alt="Efficiency summary thumbnail."
-                      decoding="async">
-                    <span class="is-sr-only">Efficiency Summary</span>
+                    <span class="is-sr-only">Per-Scene FPS Results</span>
                   </button>
                 </div>
               </div>
@@ -455,17 +467,290 @@
           </div>
 
           <div class="results-display" data-results-display>
-            <div class="results-display__viewport">
-              <div class="results-display__stage is-current" data-results-display-stage>
-                <img class="results-display__image" data-results-display-image
-                  src="./static/images/results/chart-03-fps.svg"
-                  alt="Rendering throughput comparison on representative scenes." decoding="async">
-                <p class="results-display__caption" data-results-display-caption>
-                  Rendering throughput comparison on representative scenes (higher is better).
-                </p>
-              </div>
-            </div>
+            <div class="results-display__viewport"></div>
           </div>
+
+          <template id="results-table-mip-template">
+            <div class="results-display__table-scroll">
+              <table class="results-table results-table--wide" aria-label="Mip-NeRF360 quantitative comparison">
+                <thead>
+                  <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">Time <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">VRAM <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">FPS <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">Size <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">Gaussians <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">PSNR <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">SSIM <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">LPIPS <span class="results-table__metric-dir">&darr;</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="results-table__method">Scaffold-GS</th>
+                    <td>1791.7s</td>
+                    <td>10682.0MB</td>
+                    <td>141</td>
+                    <td>171.7MB</td>
+                    <td>570K</td>
+                    <td class="is-best">27.75</td>
+                    <td class="is-second">0.813</td>
+                    <td class="is-second">0.226</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">LightGaussian</th>
+                    <td>1839.4s</td>
+                    <td>16207.1MB</td>
+                    <td>159</td>
+                    <td>266.9MB</td>
+                    <td>1128K</td>
+                    <td>27.08</td>
+                    <td>0.806</td>
+                    <td>0.238</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Compact 3DGS</th>
+                    <td>2637.3s</td>
+                    <td>12722.4MB</td>
+                    <td>159</td>
+                    <td>124.7MB</td>
+                    <td>1435K</td>
+                    <td>26.99</td>
+                    <td>0.799</td>
+                    <td>0.243</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Speedy-Splat</th>
+                    <td class="is-second">1140.7s</td>
+                    <td class="is-second">9976.2MB</td>
+                    <td class="is-second">832</td>
+                    <td class="is-best">74.8MB</td>
+                    <td class="is-best">316K</td>
+                    <td>26.97</td>
+                    <td>0.787</td>
+                    <td>0.289</td>
+                  </tr>
+                  <tr class="results-table__row--group-break">
+                    <th scope="row" class="results-table__method">3DGS</th>
+                    <td>2072.9s</td>
+                    <td>12344.9MB</td>
+                    <td>123</td>
+                    <td>646.4MB</td>
+                    <td>2733K</td>
+                    <td class="is-second">27.53</td>
+                    <td class="is-best">0.816</td>
+                    <td class="is-best">0.215</td>
+                  </tr>
+                  <tr class="results-table__row--ours">
+                    <th scope="row" class="results-table__method">Ours</th>
+                    <td class="is-best">180.7s</td>
+                    <td class="is-best">6567.6MB</td>
+                    <td class="is-best">892</td>
+                    <td class="is-second">89.3MB</td>
+                    <td class="is-second">378K</td>
+                    <td>27.48</td>
+                    <td>0.798</td>
+                    <td>0.261</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+
+          <template id="results-table-tnt-template">
+            <div class="results-display__table-scroll">
+              <table class="results-table results-table--wide" aria-label="Tanks and Temples quantitative comparison">
+                <thead>
+                  <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">Time <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">VRAM <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">FPS <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">Size <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">Gaussians <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">PSNR <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">SSIM <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">LPIPS <span class="results-table__metric-dir">&darr;</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="results-table__method">Scaffold-GS</th>
+                    <td>800.5s</td>
+                    <td class="is-second">3949.0MB</td>
+                    <td>216</td>
+                    <td>76.7MB</td>
+                    <td>254K</td>
+                    <td class="is-second">24.04</td>
+                    <td class="is-best">0.853</td>
+                    <td class="is-second">0.174</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">LightGaussian</th>
+                    <td>1104.3s</td>
+                    <td>11799.0MB</td>
+                    <td>200</td>
+                    <td>148.2MB</td>
+                    <td>627K</td>
+                    <td>23.10</td>
+                    <td>0.823</td>
+                    <td>0.223</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Compact 3DGS</th>
+                    <td>1294.4s</td>
+                    <td>7033.0MB</td>
+                    <td>219</td>
+                    <td>92.8MB</td>
+                    <td>838K</td>
+                    <td>23.33</td>
+                    <td class="is-second">0.834</td>
+                    <td>0.200</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Speedy-Splat</th>
+                    <td class="is-second">703.7s</td>
+                    <td>5307.0MB</td>
+                    <td class="is-best">1095</td>
+                    <td class="is-best">43.0MB</td>
+                    <td class="is-best">182K</td>
+                    <td>23.47</td>
+                    <td>0.821</td>
+                    <td>0.240</td>
+                  </tr>
+                  <tr class="results-table__row--group-break">
+                    <th scope="row" class="results-table__method">3DGS</th>
+                    <td>1022.8s</td>
+                    <td>7020.0MB</td>
+                    <td>175</td>
+                    <td>372.2MB</td>
+                    <td>1574K</td>
+                    <td>23.80</td>
+                    <td class="is-best">0.853</td>
+                    <td class="is-best">0.169</td>
+                  </tr>
+                  <tr class="results-table__row--ours">
+                    <th scope="row" class="results-table__method">Ours</th>
+                    <td class="is-best">149.6s</td>
+                    <td class="is-best">3914.0MB</td>
+                    <td class="is-second">996</td>
+                    <td class="is-second">57.3MB</td>
+                    <td class="is-second">242K</td>
+                    <td class="is-best">24.19</td>
+                    <td>0.842</td>
+                    <td>0.208</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+
+          <template id="results-table-db-template">
+            <div class="results-display__table-scroll">
+              <table class="results-table results-table--wide" aria-label="Deep Blending quantitative comparison">
+                <thead>
+                  <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">Time <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">VRAM <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">FPS <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">Size <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">Gaussians <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">PSNR <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">SSIM <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">LPIPS <span class="results-table__metric-dir">&darr;</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="results-table__method">Scaffold-GS</th>
+                    <td>1087.1s</td>
+                    <td class="is-second">7272.0MB</td>
+                    <td>283</td>
+                    <td class="is-second">54.8MB</td>
+                    <td class="is-best">182K</td>
+                    <td class="is-best">30.29</td>
+                    <td class="is-best">0.910</td>
+                    <td class="is-second">0.253</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">LightGaussian</th>
+                    <td>1554.7s</td>
+                    <td>24467.0MB</td>
+                    <td>164</td>
+                    <td>178.9MB</td>
+                    <td>756K</td>
+                    <td>27.10</td>
+                    <td>0.877</td>
+                    <td>0.295</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Compact 3DGS</th>
+                    <td>1875.0s</td>
+                    <td>10606.0MB</td>
+                    <td>210</td>
+                    <td>104.2MB</td>
+                    <td>1051K</td>
+                    <td class="is-second">29.85</td>
+                    <td>0.905</td>
+                    <td>0.255</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">Speedy-Splat</th>
+                    <td class="is-second">964.5s</td>
+                    <td>7895.0MB</td>
+                    <td class="is-second">998</td>
+                    <td>59.2MB</td>
+                    <td>250K</td>
+                    <td>29.77</td>
+                    <td>0.904</td>
+                    <td>0.272</td>
+                  </tr>
+                  <tr class="results-table__row--group-break">
+                    <th scope="row" class="results-table__method">3DGS</th>
+                    <td>1690.8s</td>
+                    <td>12147.0MB</td>
+                    <td>130</td>
+                    <td>587.6MB</td>
+                    <td>2484K</td>
+                    <td>29.76</td>
+                    <td class="is-second">0.907</td>
+                    <td class="is-best">0.238</td>
+                  </tr>
+                  <tr class="results-table__row--ours">
+                    <th scope="row" class="results-table__method">Ours</th>
+                    <td class="is-best">140.5s</td>
+                    <td class="is-best">5445.0MB</td>
+                    <td class="is-best">1128</td>
+                    <td class="is-best">51.8MB</td>
+                    <td class="is-second">219K</td>
+                    <td class="is-second">29.85</td>
+                    <td>0.905</td>
+                    <td>0.267</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+
+          <template id="results-tradeoff-template">
+            <div class="results-display__pair-shell">
+              <figure class="results-display__pair-card">
+                <div class="results-display__pair-visual">
+                  <img class="results-display__pair-image" src="./static/images/results/fps_psnr_scatter.svg"
+                    alt="FPS versus PSNR trade-off across benchmark datasets." decoding="async">
+                </div>
+              </figure>
+              <figure class="results-display__pair-card">
+                <div class="results-display__pair-visual">
+                  <img class="results-display__pair-image" src="./static/images/results/time_vram_scatter.svg"
+                    alt="Training time versus VRAM trade-off across benchmark datasets." decoding="async">
+                </div>
+              </figure>
+            </div>
+          </template>
+
         </div>
       </div>
     </div>
@@ -490,8 +775,8 @@
               the scene structure stabilize before the high-frequency appearance is fully expressed, while using
               cross-view geometric consistency to constrain Gaussian growth. By improving training dynamics at the
               source instead of relying on post-hoc compression, GADO-GS learns a more coherent and less redundant
-              Gaussian representation. Across the three benchmark datasets, GADO-GS provides on average 10.1× faster
-              training, 7.2× higher rendering throughput, and 8.4× smaller models than vanilla 3DGS, while maintaining
+              Gaussian representation. Across the three benchmark datasets, GADO-GS provides on average 10.1x faster
+              training, 7.2x higher rendering throughput, and 8.4x smaller models than vanilla 3DGS, while maintaining
               competitive reconstruction quality.
             </p>
           </div>

@@ -1,6 +1,6 @@
 <svg width="960" height="560" viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg">
   <rect width="960" height="560" rx="24" fill="#fbfcff"/>
-  <text x="64" y="78" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#243044">SSIM Comparison ↑</text>
+  <text x="64" y="78" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#243044">Average SSIM ↑</text>
   <text x="64" y="112" font-family="Arial, sans-serif" font-size="18" fill="#5f6b7c">Average structural similarity on representative evaluation scenes.</text>
   <line x1="92" y1="450" x2="882" y2="450" stroke="#cfd8e5" stroke-width="2"/>
   <line x1="92" y1="170" x2="92" y2="450" stroke="#cfd8e5" stroke-width="2"/>

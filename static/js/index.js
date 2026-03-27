@@ -357,9 +357,15 @@ function initSceneShowcase() {
     var loadingHideTimer = null;
     var LOADING_SHOW_DELAY = 140;
     var LOADING_MIN_VISIBLE = 220;
+    var SYNC_RESET_THRESHOLD = 0.012;
+    var SYNC_SOFT_THRESHOLD = 0.04;
+    var SYNC_HARD_THRESHOLD = 0.22;
+    var SYNC_MAX_RATE_OFFSET = 0.08;
+    var SYNC_HARD_RESYNC_COOLDOWN = 220;
     var userPaused = false;
     var isScrubbing = false;
     var resumeAfterScrub = false;
+    var lastHardSyncAt = 0;
 
     if (!frame || !wrapper || !controls || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
       return null;
@@ -367,14 +373,6 @@ function initSceneShowcase() {
     compareInteraction = attachCompareInteraction(wrapper, overlay, divider);
     if (!compareInteraction) {
       return null;
-    }
-
-    function syncVideos() {
-      if (Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.08) {
-        try {
-          rightVideo.currentTime = leftVideo.currentTime;
-        } catch (error) {}
-      }
     }
 
     function isVideoReady(videoElement) {
@@ -458,13 +456,88 @@ function initSceneShowcase() {
       }
     }
 
+    function getBasePlaybackRate() {
+      return leftVideo.playbackRate || 1;
+    }
+
+    function setPlaybackRate(videoElement, nextRate) {
+      var safeRate = Math.max(0.85, Math.min(1.15, nextRate || 1));
+
+      if (Math.abs((videoElement.playbackRate || 1) - safeRate) < 0.001) {
+        return;
+      }
+
+      videoElement.playbackRate = safeRate;
+    }
+
+    function resetRightPlaybackRate() {
+      setPlaybackRate(rightVideo, getBasePlaybackRate());
+    }
+
+    function hardSyncRightVideo() {
+      lastHardSyncAt = Date.now();
+
+      try {
+        rightVideo.currentTime = leftVideo.currentTime;
+      } catch (error) {}
+
+      resetRightPlaybackRate();
+    }
+
+    function syncVideos() {
+      var drift;
+      var absoluteDrift;
+      var baseRate;
+      var rateOffset;
+
+      if (isScrubbing || leftVideo.seeking || rightVideo.seeking) {
+        return;
+      }
+
+      if (leftVideo.paused || rightVideo.paused) {
+        resetRightPlaybackRate();
+        return;
+      }
+
+      if (leftVideo.readyState < 2 || rightVideo.readyState < 2) {
+        return;
+      }
+
+      drift = leftVideo.currentTime - rightVideo.currentTime;
+      absoluteDrift = Math.abs(drift);
+      baseRate = getBasePlaybackRate();
+
+      if (absoluteDrift >= SYNC_HARD_THRESHOLD) {
+        if (Date.now() - lastHardSyncAt > SYNC_HARD_RESYNC_COOLDOWN) {
+          hardSyncRightVideo();
+        }
+        return;
+      }
+
+      if (absoluteDrift <= SYNC_RESET_THRESHOLD) {
+        resetRightPlaybackRate();
+        return;
+      }
+
+      if (absoluteDrift >= SYNC_SOFT_THRESHOLD) {
+        rateOffset = Math.max(-SYNC_MAX_RATE_OFFSET, Math.min(SYNC_MAX_RATE_OFFSET, drift * 0.45));
+        setPlaybackRate(rightVideo, baseRate + rateOffset);
+        return;
+      }
+
+      rateOffset = drift > 0 ? 0.015 : -0.015;
+      setPlaybackRate(rightVideo, baseRate + rateOffset);
+    }
+
     function pauseBothVideos() {
       leftVideo.pause();
       rightVideo.pause();
+      resetRightPlaybackRate();
       syncControlState();
     }
 
     function playBothVideos() {
+      resetRightPlaybackRate();
       playVideo(leftVideo);
       playVideo(rightVideo);
       syncControlState();
@@ -499,6 +572,8 @@ function initSceneShowcase() {
       try {
         rightVideo.currentTime = nextTime;
       } catch (error) {}
+
+      resetRightPlaybackRate();
 
       progressInput.value = String(Math.round(clampedValue));
       progressInput.style.setProperty('--compare-progress-percent', ((clampedValue / 1000) * 100).toFixed(3) + '%');
@@ -799,6 +874,7 @@ function initSceneShowcase() {
         rightVideo.currentTime = 0;
       } catch (error) {}
 
+      resetRightPlaybackRate();
       updateProgressState();
       applyPlaybackState();
       scheduleWrapperSize();
@@ -807,26 +883,29 @@ function initSceneShowcase() {
     }
 
     leftVideo.addEventListener('play', function() {
-      try {
-        rightVideo.currentTime = leftVideo.currentTime;
-      } catch (error) {}
+      hardSyncRightVideo();
       playVideo(rightVideo);
     });
 
     leftVideo.addEventListener('pause', function() {
+      resetRightPlaybackRate();
       rightVideo.pause();
     });
 
     leftVideo.addEventListener('seeking', function() {
-      try {
-        rightVideo.currentTime = leftVideo.currentTime;
-      } catch (error) {}
+      hardSyncRightVideo();
     });
 
     leftVideo.addEventListener('timeupdate', syncVideos);
     leftVideo.addEventListener('ratechange', function() {
-      rightVideo.playbackRate = leftVideo.playbackRate;
+      resetRightPlaybackRate();
     });
+    leftVideo.addEventListener('seeked', syncVideos);
+    rightVideo.addEventListener('seeked', syncVideos);
+    rightVideo.addEventListener('timeupdate', syncVideos);
+    rightVideo.addEventListener('waiting', syncVideos);
+    rightVideo.addEventListener('stalled', syncVideos);
+    rightVideo.addEventListener('canplay', syncVideos);
     leftVideo.addEventListener('play', syncControlState);
     rightVideo.addEventListener('play', syncControlState);
     leftVideo.addEventListener('pause', syncControlState);
@@ -1684,7 +1763,7 @@ function initResultsGallery() {
   var visibleCount = 0;
   var hasRendered = false;
   var pendingDisplayDirection = 0;
-  var displayAnimationTimer = null;
+  var displayLayoutFrame = 0;
 
   if (!items.length || !displayRoot || !displayViewport || !viewport) {
     return;
@@ -1694,22 +1773,101 @@ function initResultsGallery() {
     return Math.min(window.innerWidth <= 768 ? 3 : 5, items.length);
   }
 
-  function getCircularOffset(index, centerIndex, total) {
-    var diff = index - centerIndex;
-
-    if (diff > total / 2) {
-      diff -= total;
-    } else if (diff < -total / 2) {
-      diff += total;
-    }
-
-    return diff;
+  function clampSelectedIndex(index) {
+    return Math.max(0, Math.min(items.length - 1, index));
   }
 
   function centerOnIndex(index, displayDirection) {
-    selectedIndex = (index + items.length) % items.length;
+    selectedIndex = clampSelectedIndex(index);
     pendingDisplayDirection = displayDirection || 0;
     renderWindow();
+  }
+
+  function getWindowCenterIndex(frontRadius) {
+    var minCenterIndex = Math.min(frontRadius, items.length - 1);
+    var maxCenterIndex = Math.max(minCenterIndex, items.length - frontRadius - 1);
+
+    return Math.max(minCenterIndex, Math.min(maxCenterIndex, selectedIndex));
+  }
+
+  function updateArrowState() {
+    if (prevButton) {
+      prevButton.disabled = selectedIndex <= 0;
+      prevButton.setAttribute('aria-disabled', prevButton.disabled ? 'true' : 'false');
+    }
+
+    if (nextButton) {
+      nextButton.disabled = selectedIndex >= items.length - 1;
+      nextButton.setAttribute('aria-disabled', nextButton.disabled ? 'true' : 'false');
+    }
+  }
+
+  function ensureTableFitWrapper(body) {
+    var viewport = body.querySelector('.results-display__table-scroll');
+    var fit = viewport ? viewport.querySelector('.results-display__table-fit') : null;
+    var table;
+
+    if (!viewport) {
+      return null;
+    }
+
+    if (!fit) {
+      table = viewport.querySelector('.results-table');
+      if (!table) {
+        return null;
+      }
+
+      fit = document.createElement('div');
+      fit.className = 'results-display__table-fit';
+      viewport.insertBefore(fit, table);
+      fit.appendChild(table);
+    }
+
+    return fit;
+  }
+
+  function fitDisplayStage(stage) {
+    Array.prototype.slice.call(stage ? stage.querySelectorAll('.results-display__body--table') : []).forEach(function(body) {
+      var viewport = body.querySelector('.results-display__table-scroll');
+      var fit = ensureTableFitWrapper(body);
+      var naturalWidth;
+      var naturalHeight;
+      var availableWidth;
+      var availableHeight;
+      var scale;
+      var safeGutter = 8;
+
+      if (!viewport || !fit) {
+        return;
+      }
+
+      fit.style.setProperty('--results-table-scale', '1');
+      naturalWidth = fit.offsetWidth;
+      naturalHeight = fit.offsetHeight;
+      availableWidth = Math.max(0, viewport.clientWidth - safeGutter);
+      availableHeight = Math.max(0, viewport.clientHeight - safeGutter);
+
+      if (!naturalWidth || !naturalHeight || !availableWidth || !availableHeight) {
+        return;
+      }
+
+      scale = Math.min(availableWidth / naturalWidth, availableHeight / naturalHeight, 1);
+      fit.style.setProperty('--results-table-scale', scale.toFixed(4));
+    });
+  }
+
+  function scheduleDisplayLayout() {
+    if (displayLayoutFrame) {
+      window.cancelAnimationFrame(displayLayoutFrame);
+    }
+
+    displayLayoutFrame = window.requestAnimationFrame(function() {
+      displayLayoutFrame = 0;
+      fitDisplayStage(getCurrentDisplayStage());
+      window.requestAnimationFrame(function() {
+        fitDisplayStage(getCurrentDisplayStage());
+      });
+    });
   }
 
   function applyItemVisualState(item, relativeIndex, frontRadius, viewportWidth, cardWidth) {
@@ -1774,25 +1932,79 @@ function initResultsGallery() {
     item.style.setProperty('--results-layer', String(layer));
   }
 
-  function createDisplayStage(src, alt, caption, extraClassName) {
+  function getDisplayDefinition(item) {
+    var type = item.getAttribute('data-display-type') || 'image';
+    var src = item.getAttribute('data-full-src') || '';
+    var caption = item.getAttribute('data-caption') || '';
+    var alt = item.querySelector('img') ? item.querySelector('img').getAttribute('alt') : caption;
+    var title = item.getAttribute('data-display-title') ||
+      (item.querySelector('.is-sr-only') ? item.querySelector('.is-sr-only').textContent.trim() : caption);
+    var templateId = item.getAttribute('data-template-id') || '';
+
+    return {
+      type: type,
+      src: src,
+      caption: caption,
+      alt: alt,
+      title: title,
+      templateId: templateId,
+      key: type === 'template' ? ('template:' + templateId) : ('image:' + src)
+    };
+  }
+
+  function createDisplayStage(definition, extraClassName) {
     var stage = document.createElement('div');
-    var image = document.createElement('img');
-    var text = document.createElement('p');
+    var header = document.createElement('div');
+    var heading = document.createElement('h3');
+    var divider = document.createElement('div');
+    var description = document.createElement('p');
+    var body = document.createElement('div');
+    var image;
+    var template;
 
     stage.className = 'results-display__stage';
     if (extraClassName) {
       stage.classList.add(extraClassName);
     }
+    stage.setAttribute('data-results-key', definition.key);
 
-    image.className = 'results-display__image';
-    image.setAttribute('src', src);
-    image.setAttribute('alt', alt || '');
+    header.className = 'results-display__header';
 
-    text.className = 'results-display__caption';
-    text.textContent = caption;
+    heading.className = 'results-display__title';
+    heading.textContent = definition.title;
 
-    stage.appendChild(image);
-    stage.appendChild(text);
+    divider.className = 'results-display__section-divider';
+    divider.setAttribute('aria-hidden', 'true');
+
+    description.className = 'results-display__description';
+    description.textContent = definition.caption;
+
+    body.className = 'results-display__body';
+
+    if (definition.type === 'template' && definition.templateId) {
+      body.classList.add('results-display__body--table');
+      template = document.getElementById(definition.templateId);
+
+      if (template && 'content' in template) {
+        body.appendChild(document.importNode(template.content, true));
+      } else if (template) {
+        body.innerHTML = template.innerHTML;
+      }
+    } else {
+      body.classList.add('results-display__body--image');
+      image = document.createElement('img');
+      image.className = 'results-display__image';
+      image.setAttribute('src', definition.src);
+      image.setAttribute('alt', definition.alt || '');
+      body.appendChild(image);
+    }
+
+    header.appendChild(heading);
+    header.appendChild(divider);
+
+    stage.appendChild(header);
+    stage.appendChild(body);
+    stage.appendChild(description);
 
     return stage;
   }
@@ -1812,23 +2024,15 @@ function initResultsGallery() {
 
   function setDisplay(index, direction, instant) {
     var item = items[index];
-    var nextSrc;
-    var nextCaption;
-    var nextAlt;
+    var nextDisplay;
     var currentStage;
-    var currentImage;
-    var currentCaption;
-    var leavingClassName;
-    var enteringClassName;
-    var enteringStage;
+    var nextStage;
 
     if (!item) {
       return;
     }
 
-    nextSrc = item.getAttribute('data-full-src');
-    nextCaption = item.getAttribute('data-caption') || '';
-    nextAlt = item.querySelector('img') ? item.querySelector('img').getAttribute('alt') : nextCaption;
+    nextDisplay = getDisplayDefinition(item);
 
     items.forEach(function(entry, entryIndex) {
       var isActive = entryIndex === index;
@@ -1836,56 +2040,19 @@ function initResultsGallery() {
       entry.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
 
-    if (displayAnimationTimer) {
-      window.clearTimeout(displayAnimationTimer);
-      displayAnimationTimer = null;
-    }
-
     currentStage = getCurrentDisplayStage();
-    if (!currentStage) {
-      currentStage = createDisplayStage(nextSrc, nextAlt, nextCaption, 'is-current');
-      displayViewport.innerHTML = '';
-      displayViewport.appendChild(currentStage);
-      return;
-    }
-
-    cleanupDisplayStages(currentStage);
-    currentImage = currentStage.querySelector('.results-display__image');
-    currentCaption = currentStage.querySelector('.results-display__caption');
+    nextStage = createDisplayStage(nextDisplay, 'is-current');
 
     if (
-      instant ||
-      !direction ||
-      (
-        currentImage &&
-        currentImage.getAttribute('src') === nextSrc &&
-        currentCaption &&
-        currentCaption.textContent === nextCaption
-      )
+      currentStage &&
+      currentStage.getAttribute('data-results-key') === nextDisplay.key
     ) {
-      currentImage.setAttribute('src', nextSrc);
-      currentImage.setAttribute('alt', nextAlt || '');
-      currentCaption.textContent = nextCaption;
-      currentStage.className = 'results-display__stage is-current';
-      displayViewport.style.height = '';
       return;
     }
 
-    leavingClassName = direction < 0 ? 'is-leaving-to-left' : 'is-leaving-to-right';
-    enteringClassName = direction < 0 ? 'is-entering-from-right' : 'is-entering-from-left';
-    enteringStage = createDisplayStage(nextSrc, nextAlt, nextCaption, enteringClassName);
-    enteringStage.classList.add('is-current');
-
-    displayViewport.style.height = currentStage.getBoundingClientRect().height + 'px';
-    currentStage.className = 'results-display__stage ' + leavingClassName;
-    displayViewport.appendChild(enteringStage);
-
-    displayAnimationTimer = window.setTimeout(function() {
-      cleanupDisplayStages(enteringStage);
-      enteringStage.className = 'results-display__stage is-current';
-      displayViewport.style.height = '';
-      displayAnimationTimer = null;
-    }, 470);
+    displayViewport.innerHTML = '';
+    displayViewport.appendChild(nextStage);
+    displayViewport.style.height = '';
   }
 
   function renderWindow() {
@@ -1893,10 +2060,12 @@ function initResultsGallery() {
     var viewportWidth;
     var cardWidth;
     var measurementItem;
+    var windowCenterIndex;
 
     visibleCount = getVisibleCount();
     gallery.style.setProperty('--results-visible-count', visibleCount);
     frontRadius = Math.floor((visibleCount - 1) / 2);
+    windowCenterIndex = getWindowCenterIndex(frontRadius);
     viewportWidth = viewport.getBoundingClientRect().width;
     measurementItem = items.find(function(item) {
       return !item.hidden;
@@ -1904,7 +2073,7 @@ function initResultsGallery() {
     cardWidth = measurementItem.offsetWidth || measurementItem.clientWidth || 64;
 
     items.forEach(function(item, index) {
-      var relativeIndex = getCircularOffset(index, selectedIndex, items.length);
+      var relativeIndex = index - windowCenterIndex;
       var isFront = Math.abs(relativeIndex) <= frontRadius;
 
       applyItemVisualState(item, relativeIndex, frontRadius, viewportWidth, cardWidth);
@@ -1912,9 +2081,12 @@ function initResultsGallery() {
       item.setAttribute('aria-hidden', isFront ? 'false' : 'true');
     });
 
+    updateArrowState();
+
     setDisplay(selectedIndex, pendingDisplayDirection, !hasRendered);
     hasRendered = true;
     pendingDisplayDirection = 0;
+    scheduleDisplayLayout();
   }
 
   function shiftWindow(direction) {
@@ -1925,6 +2097,8 @@ function initResultsGallery() {
     item.addEventListener('click', function(event) {
       var relativeIndex;
       var displayDirection;
+      var frontRadius = Math.floor((visibleCount - 1) / 2);
+      var windowCenterIndex = getWindowCenterIndex(frontRadius);
 
       event.preventDefault();
       event.stopPropagation();
@@ -1933,14 +2107,16 @@ function initResultsGallery() {
         return;
       }
 
-      relativeIndex = getCircularOffset(index, selectedIndex, items.length);
+      relativeIndex = index - windowCenterIndex;
       displayDirection = relativeIndex > 0 ? -1 : (relativeIndex < 0 ? 1 : 0);
       centerOnIndex(index, displayDirection);
     });
 
     item.addEventListener('keydown', function(event) {
       if (event.key === 'Enter' || event.key === ' ') {
-        var relativeIndex = getCircularOffset(index, selectedIndex, items.length);
+        var frontRadius = Math.floor((visibleCount - 1) / 2);
+        var windowCenterIndex = getWindowCenterIndex(frontRadius);
+        var relativeIndex = index - windowCenterIndex;
         var displayDirection = relativeIndex > 0 ? -1 : (relativeIndex < 0 ? 1 : 0);
         event.preventDefault();
         centerOnIndex(index, displayDirection);
@@ -1961,7 +2137,12 @@ function initResultsGallery() {
   }
 
   visibleCount = getVisibleCount();
-  selectedIndex = Math.floor(Math.min(items.length, visibleCount) / 2);
+  selectedIndex = items.findIndex(function(item) {
+    return item.hasAttribute('data-results-default');
+  });
+  if (selectedIndex < 0) {
+    selectedIndex = 0;
+  }
   renderWindow();
 
   window.addEventListener('resize', function() {
