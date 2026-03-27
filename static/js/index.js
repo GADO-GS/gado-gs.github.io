@@ -362,10 +362,12 @@ function initSceneShowcase() {
     var SYNC_HARD_THRESHOLD = 0.22;
     var SYNC_MAX_RATE_OFFSET = 0.08;
     var SYNC_HARD_RESYNC_COOLDOWN = 220;
+    var LOOP_RESTART_THRESHOLD = 0.08;
     var userPaused = false;
     var isScrubbing = false;
     var resumeAfterScrub = false;
     var lastHardSyncAt = 0;
+    var isLoopRestarting = false;
 
     if (!frame || !wrapper || !controls || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
       return null;
@@ -375,8 +377,37 @@ function initSceneShowcase() {
       return null;
     }
 
-    function isVideoReady(videoElement) {
-      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 1;
+    leftVideo.removeAttribute('autoplay');
+    rightVideo.removeAttribute('autoplay');
+    leftVideo.removeAttribute('loop');
+    rightVideo.removeAttribute('loop');
+
+    var leftFrameReady = !!leftVideo.currentSrc && leftVideo.readyState >= 2;
+    var rightFrameReady = !!rightVideo.currentSrc && rightVideo.readyState >= 2;
+
+    function isVideoPlayable(videoElement) {
+      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 2;
+    }
+
+    function canPlayCardVideos() {
+      return isVideoPlayable(leftVideo) && isVideoPlayable(rightVideo);
+    }
+
+    function setVideoFrameReady(videoElement, isReady) {
+      if (videoElement === leftVideo) {
+        leftFrameReady = isReady;
+      } else if (videoElement === rightVideo) {
+        rightFrameReady = isReady;
+      }
+    }
+
+    function syncVideoFrameReady(videoElement) {
+      setVideoFrameReady(videoElement, isVideoPlayable(videoElement));
+    }
+
+    function resetFrameReadyState() {
+      leftFrameReady = false;
+      rightFrameReady = false;
     }
 
     function isFrameFullscreen() {
@@ -490,7 +521,7 @@ function initSceneShowcase() {
       var baseRate;
       var rateOffset;
 
-      if (isScrubbing || leftVideo.seeking || rightVideo.seeking) {
+      if (isLoopRestarting || isScrubbing || leftVideo.seeking || rightVideo.seeking) {
         return;
       }
 
@@ -536,8 +567,48 @@ function initSceneShowcase() {
       syncControlState();
     }
 
-    function playBothVideos() {
+    function resetVideosToStart() {
+      try {
+        leftVideo.currentTime = 0;
+      } catch (error) {}
+
+      try {
+        rightVideo.currentTime = 0;
+      } catch (error) {}
+    }
+
+    function maybeRestartLoopPlayback() {
+      var duration = getActiveDuration();
+
+      if (isLoopRestarting || userPaused || isScrubbing || !shouldPlayShowcaseMedia() || !(duration > 0)) {
+        return false;
+      }
+
+      if (leftVideo.currentTime < Math.max(0, duration - LOOP_RESTART_THRESHOLD)) {
+        return false;
+      }
+
+      isLoopRestarting = true;
+      resetVideosToStart();
       resetRightPlaybackRate();
+      playBothVideos();
+      window.setTimeout(function() {
+        isLoopRestarting = false;
+      }, 80);
+      return true;
+    }
+
+    function playBothVideos() {
+      var duration = getActiveDuration();
+
+      if (!isLoopRestarting && duration > 0 && leftVideo.currentTime >= Math.max(0, duration - LOOP_RESTART_THRESHOLD)) {
+        resetVideosToStart();
+      }
+
+      resetRightPlaybackRate();
+      if (canPlayCardVideos()) {
+        hardSyncRightVideo();
+      }
       playVideo(leftVideo);
       playVideo(rightVideo);
       syncControlState();
@@ -600,7 +671,7 @@ function initSceneShowcase() {
 
       isScrubbing = false;
 
-      if (resumeAfterScrub && !userPaused && shouldPlayShowcaseMedia()) {
+      if (resumeAfterScrub && !userPaused && shouldPlayShowcaseMedia() && canPlayCardVideos()) {
         playBothVideos();
       }
 
@@ -693,7 +764,7 @@ function initSceneShowcase() {
     }
 
     function syncLoadingState() {
-      setLoadingState(!(isVideoReady(leftVideo) && isVideoReady(rightVideo)));
+      setLoadingState(!(leftFrameReady && rightFrameReady));
     }
 
     function getPosterPath(videoPath) {
@@ -860,6 +931,7 @@ function initSceneShowcase() {
         compareCaption.textContent = resolvedLeftLabel + ' vs. ' + resolvedRightLabel;
       }
 
+      resetFrameReadyState();
       setLoadingState(true);
       leftVideo.setAttribute('poster', getPosterPath(nextLeftVideo));
       rightVideo.setAttribute('poster', getPosterPath(nextRightVideo));
@@ -874,6 +946,8 @@ function initSceneShowcase() {
         rightVideo.currentTime = 0;
       } catch (error) {}
 
+      syncVideoFrameReady(leftVideo);
+      syncVideoFrameReady(rightVideo);
       resetRightPlaybackRate();
       updateProgressState();
       applyPlaybackState();
@@ -912,11 +986,15 @@ function initSceneShowcase() {
     rightVideo.addEventListener('pause', syncControlState);
     leftVideo.addEventListener('timeupdate', function() {
       if (!isScrubbing) {
+        maybeRestartLoopPlayback();
+      }
+      if (!isScrubbing) {
         updateProgressState();
       }
     });
     leftVideo.addEventListener('durationchange', updateProgressState);
     rightVideo.addEventListener('durationchange', updateProgressState);
+    leftVideo.addEventListener('ended', maybeRestartLoopPlayback);
     progressInput.addEventListener('pointerdown', beginScrub);
     progressInput.addEventListener('pointerup', endScrub);
     progressInput.addEventListener('pointercancel', endScrub);
@@ -955,15 +1033,30 @@ function initSceneShowcase() {
 
     [leftVideo, rightVideo].forEach(function(videoElement) {
       videoElement.addEventListener('loadstart', function() {
+        setVideoFrameReady(videoElement, false);
         setLoadingState(true);
       });
       videoElement.addEventListener('emptied', function() {
+        setVideoFrameReady(videoElement, false);
         setLoadingState(true);
       });
-      videoElement.addEventListener('loadedmetadata', syncLoadingState);
-      videoElement.addEventListener('loadeddata', syncLoadingState);
-      videoElement.addEventListener('canplay', syncLoadingState);
-      videoElement.addEventListener('playing', syncLoadingState);
+      videoElement.addEventListener('loadedmetadata', function() {
+        applyPlaybackState();
+      });
+      videoElement.addEventListener('loadeddata', function() {
+        setVideoFrameReady(videoElement, true);
+        syncLoadingState();
+        applyPlaybackState();
+      });
+      videoElement.addEventListener('canplay', function() {
+        setVideoFrameReady(videoElement, true);
+        syncLoadingState();
+        applyPlaybackState();
+      });
+      videoElement.addEventListener('playing', function() {
+        setVideoFrameReady(videoElement, true);
+        syncLoadingState();
+      });
       videoElement.addEventListener('error', function() {
         setLoadingState(false);
       });
@@ -1062,7 +1155,6 @@ function initSceneShowcase() {
       caption.textContent = nextLabel;
     }
 
-    preloadSceneVideos(button, true);
     compareCards.forEach(function(compareCard, index) {
       compareCard.setContent(compareConfigs[index] || compareConfigs[0]);
     });
@@ -1112,7 +1204,6 @@ function initSceneShowcase() {
   });
 
   activeButton = showcase.querySelector('.scene-selector__item.is-active') || buttons[0];
-  preloadSceneVideos(activeButton, true);
   activateScene(activeButton, true);
 
   if ('IntersectionObserver' in window) {
