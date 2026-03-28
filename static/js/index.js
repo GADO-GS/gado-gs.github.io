@@ -123,6 +123,7 @@ function setCompareMetricLine(element, formattedMetric) {
 function attachCompareInteraction(wrapper, overlay, divider) {
   var compareRatio = 0.5;
   var isDragging = false;
+  var onPositionChange = null;
 
   if (!wrapper || !overlay || !divider) {
     return null;
@@ -137,6 +138,10 @@ function attachCompareInteraction(wrapper, overlay, divider) {
     overlay.style.clipPath = 'inset(0 ' + hiddenRight + '% 0 0)';
     divider.style.left = percentage + '%';
     divider.setAttribute('aria-valuenow', Math.round(percentage));
+
+    if (typeof onPositionChange === 'function') {
+      onPositionChange(compareRatio);
+    }
   }
 
   function updateCompareFromClientX(clientX) {
@@ -215,7 +220,13 @@ function attachCompareInteraction(wrapper, overlay, divider) {
   setComparePosition(0.5);
 
   return {
-    setComparePosition: setComparePosition
+    setComparePosition: setComparePosition,
+    getComparePosition: function() {
+      return compareRatio;
+    },
+    setOnPositionChange: function(callback) {
+      onPositionChange = typeof callback === 'function' ? callback : null;
+    }
   };
 }
 
@@ -228,7 +239,6 @@ function initSceneShowcase() {
   var buttons = showcase.querySelectorAll('.scene-selector__item');
   var caption = document.getElementById('scene-showcase-caption');
   var activeButton;
-  var preloadedVideoElements = Object.create(null);
   var showcaseViewportActive = true;
   var showcasePageVisible = !document.hidden;
 
@@ -236,91 +246,16 @@ function initSceneShowcase() {
     return;
   }
 
-  function playVideo(videoElement) {
-    var playPromise = videoElement.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(function() {});
-    }
-  }
-
   function shouldPlayShowcaseMedia() {
     return showcaseViewportActive && showcasePageVisible;
   }
 
-  function collectSceneVideoPaths(button) {
-    var seen = Object.create(null);
-    var uniquePaths = [];
-    var paths = [
-      button.getAttribute('data-left-video-1'),
-      button.getAttribute('data-right-video-1'),
-      button.getAttribute('data-left-video-2') || button.getAttribute('data-left-video-1'),
-      button.getAttribute('data-right-video-2') || button.getAttribute('data-right-video-1')
-    ];
-
-    paths.forEach(function(path) {
-      if (!path || seen[path]) {
-        return;
-      }
-
-      seen[path] = true;
-      uniquePaths.push(path);
-    });
-
-    return uniquePaths;
+  function buildCompositeVideoPath(sceneKey, baselineKey) {
+    return './static/videos/' + sceneKey + '_ours_vs_' + baselineKey + '.mp4';
   }
 
-  function preloadVideoPath(videoPath) {
-    var preloader = preloadedVideoElements[videoPath];
-
-    if (!videoPath) {
-      return;
-    }
-
-    if (preloader) {
-      return;
-    }
-
-    preloader = document.createElement('video');
-    preloader.muted = true;
-    preloader.playsInline = true;
-    preloader.preload = 'metadata';
-    preloader.src = videoPath;
-    preloader.load();
-
-    preloadedVideoElements[videoPath] = preloader;
-  }
-
-  function preloadSceneVideos(button, eager) {
-    if (!button) {
-      return;
-    }
-
-    collectSceneVideoPaths(button).forEach(function(videoPath) {
-      preloadVideoPath(videoPath);
-    });
-  }
-
-  function freezePreviewVideo(videoElement) {
-    function applyStaticFrame() {
-      var targetTime = 0.12;
-      try {
-        if (videoElement.duration && videoElement.duration < targetTime) {
-          targetTime = Math.max(0, videoElement.duration / 3);
-        }
-        videoElement.currentTime = targetTime;
-      } catch (error) {}
-      videoElement.pause();
-    }
-
-    videoElement.pause();
-    videoElement.removeAttribute('autoplay');
-    videoElement.removeAttribute('loop');
-
-    if (videoElement.readyState >= 2) {
-      applyStaticFrame();
-    } else {
-      videoElement.addEventListener('loadeddata', applyStaticFrame, { once: true });
-    }
+  function buildCompositePosterPath(sceneKey) {
+    return './static/videos/' + sceneKey + '_ours.jpg';
   }
 
   function createCompareCard(card) {
@@ -330,10 +265,10 @@ function initSceneShowcase() {
     var overlay = card.querySelector('[data-compare-overlay]');
     var divider = card.querySelector('[data-compare-handle]');
     var loadingOverlay = card.querySelector('[data-compare-loading]');
-    var leftVideo = card.querySelector('.scene-compare-video--left');
-    var rightVideo = card.querySelector('.scene-compare-video--right');
-    var leftSource = card.querySelector('.scene-compare-source--left');
-    var rightSource = card.querySelector('.scene-compare-source--right');
+    var sourceVideo = card.querySelector('[data-compare-source-video]');
+    var sourceElement = card.querySelector('.scene-compare-source--combined');
+    var leftCanvas = card.querySelector('[data-compare-canvas-left]');
+    var rightCanvas = card.querySelector('[data-compare-canvas-right]');
     var leftLabel = card.querySelector('[data-compare-left-label]');
     var rightLabel = card.querySelector('[data-compare-right-label]');
     var leftGaussianMetric = card.querySelector('[data-compare-left-metric-gaussians]');
@@ -350,82 +285,46 @@ function initSceneShowcase() {
     var fullscreenToggleText = card.querySelector('[data-compare-fullscreen-text]');
     var compareInteraction;
     var layoutFrame = null;
+    var paintFrame = null;
+    var videoFrameRequest = null;
     var initialAspectRatio = parseFloat(wrapper.style.getPropertyValue('--scene-compare-aspect-ratio')) || 0;
     var lastKnownRatio = initialAspectRatio > 0 ? initialAspectRatio : 16 / 9;
-    var loadingVisibleSince = 0;
-    var loadingShowTimer = null;
-    var loadingHideTimer = null;
-    var LOADING_SHOW_DELAY = 140;
-    var LOADING_MIN_VISIBLE = 220;
-    var SYNC_RESET_THRESHOLD = 0.012;
-    var SYNC_SOFT_THRESHOLD = 0.04;
-    var SYNC_HARD_THRESHOLD = 0.22;
-    var SYNC_MAX_RATE_OFFSET = 0.08;
-    var SYNC_HARD_RESYNC_COOLDOWN = 220;
-    var LOOP_RESTART_THRESHOLD = 0.08;
+    var SCRUB_PREVIEW_INTERVAL = 34;
+    var SCRUB_TIME_EPSILON = 0.01;
     var userPaused = false;
     var isScrubbing = false;
     var resumeAfterScrub = false;
-    var lastHardSyncAt = 0;
-    var isLoopRestarting = false;
-    var pendingPlayToken = 0;
-    var pendingReadyCleanup = null;
+    var hasFirstFrame = false;
+    var scrubPreviewTimer = null;
+    var pendingScrubTime = null;
+    var scrubSeekInFlight = false;
+    var leftContext;
+    var rightContext;
 
-    if (!frame || !wrapper || !controls || !overlay || !divider || !leftVideo || !rightVideo || !leftSource || !rightSource || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
+    if (!frame || !wrapper || !controls || !overlay || !divider || !loadingOverlay || !sourceVideo || !sourceElement || !leftCanvas || !rightCanvas || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
       return null;
     }
+
     compareInteraction = attachCompareInteraction(wrapper, overlay, divider);
     if (!compareInteraction) {
       return null;
     }
 
-    leftVideo.removeAttribute('autoplay');
-    rightVideo.removeAttribute('autoplay');
-    leftVideo.removeAttribute('loop');
-    rightVideo.removeAttribute('loop');
+    leftContext = leftCanvas.getContext('2d', { alpha: false });
+    rightContext = rightCanvas.getContext('2d', { alpha: false });
+    sourceVideo.muted = true;
+    sourceVideo.playsInline = true;
+    sourceVideo.loop = true;
+    sourceVideo.preload = 'metadata';
 
-    var leftFrameReady = !!leftVideo.currentSrc && leftVideo.readyState >= 2;
-    var rightFrameReady = !!rightVideo.currentSrc && rightVideo.readyState >= 2;
-
-    function isVideoPlayable(videoElement) {
-      return !!videoElement && !!videoElement.currentSrc && videoElement.readyState >= 2;
-    }
-
-    function canPlayCardVideos() {
-      return isVideoPlayable(leftVideo) && isVideoPlayable(rightVideo);
-    }
-
-    function setVideoFrameReady(videoElement, isReady) {
-      if (videoElement === leftVideo) {
-        leftFrameReady = isReady;
-      } else if (videoElement === rightVideo) {
-        rightFrameReady = isReady;
-      }
-    }
-
-    function syncVideoFrameReady(videoElement) {
-      setVideoFrameReady(videoElement, isVideoPlayable(videoElement));
-    }
-
-    function resetFrameReadyState() {
-      leftFrameReady = false;
-      rightFrameReady = false;
+    function setLoadingState(isLoading) {
+      wrapper.classList.toggle('is-video-loading', isLoading);
+      wrapper.classList.toggle('is-video-loading-visible', isLoading);
+      loadingOverlay.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
     }
 
     function isFrameFullscreen() {
       return document.fullscreenElement === frame || document.webkitFullscreenElement === frame;
-    }
-
-    function isPlaybackPaused() {
-      return userPaused || leftVideo.paused || rightVideo.paused;
-    }
-
-    function getActiveDuration() {
-      return leftVideo.duration || rightVideo.duration || 0;
-    }
-
-    function getActiveCurrentTime() {
-      return leftVideo.currentTime || rightVideo.currentTime || 0;
     }
 
     function getFrameReservedHeight() {
@@ -446,18 +345,6 @@ function initSceneShowcase() {
       return reserved;
     }
 
-    function updatePlayToggleState() {
-      var paused = isPlaybackPaused();
-      var label = paused ? 'Play comparison videos' : 'Pause comparison videos';
-
-      playToggle.classList.toggle('is-paused', paused);
-      playToggle.setAttribute('aria-label', label);
-      playToggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      if (playToggleText) {
-        playToggleText.textContent = label;
-      }
-    }
-
     function updateFullscreenToggleState() {
       var fullscreenActive = isFrameFullscreen();
       var label = fullscreenActive ? 'Exit fullscreen' : 'Enter fullscreen';
@@ -470,290 +357,70 @@ function initSceneShowcase() {
       }
     }
 
+    function updatePlayToggleState() {
+      var paused = sourceVideo.paused;
+      var label = paused ? 'Play comparison video' : 'Pause comparison video';
+
+      playToggle.classList.toggle('is-paused', paused);
+      playToggle.setAttribute('aria-label', label);
+      playToggle.setAttribute('aria-pressed', paused ? 'false' : 'true');
+      if (playToggleText) {
+        playToggleText.textContent = label;
+      }
+    }
+
+    function getBufferedEnd() {
+      var buffered = sourceVideo.buffered;
+      var currentTime = sourceVideo.currentTime || 0;
+      var index;
+
+      if (!buffered || !buffered.length) {
+        return 0;
+      }
+
+      for (index = 0; index < buffered.length; index += 1) {
+        if (buffered.start(index) <= currentTime && currentTime <= buffered.end(index)) {
+          return buffered.end(index);
+        }
+      }
+
+      return buffered.end(buffered.length - 1);
+    }
+
+    function resetProgressState() {
+      progressInput.value = '0';
+      progressInput.disabled = true;
+      progressInput.style.setProperty('--compare-progress-percent', '0%');
+      progressInput.style.setProperty('--compare-progress-buffered-percent', '0%');
+    }
+
     function updateProgressState() {
-      var duration = getActiveDuration();
-      var currentTime = Math.min(getActiveCurrentTime(), duration || 0);
+      var duration = sourceVideo.duration || 0;
+      var currentTime = Math.min(sourceVideo.currentTime || 0, duration || 0);
+      var bufferedEnd = Math.min(getBufferedEnd(), duration || 0);
       var value = duration > 0 ? Math.round((currentTime / duration) * 1000) : 0;
-      var percentage = duration > 0 ? ((currentTime / duration) * 100).toFixed(3) + '%' : '0%';
+      var progressPercent = duration > 0 ? ((currentTime / duration) * 100).toFixed(3) + '%' : '0%';
+      var bufferedPercent = duration > 0 ? ((Math.max(currentTime, bufferedEnd) / duration) * 100).toFixed(3) + '%' : '0%';
 
       progressInput.value = String(value);
-      progressInput.style.setProperty('--compare-progress-percent', percentage);
+      progressInput.style.setProperty('--compare-progress-percent', progressPercent);
+      progressInput.style.setProperty('--compare-progress-buffered-percent', bufferedPercent);
       progressInput.disabled = duration <= 0;
+    }
+
+    function updateProgressPreview(progressValue) {
+      var duration = sourceVideo.duration || 0;
+      var clampedValue = Math.max(0, Math.min(1000, progressValue));
+      var progressPercent = duration > 0 ? ((clampedValue / 1000) * 100).toFixed(3) + '%' : '0%';
+
+      progressInput.value = String(Math.round(clampedValue));
+      progressInput.style.setProperty('--compare-progress-percent', progressPercent);
     }
 
     function syncControlState() {
       updatePlayToggleState();
       updateFullscreenToggleState();
-      if (!isScrubbing) {
-        updateProgressState();
-      }
-    }
-
-    function getBasePlaybackRate() {
-      return leftVideo.playbackRate || 1;
-    }
-
-    function setPlaybackRate(videoElement, nextRate) {
-      var safeRate = Math.max(0.85, Math.min(1.15, nextRate || 1));
-
-      if (Math.abs((videoElement.playbackRate || 1) - safeRate) < 0.001) {
-        return;
-      }
-
-      videoElement.playbackRate = safeRate;
-    }
-
-    function resetRightPlaybackRate() {
-      setPlaybackRate(rightVideo, getBasePlaybackRate());
-    }
-
-    function hardSyncRightVideo() {
-      lastHardSyncAt = Date.now();
-
-      try {
-        rightVideo.currentTime = leftVideo.currentTime;
-      } catch (error) {}
-
-      resetRightPlaybackRate();
-    }
-
-    function syncVideos() {
-      var drift;
-      var absoluteDrift;
-      var baseRate;
-      var rateOffset;
-
-      if (isLoopRestarting || isScrubbing || leftVideo.seeking || rightVideo.seeking) {
-        return;
-      }
-
-      if (leftVideo.paused || rightVideo.paused) {
-        resetRightPlaybackRate();
-        return;
-      }
-
-      if (leftVideo.readyState < 2 || rightVideo.readyState < 2) {
-        return;
-      }
-
-      drift = leftVideo.currentTime - rightVideo.currentTime;
-      absoluteDrift = Math.abs(drift);
-      baseRate = getBasePlaybackRate();
-
-      if (absoluteDrift >= SYNC_HARD_THRESHOLD) {
-        if (Date.now() - lastHardSyncAt > SYNC_HARD_RESYNC_COOLDOWN) {
-          hardSyncRightVideo();
-        }
-        return;
-      }
-
-      if (absoluteDrift <= SYNC_RESET_THRESHOLD) {
-        resetRightPlaybackRate();
-        return;
-      }
-
-      if (absoluteDrift >= SYNC_SOFT_THRESHOLD) {
-        rateOffset = Math.max(-SYNC_MAX_RATE_OFFSET, Math.min(SYNC_MAX_RATE_OFFSET, drift * 0.45));
-        setPlaybackRate(rightVideo, baseRate + rateOffset);
-        return;
-      }
-
-      rateOffset = drift > 0 ? 0.015 : -0.015;
-      setPlaybackRate(rightVideo, baseRate + rateOffset);
-    }
-
-    function pauseBothVideos() {
-      leftVideo.pause();
-      rightVideo.pause();
-      resetRightPlaybackRate();
-      syncControlState();
-    }
-
-    function clearPendingReadyWait() {
-      if (pendingReadyCleanup) {
-        pendingReadyCleanup();
-        pendingReadyCleanup = null;
-      }
-    }
-
-    function resetVideosToStart() {
-      try {
-        leftVideo.currentTime = 0;
-      } catch (error) {}
-
-      try {
-        rightVideo.currentTime = 0;
-      } catch (error) {}
-    }
-
-    function maybeRestartLoopPlayback() {
-      var duration = getActiveDuration();
-
-      if (isLoopRestarting || userPaused || isScrubbing || !shouldPlayShowcaseMedia() || !(duration > 0)) {
-        return false;
-      }
-
-      if (leftVideo.currentTime < Math.max(0, duration - LOOP_RESTART_THRESHOLD)) {
-        return false;
-      }
-
-      isLoopRestarting = true;
-      resetVideosToStart();
-      resetRightPlaybackRate();
-      playBothVideos();
-      window.setTimeout(function() {
-        isLoopRestarting = false;
-      }, 80);
-      return true;
-    }
-
-    function playBothVideos() {
-      var duration = getActiveDuration();
-
-      if (!isLoopRestarting && duration > 0 && leftVideo.currentTime >= Math.max(0, duration - LOOP_RESTART_THRESHOLD)) {
-        resetVideosToStart();
-      }
-
-      resetRightPlaybackRate();
-      if (canPlayCardVideos()) {
-        hardSyncRightVideo();
-      }
-      playVideo(leftVideo);
-      playVideo(rightVideo);
-      syncControlState();
-    }
-
-    function requestSynchronizedPlayback() {
-      var token = ++pendingPlayToken;
-      var cleaned = false;
-
-      clearPendingReadyWait();
-
-      if (userPaused || !shouldPlayShowcaseMedia()) {
-        pauseBothVideos();
-        return;
-      }
-
-      if (canPlayCardVideos()) {
-        playBothVideos();
-        return;
-      }
-
-      setLoadingState(true);
-
-      function cleanup() {
-        if (cleaned) {
-          return;
-        }
-        cleaned = true;
-
-        [leftVideo, rightVideo].forEach(function(videoElement) {
-          videoElement.removeEventListener('loadeddata', tryStart);
-          videoElement.removeEventListener('canplay', tryStart);
-          videoElement.removeEventListener('playing', tryStart);
-          videoElement.removeEventListener('error', tryStart);
-          videoElement.removeEventListener('emptied', tryStart);
-          videoElement.removeEventListener('loadstart', tryStart);
-        });
-      }
-
-      function tryStart() {
-        if (token !== pendingPlayToken) {
-          cleanup();
-          return;
-        }
-
-        syncVideoFrameReady(leftVideo);
-        syncVideoFrameReady(rightVideo);
-        syncLoadingState();
-
-        if (userPaused || !shouldPlayShowcaseMedia()) {
-          cleanup();
-          pauseBothVideos();
-          return;
-        }
-
-        if (canPlayCardVideos()) {
-          cleanup();
-          playBothVideos();
-        }
-      }
-
-      pendingReadyCleanup = cleanup;
-
-      [leftVideo, rightVideo].forEach(function(videoElement) {
-        videoElement.addEventListener('loadeddata', tryStart);
-        videoElement.addEventListener('canplay', tryStart);
-        videoElement.addEventListener('playing', tryStart);
-        videoElement.addEventListener('error', tryStart);
-        videoElement.addEventListener('emptied', tryStart);
-        videoElement.addEventListener('loadstart', tryStart);
-      });
-    }
-
-    function applyPlaybackState() {
-      if (userPaused || !shouldPlayShowcaseMedia()) {
-        pauseBothVideos();
-        return;
-      }
-
-      requestSynchronizedPlayback();
-    }
-
-    function seekToProgress(progressValue) {
-      var duration = getActiveDuration();
-      var clampedValue;
-      var nextTime;
-
-      if (!(duration > 0)) {
-        updateProgressState();
-        return;
-      }
-
-      clampedValue = Math.max(0, Math.min(1000, progressValue));
-      nextTime = (clampedValue / 1000) * duration;
-
-      try {
-        leftVideo.currentTime = nextTime;
-      } catch (error) {}
-
-      try {
-        rightVideo.currentTime = nextTime;
-      } catch (error) {}
-
-      resetRightPlaybackRate();
-
-      progressInput.value = String(Math.round(clampedValue));
-      progressInput.style.setProperty('--compare-progress-percent', ((clampedValue / 1000) * 100).toFixed(3) + '%');
-    }
-
-    function beginScrub() {
-      if (isScrubbing) {
-        return;
-      }
-
-      isScrubbing = true;
-      resumeAfterScrub = !userPaused && !leftVideo.paused && !rightVideo.paused;
-      if (resumeAfterScrub) {
-        leftVideo.pause();
-        rightVideo.pause();
-      }
-      syncControlState();
-    }
-
-    function endScrub() {
-      if (!isScrubbing) {
-        return;
-      }
-
-      isScrubbing = false;
-
-      if (resumeAfterScrub && !userPaused && shouldPlayShowcaseMedia() && canPlayCardVideos()) {
-        playBothVideos();
-      }
-
-      resumeAfterScrub = false;
-      syncControlState();
+      updateProgressState();
     }
 
     function requestCardFullscreen() {
@@ -780,87 +447,9 @@ function initSceneShowcase() {
       return null;
     }
 
-    function clearLoadingTimers() {
-      if (loadingShowTimer) {
-        window.clearTimeout(loadingShowTimer);
-        loadingShowTimer = null;
-      }
-
-      if (loadingHideTimer) {
-        window.clearTimeout(loadingHideTimer);
-        loadingHideTimer = null;
-      }
-    }
-
-    function revealLoadingOverlay() {
-      if (wrapper.classList.contains('is-video-loading-visible')) {
-        return;
-      }
-
-      loadingVisibleSince = Date.now();
-      wrapper.classList.add('is-video-loading-visible');
-      if (loadingOverlay) {
-        loadingOverlay.setAttribute('aria-hidden', 'false');
-      }
-    }
-
-    function setLoadingState(isLoading) {
-      clearLoadingTimers();
-
-      if (isLoading) {
-        wrapper.classList.add('is-video-loading');
-
-        if (!wrapper.classList.contains('is-video-loading-visible')) {
-          loadingShowTimer = window.setTimeout(function() {
-            loadingShowTimer = null;
-            if (wrapper.classList.contains('is-video-loading')) {
-              revealLoadingOverlay();
-            }
-          }, LOADING_SHOW_DELAY);
-        }
-
-        return;
-      }
-
-      wrapper.classList.remove('is-video-loading');
-
-      if (!wrapper.classList.contains('is-video-loading-visible')) {
-        if (loadingOverlay) {
-          loadingOverlay.setAttribute('aria-hidden', 'true');
-        }
-        return;
-      }
-
-      loadingHideTimer = window.setTimeout(function() {
-        loadingHideTimer = null;
-        wrapper.classList.remove('is-video-loading-visible');
-        if (loadingOverlay) {
-          loadingOverlay.setAttribute('aria-hidden', 'true');
-        }
-      }, Math.max(0, LOADING_MIN_VISIBLE - (Date.now() - loadingVisibleSince)));
-    }
-
-    function syncLoadingState() {
-      setLoadingState(!(leftFrameReady && rightFrameReady));
-    }
-
-    function getPosterPath(videoPath) {
-      if (!videoPath) {
-        return '';
-      }
-
-      return videoPath
-        .replace(/_pingpong\.mp4$/i, '.jpg')
-        .replace(/\.mp4$/i, '.jpg');
-    }
-
     function getVideoRatio() {
-      if (leftVideo.videoWidth && leftVideo.videoHeight) {
-        return leftVideo.videoWidth / leftVideo.videoHeight;
-      }
-
-      if (rightVideo.videoWidth && rightVideo.videoHeight) {
-        return rightVideo.videoWidth / rightVideo.videoHeight;
+      if (sourceVideo.videoWidth && sourceVideo.videoHeight) {
+        return (sourceVideo.videoWidth / 2) / sourceVideo.videoHeight;
       }
 
       return lastKnownRatio;
@@ -948,29 +537,209 @@ function initSceneShowcase() {
       });
     }
 
-    function ensureVideoSource(videoElement, sourceElement, nextVideoPath) {
-      var currentSource;
+    function cancelRenderLoop() {
+      if (paintFrame) {
+        window.cancelAnimationFrame(paintFrame);
+        paintFrame = null;
+      }
 
-      if (!nextVideoPath) {
+      if (videoFrameRequest && sourceVideo.cancelVideoFrameCallback) {
+        sourceVideo.cancelVideoFrameCallback(videoFrameRequest);
+        videoFrameRequest = null;
+      }
+    }
+
+    function resizeCanvas(canvas) {
+      var devicePixelRatio = window.devicePixelRatio || 1;
+      var targetWidth = Math.max(1, Math.round(wrapper.clientWidth * devicePixelRatio));
+      var targetHeight = Math.max(1, Math.round(wrapper.clientHeight * devicePixelRatio));
+
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+      }
+    }
+
+    function clearCanvas(context, canvas) {
+      context.save();
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = '#0f1218';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.restore();
+    }
+
+    function drawFrame() {
+      var videoWidth;
+      var videoHeight;
+      var halfWidth;
+
+      resizeCanvas(leftCanvas);
+      resizeCanvas(rightCanvas);
+
+      if (sourceVideo.readyState < 2 || !sourceVideo.videoWidth || !sourceVideo.videoHeight) {
+        if (!hasFirstFrame) {
+          clearCanvas(leftContext, leftCanvas);
+          clearCanvas(rightContext, rightCanvas);
+        }
         return;
       }
 
-      currentSource = sourceElement.getAttribute('src');
-      if (currentSource === nextVideoPath) {
-        if (videoElement.readyState < 1 && videoElement.networkState === 0) {
-          videoElement.load();
-        }
-        return videoElement.readyState < 1;
+      videoWidth = sourceVideo.videoWidth;
+      videoHeight = sourceVideo.videoHeight;
+      halfWidth = Math.floor(videoWidth / 2);
+
+      clearCanvas(leftContext, leftCanvas);
+      clearCanvas(rightContext, rightCanvas);
+
+      leftContext.drawImage(sourceVideo, 0, 0, halfWidth, videoHeight, 0, 0, leftCanvas.width, leftCanvas.height);
+      rightContext.drawImage(sourceVideo, halfWidth, 0, halfWidth, videoHeight, 0, 0, rightCanvas.width, rightCanvas.height);
+    }
+
+    function requestFramePaint() {
+      cancelRenderLoop();
+
+      if (sourceVideo.requestVideoFrameCallback) {
+        videoFrameRequest = sourceVideo.requestVideoFrameCallback(function() {
+          videoFrameRequest = null;
+          drawFrame();
+          updateProgressState();
+          if (!sourceVideo.paused) {
+            requestFramePaint();
+          }
+        });
+        return;
       }
 
-      videoElement.setAttribute('preload', 'metadata');
+      paintFrame = window.requestAnimationFrame(function() {
+        paintFrame = null;
+        drawFrame();
+        updateProgressState();
+        if (!sourceVideo.paused) {
+          requestFramePaint();
+        }
+      });
+    }
+
+    function stopPlayback() {
+      sourceVideo.pause();
+      cancelRenderLoop();
+      drawFrame();
+      syncControlState();
+    }
+
+    function requestPlayback() {
+      var playPromise;
+
+      if (userPaused || !shouldPlayShowcaseMedia() || sourceVideo.readyState < 2) {
+        syncControlState();
+        return;
+      }
+
+      playPromise = sourceVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(function() {});
+      }
+      syncControlState();
+    }
+
+    function clearScrubPreviewTimer() {
+      if (scrubPreviewTimer) {
+        window.clearTimeout(scrubPreviewTimer);
+        scrubPreviewTimer = null;
+      }
+    }
+
+    function maybeResumeAfterScrub() {
+      if (!resumeAfterScrub || isScrubbing || scrubSeekInFlight || pendingScrubTime !== null) {
+        return;
+      }
+
+      resumeAfterScrub = false;
+      if (!userPaused && shouldPlayShowcaseMedia()) {
+        requestPlayback();
+      } else {
+        drawFrame();
+        syncControlState();
+      }
+    }
+
+    function flushScrubPreview() {
+      var nextTime;
+
+      clearScrubPreviewTimer();
+
+      if (scrubSeekInFlight || pendingScrubTime === null) {
+        maybeResumeAfterScrub();
+        return;
+      }
+
+      nextTime = pendingScrubTime;
+
+      if (Math.abs((sourceVideo.currentTime || 0) - nextTime) <= SCRUB_TIME_EPSILON) {
+        pendingScrubTime = null;
+        drawFrame();
+        maybeResumeAfterScrub();
+        return;
+      }
+
+      pendingScrubTime = null;
+      scrubSeekInFlight = true;
+
+      try {
+        if (typeof sourceVideo.fastSeek === 'function') {
+          sourceVideo.fastSeek(nextTime);
+        } else {
+          sourceVideo.currentTime = nextTime;
+        }
+      } catch (error) {
+        scrubSeekInFlight = false;
+        drawFrame();
+        maybeResumeAfterScrub();
+      }
+    }
+
+    function scheduleScrubPreview(immediate) {
+      if (scrubSeekInFlight || pendingScrubTime === null || scrubPreviewTimer) {
+        return;
+      }
+
+      scrubPreviewTimer = window.setTimeout(function() {
+        scrubPreviewTimer = null;
+        flushScrubPreview();
+      }, immediate ? 0 : SCRUB_PREVIEW_INTERVAL);
+    }
+
+    function requestScrubPreview(nextTime) {
+      pendingScrubTime = nextTime;
+      scheduleScrubPreview(!scrubSeekInFlight);
+    }
+
+    function ensureVideoSource(nextVideoPath) {
+      var currentSource = sourceElement.getAttribute('src');
+
+      if (!nextVideoPath) {
+        sourceVideo.pause();
+        sourceElement.removeAttribute('src');
+        sourceElement.removeAttribute('data-src');
+        sourceVideo.removeAttribute('src');
+        return false;
+      }
+
+      if (currentSource === nextVideoPath) {
+        if (sourceVideo.readyState < 1 && sourceVideo.networkState === 0) {
+          sourceVideo.load();
+        }
+        return false;
+      }
+
       sourceElement.setAttribute('src', nextVideoPath);
       sourceElement.setAttribute('data-src', nextVideoPath);
-      videoElement.load();
+      sourceVideo.load();
       return true;
     }
 
-    function setMetricBlock(sceneKey, methodKey, labelElement, gaussianElement, fpsElement, trainElement, fallbackLabel) {
+    function setMetricBlock(sceneKey, methodKey, labelElement, gaussianElement, fpsElement, trainElement) {
       var metrics = getCompareMetrics(sceneKey, methodKey);
 
       if (!metrics) {
@@ -987,12 +756,12 @@ function initSceneShowcase() {
 
     function setContent(content) {
       var sceneKey = content.sceneKey || '';
-      var nextLeftVideo = content.leftVideo || '';
-      var nextRightVideo = content.rightVideo || nextLeftVideo;
       var resolvedLeftLabel = content.leftLabel || 'Ours';
       var resolvedRightLabel = content.rightLabel || 'Method B';
       var leftMetricMethod = content.leftMetricMethod || 'ours';
       var rightMetricMethod = content.rightMetricMethod || 'gaussian_splatting';
+      var nextCompositeVideo = content.videoPath || '';
+      var nextPosterPath = content.posterPath || '';
       var nextAspectRatio = content.aspectRatio;
 
       if (nextAspectRatio > 0) {
@@ -1002,77 +771,105 @@ function initSceneShowcase() {
 
       leftLabel.textContent = resolvedLeftLabel;
       rightLabel.textContent = resolvedRightLabel;
-      setMetricBlock(sceneKey, leftMetricMethod, leftLabel, leftGaussianMetric, leftFpsMetric, leftTrainMetric, resolvedLeftLabel);
-      setMetricBlock(sceneKey, rightMetricMethod, rightLabel, rightGaussianMetric, rightFpsMetric, rightTrainMetric, resolvedRightLabel);
+      setMetricBlock(sceneKey, leftMetricMethod, leftLabel, leftGaussianMetric, leftFpsMetric, leftTrainMetric);
+      setMetricBlock(sceneKey, rightMetricMethod, rightLabel, rightGaussianMetric, rightFpsMetric, rightTrainMetric);
       if (compareCaption) {
         compareCaption.textContent = resolvedLeftLabel + ' vs. ' + resolvedRightLabel;
       }
 
-      resetFrameReadyState();
-      setLoadingState(true);
-      clearPendingReadyWait();
-      leftVideo.setAttribute('poster', getPosterPath(nextLeftVideo));
-      rightVideo.setAttribute('poster', getPosterPath(nextRightVideo));
-
+      hasFirstFrame = false;
+      isScrubbing = false;
+      resumeAfterScrub = false;
+      userPaused = false;
+      clearScrubPreviewTimer();
+      pendingScrubTime = null;
+      scrubSeekInFlight = false;
+      cancelRenderLoop();
       compareInteraction.setComparePosition(0.5);
+      setLoadingState(true);
+      resetProgressState();
 
-      ensureVideoSource(leftVideo, leftSource, nextLeftVideo);
-      ensureVideoSource(rightVideo, rightSource, nextRightVideo);
+      sourceVideo.pause();
+      sourceVideo.loop = true;
+      sourceVideo.muted = true;
+      sourceVideo.playsInline = true;
+      sourceVideo.preload = 'metadata';
+      sourceVideo.setAttribute('poster', nextPosterPath);
+      ensureVideoSource(nextCompositeVideo);
 
       try {
-        leftVideo.currentTime = 0;
-        rightVideo.currentTime = 0;
+        sourceVideo.currentTime = 0;
       } catch (error) {}
 
-      syncVideoFrameReady(leftVideo);
-      syncVideoFrameReady(rightVideo);
-      resetRightPlaybackRate();
-      updateProgressState();
-      applyPlaybackState();
+      drawFrame();
       scheduleWrapperSize();
-      syncLoadingState();
       syncControlState();
+      requestPlayback();
     }
 
-    leftVideo.addEventListener('play', function() {
-      hardSyncRightVideo();
-      playVideo(rightVideo);
+    compareInteraction.setOnPositionChange(function() {
+      drawFrame();
     });
 
-    leftVideo.addEventListener('pause', function() {
-      resetRightPlaybackRate();
-      rightVideo.pause();
-    });
-
-    leftVideo.addEventListener('seeking', function() {
-      hardSyncRightVideo();
-    });
-
-    leftVideo.addEventListener('timeupdate', syncVideos);
-    leftVideo.addEventListener('ratechange', function() {
-      resetRightPlaybackRate();
-    });
-    leftVideo.addEventListener('seeked', syncVideos);
-    rightVideo.addEventListener('seeked', syncVideos);
-    rightVideo.addEventListener('timeupdate', syncVideos);
-    rightVideo.addEventListener('waiting', syncVideos);
-    rightVideo.addEventListener('stalled', syncVideos);
-    rightVideo.addEventListener('canplay', syncVideos);
-    leftVideo.addEventListener('play', syncControlState);
-    rightVideo.addEventListener('play', syncControlState);
-    leftVideo.addEventListener('pause', syncControlState);
-    rightVideo.addEventListener('pause', syncControlState);
-    leftVideo.addEventListener('timeupdate', function() {
-      if (!isScrubbing) {
-        maybeRestartLoopPlayback();
+    function beginScrub() {
+      if (isScrubbing) {
+        return;
       }
-      if (!isScrubbing) {
+
+      isScrubbing = true;
+      resumeAfterScrub = !sourceVideo.paused;
+      clearScrubPreviewTimer();
+      pendingScrubTime = null;
+      scrubSeekInFlight = false;
+      sourceVideo.pause();
+      cancelRenderLoop();
+    }
+
+    function seekToProgress(progressValue) {
+      var duration = sourceVideo.duration || 0;
+      var clampedValue;
+      var nextTime;
+
+      if (!(duration > 0)) {
         updateProgressState();
+        return;
+      }
+
+      clampedValue = Math.max(0, Math.min(1000, progressValue));
+      nextTime = (clampedValue / 1000) * duration;
+
+      updateProgressPreview(clampedValue);
+      requestScrubPreview(nextTime);
+    }
+
+    function endScrub() {
+      if (!isScrubbing) {
+        return;
+      }
+
+      isScrubbing = false;
+      clearScrubPreviewTimer();
+      if (pendingScrubTime !== null) {
+        flushScrubPreview();
+      }
+      if (!resumeAfterScrub || userPaused || !shouldPlayShowcaseMedia()) {
+        resumeAfterScrub = false;
+        drawFrame();
+        syncControlState();
+        return;
+      }
+      maybeResumeAfterScrub();
+    }
+
+    playToggle.addEventListener('click', function() {
+      if (sourceVideo.paused) {
+        userPaused = false;
+        requestPlayback();
+      } else {
+        userPaused = true;
+        stopPlayback();
       }
     });
-    leftVideo.addEventListener('durationchange', updateProgressState);
-    rightVideo.addEventListener('durationchange', updateProgressState);
-    leftVideo.addEventListener('ended', maybeRestartLoopPlayback);
     progressInput.addEventListener('pointerdown', beginScrub);
     progressInput.addEventListener('pointerup', endScrub);
     progressInput.addEventListener('pointercancel', endScrub);
@@ -1084,15 +881,6 @@ function initSceneShowcase() {
       }
       seekToProgress(parseFloat(progressInput.value) || 0);
     });
-    playToggle.addEventListener('click', function() {
-      if (isPlaybackPaused()) {
-        userPaused = false;
-        applyPlaybackState();
-      } else {
-        userPaused = true;
-        pauseBothVideos();
-      }
-    });
     fullscreenToggle.addEventListener('click', function() {
       if (isFrameFullscreen()) {
         exitCardFullscreen();
@@ -1103,47 +891,82 @@ function initSceneShowcase() {
     document.addEventListener('fullscreenchange', function() {
       syncControlState();
       scheduleWrapperSize();
+      drawFrame();
     });
     document.addEventListener('webkitfullscreenchange', function() {
       syncControlState();
       scheduleWrapperSize();
+      drawFrame();
     });
 
-    [leftVideo, rightVideo].forEach(function(videoElement) {
-      videoElement.addEventListener('loadstart', function() {
-        setVideoFrameReady(videoElement, false);
-        setLoadingState(true);
-      });
-      videoElement.addEventListener('emptied', function() {
-        setVideoFrameReady(videoElement, false);
-        setLoadingState(true);
-      });
-      videoElement.addEventListener('loadedmetadata', function() {
-        applyPlaybackState();
-      });
-      videoElement.addEventListener('loadeddata', function() {
-        setVideoFrameReady(videoElement, true);
-        syncLoadingState();
-        applyPlaybackState();
-      });
-      videoElement.addEventListener('canplay', function() {
-        setVideoFrameReady(videoElement, true);
-        syncLoadingState();
-        applyPlaybackState();
-      });
-      videoElement.addEventListener('playing', function() {
-        setVideoFrameReady(videoElement, true);
-        syncLoadingState();
-      });
-      videoElement.addEventListener('error', function() {
+    sourceVideo.addEventListener('loadedmetadata', function() {
+      scheduleWrapperSize();
+      updateProgressState();
+    });
+    sourceVideo.addEventListener('loadeddata', function() {
+      hasFirstFrame = true;
+      drawFrame();
+      setLoadingState(false);
+      scheduleWrapperSize();
+      requestPlayback();
+    });
+    sourceVideo.addEventListener('canplay', function() {
+      if (!hasFirstFrame) {
+        hasFirstFrame = true;
+        drawFrame();
         setLoadingState(false);
-      });
+      }
+      requestPlayback();
+    });
+    sourceVideo.addEventListener('play', function() {
+      requestFramePaint();
+      syncControlState();
+    });
+    sourceVideo.addEventListener('pause', function() {
+      cancelRenderLoop();
+      drawFrame();
+      syncControlState();
+    });
+    sourceVideo.addEventListener('timeupdate', updateProgressState);
+    sourceVideo.addEventListener('progress', updateProgressState);
+    sourceVideo.addEventListener('durationchange', updateProgressState);
+    sourceVideo.addEventListener('seeking', function() {
+      if (!sourceVideo.paused) {
+        cancelRenderLoop();
+      }
+    });
+    sourceVideo.addEventListener('seeked', function() {
+      scrubSeekInFlight = false;
+      drawFrame();
+      updateProgressState();
+      if (pendingScrubTime !== null) {
+        scheduleScrubPreview(true);
+      }
+      maybeResumeAfterScrub();
+      if (!sourceVideo.paused) {
+        requestFramePaint();
+      }
+    });
+    sourceVideo.addEventListener('waiting', function() {
+      if (!hasFirstFrame) {
+        setLoadingState(true);
+      }
+    });
+    sourceVideo.addEventListener('error', function() {
+      scrubSeekInFlight = false;
+      clearScrubPreviewTimer();
+      pendingScrubTime = null;
+      cancelRenderLoop();
+      setLoadingState(false);
+      syncControlState();
+    });
+    window.addEventListener('resize', function() {
+      scheduleWrapperSize();
+      drawFrame();
     });
 
-    leftVideo.addEventListener('loadedmetadata', scheduleWrapperSize);
-    rightVideo.addEventListener('loadedmetadata', scheduleWrapperSize);
-    window.addEventListener('resize', scheduleWrapperSize);
-    syncLoadingState();
+    setLoadingState(false);
+    drawFrame();
     scheduleWrapperSize();
     syncControlState();
 
@@ -1153,13 +976,13 @@ function initSceneShowcase() {
         if (forceUser) {
           userPaused = false;
         }
-        applyPlaybackState();
+        requestPlayback();
       },
       pause: function(forceUser) {
         if (forceUser) {
           userPaused = true;
         }
-        pauseBothVideos();
+        stopPlayback();
       }
     };
   }
@@ -1174,11 +997,6 @@ function initSceneShowcase() {
   if (!compareCards.length) {
     return;
   }
-
-  Array.prototype.forEach.call(
-    showcase.querySelectorAll('.scene-selector__preview video'),
-    freezePreviewVideo
-  );
 
   function syncShowcasePlayback() {
     compareCards.forEach(function(compareCard) {
@@ -1202,8 +1020,8 @@ function initSceneShowcase() {
       {
         sceneKey: sceneKey,
         aspectRatio: nextAspectRatio,
-        leftVideo: button.getAttribute('data-left-video-1'),
-        rightVideo: button.getAttribute('data-right-video-1'),
+        videoPath: buildCompositeVideoPath(sceneKey, '3dgs'),
+        posterPath: buildCompositePosterPath(sceneKey),
         leftLabel: button.getAttribute('data-left-label-1'),
         rightLabel: button.getAttribute('data-right-label-1'),
         leftMetricMethod: 'ours',
@@ -1212,8 +1030,8 @@ function initSceneShowcase() {
       {
         sceneKey: sceneKey,
         aspectRatio: nextAspectRatio,
-        leftVideo: button.getAttribute('data-left-video-2') || button.getAttribute('data-left-video-1'),
-        rightVideo: button.getAttribute('data-right-video-2') || button.getAttribute('data-right-video-1') || button.getAttribute('data-left-video-2') || button.getAttribute('data-left-video-1'),
+        videoPath: buildCompositeVideoPath(sceneKey, 'speedySplat'),
+        posterPath: buildCompositePosterPath(sceneKey),
         leftLabel: button.getAttribute('data-left-label-2') || button.getAttribute('data-left-label-1'),
         rightLabel: button.getAttribute('data-right-label-2') || button.getAttribute('data-right-label-1'),
         leftMetricMethod: 'ours',
@@ -1249,14 +1067,6 @@ function initSceneShowcase() {
   Array.prototype.forEach.call(buttons, function(button, index) {
     button.addEventListener('click', function() {
       activateScene(button);
-    });
-
-    button.addEventListener('pointerenter', function() {
-      preloadSceneVideos(button, true);
-    });
-
-    button.addEventListener('focusin', function() {
-      preloadSceneVideos(button, true);
     });
 
     button.addEventListener('keydown', function(event) {

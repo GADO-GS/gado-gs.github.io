@@ -146,9 +146,9 @@
                               class="visual-compare-selector__vs">vs</span> 3DGS</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible"
+                      <div class="scene-compare-wrapper"
                         style="--scene-compare-aspect-ratio: 1.507538;">
-                        <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
+                        <div class="scene-compare-loading" data-compare-loading aria-hidden="true">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
                             <span class="scene-compare-loading__title">Preparing Comparison</span>
@@ -157,13 +157,15 @@
                             </span>
                           </div>
                         </div>
+                        <video class="scene-compare-video-source" data-compare-source-video muted playsinline
+                          preload="metadata" poster="./static/videos/bicycle_ours.jpg">
+                          <source class="scene-compare-source scene-compare-source--combined"
+                            src="./static/videos/bicycle_ours_vs_3dgs.mp4"
+                            data-src="./static/videos/bicycle_ours_vs_3dgs.mp4" type="video/mp4">
+                        </video>
                         <div class="scene-compare-layer scene-compare-layer--base">
-                          <video class="scene-compare-video scene-compare-video--right" muted loop playsinline
-                            poster="./static/videos/bicycle_3dgs.jpg" preload="metadata">
-                            <source class="scene-compare-source scene-compare-source--right"
-                              src="./static/videos/bicycle_3dgs.mp4" data-src="./static/videos/bicycle_3dgs.mp4"
-                              type="video/mp4">
-                          </video>
+                          <canvas class="scene-compare-canvas scene-compare-canvas--right"
+                            data-compare-canvas-right aria-hidden="true"></canvas>
                           <div class="scene-compare-metrics scene-compare-metrics--right">
                             <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
                                 class="scene-compare-metrics__value">4.90M</span><span
@@ -180,12 +182,8 @@
                         </div>
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
-                            <video class="scene-compare-video scene-compare-video--left" muted loop playsinline
-                              poster="./static/videos/bicycle_ours.jpg" preload="metadata">
-                              <source class="scene-compare-source scene-compare-source--left"
-                                src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
-                                type="video/mp4">
-                            </video>
+                            <canvas class="scene-compare-canvas scene-compare-canvas--left"
+                              data-compare-canvas-left aria-hidden="true"></canvas>
                             <div class="scene-compare-metrics scene-compare-metrics--left">
                               <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
                                   class="scene-compare-metrics__value">0.48M</span><span
@@ -254,9 +252,9 @@
                               class="visual-compare-selector__vs">vs</span> SpeedySplat</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper is-video-loading is-video-loading-visible"
+                      <div class="scene-compare-wrapper"
                         style="--scene-compare-aspect-ratio: 1.507538;">
-                        <div class="scene-compare-loading" data-compare-loading aria-hidden="false">
+                        <div class="scene-compare-loading" data-compare-loading aria-hidden="true">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
                             <span class="scene-compare-loading__title">Preparing Comparison</span>
@@ -265,13 +263,15 @@
                             </span>
                           </div>
                         </div>
+                        <video class="scene-compare-video-source" data-compare-source-video muted playsinline
+                          preload="metadata" poster="./static/videos/bicycle_ours.jpg">
+                          <source class="scene-compare-source scene-compare-source--combined"
+                            src="./static/videos/bicycle_ours_vs_speedySplat.mp4"
+                            data-src="./static/videos/bicycle_ours_vs_speedySplat.mp4" type="video/mp4">
+                        </video>
                         <div class="scene-compare-layer scene-compare-layer--base">
-                          <video class="scene-compare-video scene-compare-video--right" muted loop playsinline
-                            poster="./static/videos/bicycle_speedySplat.jpg" preload="metadata">
-                            <source class="scene-compare-source scene-compare-source--right"
-                              src="./static/videos/bicycle_speedySplat.mp4"
-                              data-src="./static/videos/bicycle_speedySplat.mp4" type="video/mp4">
-                          </video>
+                          <canvas class="scene-compare-canvas scene-compare-canvas--right"
+                            data-compare-canvas-right aria-hidden="true"></canvas>
                           <div class="scene-compare-metrics scene-compare-metrics--right">
                             <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
                                 class="scene-compare-metrics__value">0.62M</span><span
@@ -288,12 +288,8 @@
                         </div>
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
-                            <video class="scene-compare-video scene-compare-video--left" muted loop playsinline
-                              poster="./static/videos/bicycle_ours.jpg" preload="metadata">
-                              <source class="scene-compare-source scene-compare-source--left"
-                                src="./static/videos/bicycle_ours.mp4" data-src="./static/videos/bicycle_ours.mp4"
-                                type="video/mp4">
-                            </video>
+                            <canvas class="scene-compare-canvas scene-compare-canvas--left"
+                              data-compare-canvas-left aria-hidden="true"></canvas>
                             <div class="scene-compare-metrics scene-compare-metrics--left">
                               <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
                                   class="scene-compare-metrics__value">0.48M</span><span
