@@ -398,6 +398,38 @@
                     </span>
                     <span class="is-sr-only">Quality-Speed and Time-Memory Trade-Offs</span>
                   </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-display-title="Per-Scene Training Time"
+                    data-full-src="./static/images/results/per_scene_train_time.png"
+                    data-caption="Per-scene training time across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Train Time</span>
+                      <span class="results-selector__card-meta">Per-scene training time for efficiency
+                        comparison.</span>
+                    </span>
+                    <span class="is-sr-only">Per-Scene Training Time Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-display-title="Per-Scene FPS" data-full-src="./static/images/results/per_scene_fps.png"
+                    data-caption="Per-scene FPS across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (higher is better).">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">FPS</span>
+                      <span class="results-selector__card-meta">Per-scene rendering FPS for throughput
+                        comparison.</span>
+                    </span>
+                    <span class="is-sr-only">Per-Scene FPS Results</span>
+                  </button>
+                  <button class="results-selector__item" type="button" data-results-item
+                    data-display-title="Per-Scene Gaussians"
+                    data-full-src="./static/images/results/per_scene_gaussian_count.png"
+                    data-caption="Per-scene Gaussian counts across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
+                    <span class="results-selector__card" aria-hidden="true">
+                      <span class="results-selector__card-title">Gaussians</span>
+                      <span class="results-selector__card-meta">Per-scene Gaussian counts for compactness
+                        comparison.</span>
+                    </span>
+                    <span class="is-sr-only">Per-Scene Gaussians Results</span>
+                  </button>
                   <button class="results-selector__item" type="button" data-results-item data-display-type="template"
                     data-template-id="results-table-mip-template"
                     data-display-title="Mip-NeRF360 Quantitative Comparison"
@@ -431,37 +463,14 @@
                     </span>
                     <span class="is-sr-only">Deep Blending Quantitative Table</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-display-title="Per-Scene Gaussians"
-                    data-full-src="./static/images/results/per_scene_gaussian_count.png"
-                    data-caption="Per-scene Gaussian counts across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
+                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                    data-template-id="results-table-ablation-template" data-display-title="Mip-NeRF360 Kitchen Ablation Study"
+                    data-caption="Component-wise ablation on the Mip-NeRF360 kitchen scene. Entries marked with w/o report results after removing the corresponding module, highlighting each component's contribution to efficiency, compactness, and reconstruction quality.">
                     <span class="results-selector__card" aria-hidden="true">
-                      <span class="results-selector__card-title">Gaussians</span>
-                      <span class="results-selector__card-meta">Per-scene Gaussian counts for compactness
-                        comparison.</span>
+                      <span class="results-selector__card-title">Ablation</span>
+                      <span class="results-selector__card-meta">w/o denotes removing one module from the full model.</span>
                     </span>
-                    <span class="is-sr-only">Per-Scene Gaussians Results</span>
-                  </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-display-title="Per-Scene Training Time"
-                    data-full-src="./static/images/results/per_scene_train_time.png"
-                    data-caption="Per-scene training time across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
-                    <span class="results-selector__card" aria-hidden="true">
-                      <span class="results-selector__card-title">Train Time</span>
-                      <span class="results-selector__card-meta">Per-scene training time for efficiency
-                        comparison.</span>
-                    </span>
-                    <span class="is-sr-only">Per-Scene Training Time Results</span>
-                  </button>
-                  <button class="results-selector__item" type="button" data-results-item
-                    data-display-title="Per-Scene FPS" data-full-src="./static/images/results/per_scene_fps.png"
-                    data-caption="Per-scene FPS across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (higher is better).">
-                    <span class="results-selector__card" aria-hidden="true">
-                      <span class="results-selector__card-title">FPS</span>
-                      <span class="results-selector__card-meta">Per-scene rendering FPS for throughput
-                        comparison.</span>
-                    </span>
-                    <span class="is-sr-only">Per-Scene FPS Results</span>
+                    <span class="is-sr-only">Ablation Study Table</span>
                   </button>
                 </div>
               </div>
@@ -730,6 +739,83 @@
                     <td class="is-second">29.85</td>
                     <td>0.905</td>
                     <td>0.267</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </template>
+
+          <template id="results-table-ablation-template">
+            <div class="results-display__table-scroll">
+              <table class="results-table results-table--wide" aria-label="Mip-NeRF360 kitchen ablation study">
+                <thead>
+                  <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">Time <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">VRAM <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">FPS <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">Size <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">Gaussians <span class="results-table__metric-dir">&darr;</span></th>
+                    <th scope="col">PSNR <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">SSIM <span class="results-table__metric-dir">&uarr;</span></th>
+                    <th scope="col">LPIPS <span class="results-table__metric-dir">&darr;</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" class="results-table__method">vanilla 3DGS</th>
+                    <td>2645.7s</td>
+                    <td>13822.0MB</td>
+                    <td>118</td>
+                    <td>377.3MB</td>
+                    <td>1595K</td>
+                    <td>30.74</td>
+                    <td>0.926</td>
+                    <td>0.129</td>
+                  </tr>
+                  <tr class="results-table__row--group-break">
+                    <th scope="row" class="results-table__method">w/o GADO</th>
+                    <td>2014.7s</td>
+                    <td class="is-second">6430.8MB</td>
+                    <td class="is-second">648</td>
+                    <td class="is-second">71.8MB</td>
+                    <td>304K</td>
+                    <td>31.16</td>
+                    <td>0.923</td>
+                    <td>0.139</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">w/o PSA</th>
+                    <td>1674.0s</td>
+                    <td class="is-best">6429.4MB</td>
+                    <td>639</td>
+                    <td class="is-best">71.7MB</td>
+                    <td class="is-second">302K</td>
+                    <td class="is-second">31.20</td>
+                    <td>0.923</td>
+                    <td>0.139</td>
+                  </tr>
+                  <tr>
+                    <th scope="row" class="results-table__method">w/o VGC</th>
+                    <td class="is-best">229.7s</td>
+                    <td>7000.1MB</td>
+                    <td>101</td>
+                    <td>162.2MB</td>
+                    <td>686K</td>
+                    <td>31.00</td>
+                    <td class="is-second">0.927</td>
+                    <td class="is-second">0.128</td>
+                  </tr>
+                  <tr class="results-table__row--group-break results-table__row--ours">
+                    <th scope="row" class="results-table__method">Full model (Ours)</th>
+                    <td class="is-second">237.3s</td>
+                    <td>6713.5MB</td>
+                    <td class="is-best">674</td>
+                    <td>90.1MB</td>
+                    <td class="is-best">255K</td>
+                    <td class="is-best">31.85</td>
+                    <td class="is-best">0.929</td>
+                    <td class="is-best">0.126</td>
                   </tr>
                 </tbody>
               </table>
