@@ -236,6 +236,7 @@ function initSceneShowcase() {
     return;
   }
 
+  var showcaseStorageKey = 'gado-gs.scene-showcase.active-scene';
   var buttons = showcase.querySelectorAll('.scene-selector__item');
   var caption = document.getElementById('scene-showcase-caption');
   var activeButton;
@@ -256,6 +257,34 @@ function initSceneShowcase() {
 
   function buildCompositePosterPath(sceneKey) {
     return './static/videos/' + sceneKey + '_ours.jpg';
+  }
+
+  function readStoredSceneKey() {
+    try {
+      return window.localStorage.getItem(showcaseStorageKey) || '';
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function writeStoredSceneKey(sceneKey) {
+    if (!sceneKey) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(showcaseStorageKey, sceneKey);
+    } catch (error) {}
+  }
+
+  function findButtonBySceneKey(sceneKey) {
+    if (!sceneKey) {
+      return null;
+    }
+
+    return Array.prototype.find.call(buttons, function(button) {
+      return button.getAttribute('data-scene-key') === sceneKey;
+    }) || null;
   }
 
   function createCompareCard(card) {
@@ -1051,6 +1080,8 @@ function initSceneShowcase() {
       caption.textContent = nextLabel;
     }
 
+    writeStoredSceneKey(sceneKey);
+
     compareCards.forEach(function(compareCard, index) {
       compareCard.setContent(compareConfigs[index] || compareConfigs[0]);
     });
@@ -1091,7 +1122,10 @@ function initSceneShowcase() {
     });
   });
 
-  activeButton = showcase.querySelector('.scene-selector__item.is-active') || buttons[0];
+  activeButton =
+    findButtonBySceneKey(readStoredSceneKey()) ||
+    showcase.querySelector('.scene-selector__item.is-active') ||
+    buttons[0];
   activateScene(activeButton, true);
 
   if ('IntersectionObserver' in window) {
