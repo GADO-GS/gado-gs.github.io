@@ -82,6 +82,16 @@
               </span>
               <span class="scene-selector__label">Bicycle</span>
             </button>
+            <button class="scene-selector__item" type="button" data-scene-key="bonsai" data-aspect-ratio="1.503759"
+              data-left-video-1="./static/videos/bonsai_ours.mp4" data-right-video-1="./static/videos/bonsai_3dgs.mp4"
+              data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bonsai_ours.mp4"
+              data-right-video-2="./static/videos/bonsai_speedySplat.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Bonsai" aria-pressed="false">
+              <span class="scene-selector__preview" aria-hidden="true">
+                <img src="./static/videos/bonsai_thumb.jpg" alt="">
+              </span>
+              <span class="scene-selector__label">Bonsai</span>
+            </button>
             <button class="scene-selector__item" type="button" data-scene-key="garden" data-aspect-ratio="1.546392"
               data-left-video-1="./static/videos/garden_ours.mp4" data-right-video-1="./static/videos/garden_3dgs.mp4"
               data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/garden_ours.mp4"
@@ -91,16 +101,6 @@
                 <img src="./static/videos/garden_thumb.jpg" alt="">
               </span>
               <span class="scene-selector__label">Garden</span>
-            </button>
-            <button class="scene-selector__item" type="button" data-scene-key="stump" data-aspect-ratio="1.511335"
-              data-left-video-1="./static/videos/stump_ours.mp4" data-right-video-1="./static/videos/stump_3dgs.mp4"
-              data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/stump_ours.mp4"
-              data-right-video-2="./static/videos/stump_speedySplat.mp4" data-left-label-2="Ours"
-              data-right-label-2="SpeedySplat" data-label="Stump" aria-pressed="false">
-              <span class="scene-selector__preview" aria-hidden="true">
-                <img src="./static/videos/stump_thumb.jpg" alt="">
-              </span>
-              <span class="scene-selector__label">Stump</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="kitchen" data-aspect-ratio="1.5"
               data-left-video-1="./static/videos/kitchen_ours.mp4" data-right-video-1="./static/videos/kitchen_3dgs.mp4"
@@ -112,15 +112,15 @@
               </span>
               <span class="scene-selector__label">Kitchen</span>
             </button>
-            <button class="scene-selector__item" type="button" data-scene-key="bonsai" data-aspect-ratio="1.503759"
-              data-left-video-1="./static/videos/bonsai_ours.mp4" data-right-video-1="./static/videos/bonsai_3dgs.mp4"
-              data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/bonsai_ours.mp4"
-              data-right-video-2="./static/videos/bonsai_speedySplat.mp4" data-left-label-2="Ours"
-              data-right-label-2="SpeedySplat" data-label="Bonsai" aria-pressed="false">
+            <button class="scene-selector__item" type="button" data-scene-key="stump" data-aspect-ratio="1.511335"
+              data-left-video-1="./static/videos/stump_ours.mp4" data-right-video-1="./static/videos/stump_3dgs.mp4"
+              data-left-label-1="Ours" data-right-label-1="3DGS" data-left-video-2="./static/videos/stump_ours.mp4"
+              data-right-video-2="./static/videos/stump_speedySplat.mp4" data-left-label-2="Ours"
+              data-right-label-2="SpeedySplat" data-label="Stump" aria-pressed="false">
               <span class="scene-selector__preview" aria-hidden="true">
-                <img src="./static/videos/bonsai_thumb.jpg" alt="">
+                <img src="./static/videos/stump_thumb.jpg" alt="">
               </span>
-              <span class="scene-selector__label">Bonsai</span>
+              <span class="scene-selector__label">Stump</span>
             </button>
             <button class="scene-selector__item" type="button" data-scene-key="truck" data-aspect-ratio="1.796407"
               data-left-video-1="./static/videos/truck_ours.mp4" data-right-video-1="./static/videos/truck_3dgs.mp4"
@@ -146,8 +146,7 @@
                               class="visual-compare-selector__vs">vs</span> 3DGS</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper"
-                        style="--scene-compare-aspect-ratio: 1.507538;">
+                      <div class="scene-compare-wrapper" style="--scene-compare-aspect-ratio: 1.507538;">
                         <div class="scene-compare-loading" data-compare-loading aria-hidden="true">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
@@ -164,8 +163,8 @@
                             data-src="./static/videos/bicycle_ours_vs_3dgs.mp4" type="video/mp4">
                         </video>
                         <div class="scene-compare-layer scene-compare-layer--base">
-                          <canvas class="scene-compare-canvas scene-compare-canvas--right"
-                            data-compare-canvas-right aria-hidden="true"></canvas>
+                          <canvas class="scene-compare-canvas scene-compare-canvas--right" data-compare-canvas-right
+                            aria-hidden="true"></canvas>
                           <div class="scene-compare-metrics scene-compare-metrics--right">
                             <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
                                 class="scene-compare-metrics__value">4.90M</span><span
@@ -182,8 +181,8 @@
                         </div>
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
-                            <canvas class="scene-compare-canvas scene-compare-canvas--left"
-                              data-compare-canvas-left aria-hidden="true"></canvas>
+                            <canvas class="scene-compare-canvas scene-compare-canvas--left" data-compare-canvas-left
+                              aria-hidden="true"></canvas>
                             <div class="scene-compare-metrics scene-compare-metrics--left">
                               <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
                                   class="scene-compare-metrics__value">0.48M</span><span
@@ -252,8 +251,7 @@
                               class="visual-compare-selector__vs">vs</span> SpeedySplat</p>
                         </div>
                       </div>
-                      <div class="scene-compare-wrapper"
-                        style="--scene-compare-aspect-ratio: 1.507538;">
+                      <div class="scene-compare-wrapper" style="--scene-compare-aspect-ratio: 1.507538;">
                         <div class="scene-compare-loading" data-compare-loading aria-hidden="true">
                           <div class="scene-compare-loading__panel">
                             <span class="scene-compare-loading__spinner" aria-hidden="true"></span>
@@ -270,8 +268,8 @@
                             data-src="./static/videos/bicycle_ours_vs_speedySplat.mp4" type="video/mp4">
                         </video>
                         <div class="scene-compare-layer scene-compare-layer--base">
-                          <canvas class="scene-compare-canvas scene-compare-canvas--right"
-                            data-compare-canvas-right aria-hidden="true"></canvas>
+                          <canvas class="scene-compare-canvas scene-compare-canvas--right" data-compare-canvas-right
+                            aria-hidden="true"></canvas>
                           <div class="scene-compare-metrics scene-compare-metrics--right">
                             <span class="scene-compare-metrics__line" data-compare-right-metric-gaussians><span
                                 class="scene-compare-metrics__value">0.62M</span><span
@@ -288,8 +286,8 @@
                         </div>
                         <div class="scene-compare-overlay" data-compare-overlay>
                           <div class="scene-compare-layer scene-compare-layer--overlay">
-                            <canvas class="scene-compare-canvas scene-compare-canvas--left"
-                              data-compare-canvas-left aria-hidden="true"></canvas>
+                            <canvas class="scene-compare-canvas scene-compare-canvas--left" data-compare-canvas-left
+                              aria-hidden="true"></canvas>
                             <div class="scene-compare-metrics scene-compare-metrics--left">
                               <span class="scene-compare-metrics__line" data-compare-left-metric-gaussians><span
                                   class="scene-compare-metrics__value">0.48M</span><span
@@ -463,12 +461,13 @@
                     </span>
                     <span class="is-sr-only">Deep Blending Quantitative Table</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
-                    data-template-id="results-table-ablation-template" data-display-title="Mip-NeRF360 Kitchen Ablation Study"
+                  <button class="results-selector__item results-selector__item--ablation" type="button"
+                    data-results-item data-display-type="template" data-template-id="results-table-ablation-template"
+                    data-display-title="Mip-NeRF360 Kitchen Ablation Study"
                     data-caption="Component-wise ablation on the Mip-NeRF360 kitchen scene. Entries marked with w/o report results after removing the corresponding module, highlighting each component's contribution to efficiency, compactness, and reconstruction quality.">
                     <span class="results-selector__card" aria-hidden="true">
                       <span class="results-selector__card-title">Ablation</span>
-                      <span class="results-selector__card-meta">w/o denotes removing one module from the full model.</span>
+                      <span class="results-selector__card-meta">Module-wise effects on efficiency and quality.</span>
                     </span>
                     <span class="is-sr-only">Ablation Study Table</span>
                   </button>
@@ -938,6 +937,61 @@
     </div>
   </section>
 
+  <section class="section method-stage-section">
+    <div class="container is-max-desktop method-stage-container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column method-stage-panel">
+          <div class="method-stage-panel__intro">
+            <h3 class="method-stage-panel__title" id="method-stage-title">Progressive SH Activation</h3>
+            <p class="method-stage-panel__summary">
+              We visualize how higher-order SH components are progressively activated during training, leading to
+              sharper appearance while preserving stable scene structure.
+            </p>
+          </div>
+          <div class="method-stage-panel__content">
+            <figure class="method-stage-video">
+              <video controls muted loop playsinline preload="metadata"
+                poster="./static/videos/per_stage_sh_stage_01.jpg">
+                <source src="./static/videos/Per_stage_SH.mp4" type="video/mp4">
+              </video>
+            </figure>
+            <div class="method-stage-panel__notes">
+              <p class="method-stage-panel__note">
+                Early stages prioritize stable coarse geometry before higher-order appearance components are activated.
+              </p>
+              <p class="method-stage-panel__note">
+                As SH order increases, the tabletop texture, flower structure, and background foliage become
+                progressively sharper and more expressive.
+              </p>
+            </div>
+          </div>
+          <div class="method-stage-gallery" aria-label="Keyframes from the stage-wise SH evolution video">
+            <figure class="method-stage-gallery__item">
+              <img src="./static/videos/per_stage_sh_stage_01.jpg" alt="Initial SH stage with coarse appearance."
+                loading="lazy" decoding="async">
+              <span class="method-stage-gallery__badge">SH0 | iteration 0</span>
+            </figure>
+            <figure class="method-stage-gallery__item">
+              <img src="./static/videos/per_stage_sh_stage_02.jpg"
+                alt="Intermediate SH stage with improved structure and color." loading="lazy" decoding="async">
+              <span class="method-stage-gallery__badge">SH1 | iteration 1000</span>
+            </figure>
+            <figure class="method-stage-gallery__item">
+              <img src="./static/videos/per_stage_sh_stage_03.jpg"
+                alt="Later SH stage with sharper tabletop and object details." loading="lazy" decoding="async">
+              <span class="method-stage-gallery__badge">SH2 | iteration 2000</span>
+            </figure>
+            <figure class="method-stage-gallery__item">
+              <img src="./static/videos/per_stage_sh_stage_04.jpg"
+                alt="Final SH stage with the most refined appearance details." loading="lazy" decoding="async">
+              <span class="method-stage-gallery__badge">SH3 | iteration 3000</span>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" data-visual-comparisons>
     <div class="container is-max-widescreen visual-comparisons-container">
       <div class="columns is-centered has-text-centered">
@@ -972,6 +1026,60 @@
                     <span class="scene-selector__label">Bicycle</span>
                   </button>
                   <button class="scene-selector__item" type="button"
+                    data-left-image-1="./static/images/comparisons/bonsai_ours.webp"
+                    data-right-image-1="./static/images/comparisons/bonsai_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/bonsai_ours.webp"
+                    data-right-image-2="./static/images/comparisons/bonsai_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/bonsai_ours.webp"
+                    data-right-image-3="./static/images/comparisons/bonsai_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/bonsai_ours.webp"
+                    data-right-image-4="./static/images/comparisons/bonsai_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/bonsai_ours.webp"
+                    data-right-image-5="./static/images/comparisons/bonsai_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Bonsai"
+                    aria-pressed="false">
+                    <span class="scene-selector__preview" aria-hidden="true">
+                      <img src="./static/videos/bonsai_thumb.jpg" alt="" decoding="async">
+                    </span>
+                    <span class="scene-selector__label">Bonsai</span>
+                  </button>
+                  <button class="scene-selector__item" type="button"
+                    data-left-image-1="./static/images/comparisons/counter_ours.webp"
+                    data-right-image-1="./static/images/comparisons/counter_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/counter_ours.webp"
+                    data-right-image-2="./static/images/comparisons/counter_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/counter_ours.webp"
+                    data-right-image-3="./static/images/comparisons/counter_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/counter_ours.webp"
+                    data-right-image-4="./static/images/comparisons/counter_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/counter_ours.webp"
+                    data-right-image-5="./static/images/comparisons/counter_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Counter"
+                    aria-pressed="false">
+                    <span class="scene-selector__preview" aria-hidden="true">
+                      <img src="./static/images/comparisons/counter_ours.webp" alt="" decoding="async">
+                    </span>
+                    <span class="scene-selector__label">Counter</span>
+                  </button>
+                  <button class="scene-selector__item" type="button"
+                    data-left-image-1="./static/images/comparisons/flowers_ours.webp"
+                    data-right-image-1="./static/images/comparisons/flowers_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/flowers_ours.webp"
+                    data-right-image-2="./static/images/comparisons/flowers_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/flowers_ours.webp"
+                    data-right-image-3="./static/images/comparisons/flowers_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/flowers_ours.webp"
+                    data-right-image-4="./static/images/comparisons/flowers_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/flowers_ours.webp"
+                    data-right-image-5="./static/images/comparisons/flowers_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Flowers"
+                    aria-pressed="false">
+                    <span class="scene-selector__preview" aria-hidden="true">
+                      <img src="./static/images/comparisons/flowers_ours.webp" alt="" decoding="async">
+                    </span>
+                    <span class="scene-selector__label">Flowers</span>
+                  </button>
+                  <button class="scene-selector__item" type="button"
                     data-left-image-1="./static/images/comparisons/garden_ours.webp"
                     data-right-image-1="./static/images/comparisons/garden_3dgs.webp" data-left-label-1="Ours"
                     data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/garden_ours.webp"
@@ -988,24 +1096,6 @@
                       <img src="./static/videos/garden_thumb.jpg" alt="" decoding="async">
                     </span>
                     <span class="scene-selector__label">Garden</span>
-                  </button>
-                  <button class="scene-selector__item" type="button"
-                    data-left-image-1="./static/images/comparisons/stump_ours.webp"
-                    data-right-image-1="./static/images/comparisons/stump_3dgs.webp" data-left-label-1="Ours"
-                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/stump_ours.webp"
-                    data-right-image-2="./static/images/comparisons/stump_speedySplat.webp" data-left-label-2="Ours"
-                    data-left-image-3="./static/images/comparisons/stump_ours.webp"
-                    data-right-image-3="./static/images/comparisons/stump_compact3DGS.webp" data-left-label-3="Ours"
-                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/stump_ours.webp"
-                    data-right-image-4="./static/images/comparisons/stump_lightgaussian.webp" data-left-label-4="Ours"
-                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/stump_ours.webp"
-                    data-right-image-5="./static/images/comparisons/stump_scaffoldGS.webp" data-left-label-5="Ours"
-                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Stump"
-                    aria-pressed="false">
-                    <span class="scene-selector__preview" aria-hidden="true">
-                      <img src="./static/videos/stump_thumb.jpg" alt="" decoding="async">
-                    </span>
-                    <span class="scene-selector__label">Stump</span>
                   </button>
                   <button class="scene-selector__item" type="button"
                     data-left-image-1="./static/images/comparisons/kitchen_ours.webp"
@@ -1026,22 +1116,58 @@
                     <span class="scene-selector__label">Kitchen</span>
                   </button>
                   <button class="scene-selector__item" type="button"
-                    data-left-image-1="./static/images/comparisons/bonsai_ours.webp"
-                    data-right-image-1="./static/images/comparisons/bonsai_3dgs.webp" data-left-label-1="Ours"
-                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/bonsai_ours.webp"
-                    data-right-image-2="./static/images/comparisons/bonsai_speedySplat.webp" data-left-label-2="Ours"
-                    data-left-image-3="./static/images/comparisons/bonsai_ours.webp"
-                    data-right-image-3="./static/images/comparisons/bonsai_compact3DGS.webp" data-left-label-3="Ours"
-                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/bonsai_ours.webp"
-                    data-right-image-4="./static/images/comparisons/bonsai_lightgaussian.webp" data-left-label-4="Ours"
-                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/bonsai_ours.webp"
-                    data-right-image-5="./static/images/comparisons/bonsai_scaffoldGS.webp" data-left-label-5="Ours"
-                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Bonsai"
+                    data-left-image-1="./static/images/comparisons/room_ours.webp"
+                    data-right-image-1="./static/images/comparisons/room_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/room_ours.webp"
+                    data-right-image-2="./static/images/comparisons/room_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/room_ours.webp"
+                    data-right-image-3="./static/images/comparisons/room_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/room_ours.webp"
+                    data-right-image-4="./static/images/comparisons/room_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/room_ours.webp"
+                    data-right-image-5="./static/images/comparisons/room_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Room"
                     aria-pressed="false">
                     <span class="scene-selector__preview" aria-hidden="true">
-                      <img src="./static/videos/bonsai_thumb.jpg" alt="" decoding="async">
+                      <img src="./static/images/comparisons/room_ours.webp" alt="" decoding="async">
                     </span>
-                    <span class="scene-selector__label">Bonsai</span>
+                    <span class="scene-selector__label">Room</span>
+                  </button>
+                  <button class="scene-selector__item" type="button"
+                    data-left-image-1="./static/images/comparisons/stump_ours.webp"
+                    data-right-image-1="./static/images/comparisons/stump_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/stump_ours.webp"
+                    data-right-image-2="./static/images/comparisons/stump_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/stump_ours.webp"
+                    data-right-image-3="./static/images/comparisons/stump_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/stump_ours.webp"
+                    data-right-image-4="./static/images/comparisons/stump_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/stump_ours.webp"
+                    data-right-image-5="./static/images/comparisons/stump_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Stump"
+                    aria-pressed="false">
+                    <span class="scene-selector__preview" aria-hidden="true">
+                      <img src="./static/videos/stump_thumb.jpg" alt="" decoding="async">
+                    </span>
+                    <span class="scene-selector__label">Stump</span>
+                  </button>
+                  <button class="scene-selector__item" type="button"
+                    data-left-image-1="./static/images/comparisons/treehill_ours.webp"
+                    data-right-image-1="./static/images/comparisons/treehill_3dgs.webp" data-left-label-1="Ours"
+                    data-right-label-1="3DGS" data-left-image-2="./static/images/comparisons/treehill_ours.webp"
+                    data-right-image-2="./static/images/comparisons/treehill_speedySplat.webp" data-left-label-2="Ours"
+                    data-left-image-3="./static/images/comparisons/treehill_ours.webp"
+                    data-right-image-3="./static/images/comparisons/treehill_compact3DGS.webp" data-left-label-3="Ours"
+                    data-right-label-3="Compact-3DGS" data-left-image-4="./static/images/comparisons/treehill_ours.webp"
+                    data-right-image-4="./static/images/comparisons/treehill_lightgaussian.webp" data-left-label-4="Ours"
+                    data-right-label-4="LightGaussian" data-left-image-5="./static/images/comparisons/treehill_ours.webp"
+                    data-right-image-5="./static/images/comparisons/treehill_scaffoldGS.webp" data-left-label-5="Ours"
+                    data-right-label-5="Scaffold-GS" data-right-label-2="SpeedySplat" data-label="Treehill"
+                    aria-pressed="false">
+                    <span class="scene-selector__preview" aria-hidden="true">
+                      <img src="./static/images/comparisons/treehill_ours.webp" alt="" decoding="async">
+                    </span>
+                    <span class="scene-selector__label">Treehill</span>
                   </button>
                   <button class="scene-selector__item" type="button"
                     data-left-image-1="./static/images/comparisons/truck_ours.webp"
