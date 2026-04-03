@@ -891,10 +891,9 @@
           </figure>
           <div class="content method-overview-copy">
             <p class="method-overview-legend">
-              <span class="method-overview-legend__geo">Geometry-first optimization</span> stabilizes scene structure
-              early, while
-              <span class="method-overview-legend__app">appearance-aware rendering</span> progressively refines color
-              and compactness under cross-view constraints.
+              GADO-GS reformulates standard 3DGS as a structure-first training pipeline: geometry and appearance are
+              optimized with decoupled schedules, higher-order SH bands are activated progressively, and cross-view
+              geometric consistency feeds back into density control to suppress ambiguity-driven redundancy.
             </p>
             <div class="method-overview-steps">
               <div class="method-overview-step">
@@ -903,9 +902,9 @@
                   <span class="method-overview-step__number">1</span>
                 </div>
                 <p class="method-overview-step__text">
-                  <strong>Decouple the Gaussian representation.</strong> The scene is split into geometry and
-                  appearance fields so that coarse structure can stabilize before high-frequency appearance begins to
-                  dominate training.
+                  <strong>Geometry-Appearance Decoupled Optimization.</strong> Geometry and appearance are optimized
+                  with distinct schedules so that scene structure can stabilize before high-frequency appearance
+                  fitting begins to dominate training.
                 </p>
               </div>
               <div class="method-overview-step">
@@ -914,9 +913,9 @@
                   <span class="method-overview-step__number">2</span>
                 </div>
                 <p class="method-overview-step__text">
-                  <strong>Constrain view rendering explicitly.</strong> Rotation, scale, and opacity are normalized or
-                  controlled explicitly, reducing geometry-appearance ambiguity and preventing redundant Gaussian
-                  growth.
+                  <strong>Progressive SH Activation.</strong> Higher-order SH bands are progressively activated during
+                  training, allowing view-dependent appearance details to emerge only after the geometry becomes
+                  sufficiently stable.
                 </p>
               </div>
               <div class="method-overview-step">
@@ -925,9 +924,9 @@
                   <span class="method-overview-step__number">3</span>
                 </div>
                 <p class="method-overview-step__text">
-                  <strong>Regularize with cross-view consistency.</strong> Multi-view geometric consistency and PSA
-                  color prediction work together to produce cleaner geometry, fewer artifacts, and a more compact final
-                  3D Gaussian representation.
+                  <strong>View-consistent Geometry Constraint.</strong> Cross-view geometric consistency regularizes
+                  the learned structure and feeds back into adaptive density control, reducing floaters and redundant
+                  Gaussian growth for a more coherent and compact representation.
                 </p>
               </div>
             </div>
