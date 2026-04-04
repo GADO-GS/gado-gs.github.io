@@ -312,7 +312,6 @@ function initSceneShowcase() {
     var progressInput = card.querySelector('[data-compare-progress]');
     var fullscreenToggle = card.querySelector('[data-compare-fullscreen-toggle]');
     var fullscreenToggleText = card.querySelector('[data-compare-fullscreen-text]');
-    var progressSurface;
     var compareInteraction;
     var layoutFrame = null;
     var paintFrame = null;
@@ -334,61 +333,6 @@ function initSceneShowcase() {
     if (!frame || !wrapper || !controls || !overlay || !divider || !loadingOverlay || !sourceVideo || !sourceElement || !leftCanvas || !rightCanvas || !leftLabel || !rightLabel || !leftGaussianMetric || !leftFpsMetric || !leftTrainMetric || !rightGaussianMetric || !rightFpsMetric || !rightTrainMetric || !playToggle || !progressInput || !fullscreenToggle) {
       return null;
     }
-
-    function ensureCustomProgressSurface() {
-      var progressLabel = progressInput.parentElement;
-      var surface;
-      var rail;
-      var buffered;
-      var fill;
-      var thumb;
-
-      if (!progressLabel) {
-        return null;
-      }
-
-      surface = progressLabel.querySelector('.scene-compare-progress__surface');
-      if (surface) {
-        return surface;
-      }
-
-      surface = document.createElement('div');
-      surface.className = 'scene-compare-progress__surface';
-      surface.setAttribute('data-compare-progress-surface', '');
-      surface.setAttribute('role', 'slider');
-      surface.setAttribute('tabindex', '0');
-      surface.setAttribute('aria-label', progressInput.getAttribute('aria-label') || 'Comparison playback progress');
-      surface.setAttribute('aria-valuemin', progressInput.getAttribute('min') || '0');
-      surface.setAttribute('aria-valuemax', progressInput.getAttribute('max') || '1000');
-      surface.setAttribute('aria-valuenow', progressInput.value || '0');
-
-      rail = document.createElement('span');
-      rail.className = 'scene-compare-progress__rail';
-      rail.setAttribute('aria-hidden', 'true');
-
-      buffered = document.createElement('span');
-      buffered.className = 'scene-compare-progress__buffer';
-      buffered.setAttribute('aria-hidden', 'true');
-
-      fill = document.createElement('span');
-      fill.className = 'scene-compare-progress__fill';
-      fill.setAttribute('aria-hidden', 'true');
-
-      thumb = document.createElement('span');
-      thumb.className = 'scene-compare-progress__thumb';
-      thumb.setAttribute('aria-hidden', 'true');
-
-      surface.appendChild(rail);
-      surface.appendChild(buffered);
-      surface.appendChild(fill);
-      surface.appendChild(thumb);
-      progressLabel.insertBefore(surface, progressInput);
-      progressInput.tabIndex = -1;
-
-      return surface;
-    }
-
-    progressSurface = ensureCustomProgressSurface();
 
     compareInteraction = attachCompareInteraction(wrapper, overlay, divider);
     if (!compareInteraction) {
@@ -477,13 +421,6 @@ function initSceneShowcase() {
       progressInput.disabled = true;
       progressInput.style.setProperty('--compare-progress-percent', '0%');
       progressInput.style.setProperty('--compare-progress-buffered-percent', '0%');
-      if (progressSurface) {
-        progressSurface.style.setProperty('--compare-progress-percent', '0%');
-        progressSurface.style.setProperty('--compare-progress-buffered-percent', '0%');
-        progressSurface.setAttribute('aria-valuenow', '0');
-        progressSurface.setAttribute('aria-disabled', 'true');
-        progressSurface.classList.add('is-disabled');
-      }
     }
 
     function updateProgressState() {
@@ -498,13 +435,6 @@ function initSceneShowcase() {
       progressInput.style.setProperty('--compare-progress-percent', progressPercent);
       progressInput.style.setProperty('--compare-progress-buffered-percent', bufferedPercent);
       progressInput.disabled = duration <= 0;
-      if (progressSurface) {
-        progressSurface.style.setProperty('--compare-progress-percent', progressPercent);
-        progressSurface.style.setProperty('--compare-progress-buffered-percent', bufferedPercent);
-        progressSurface.setAttribute('aria-valuenow', String(value));
-        progressSurface.setAttribute('aria-disabled', duration <= 0 ? 'true' : 'false');
-        progressSurface.classList.toggle('is-disabled', duration <= 0);
-      }
     }
 
     function updateProgressPreview(progressValue) {
@@ -514,10 +444,6 @@ function initSceneShowcase() {
 
       progressInput.value = String(Math.round(clampedValue));
       progressInput.style.setProperty('--compare-progress-percent', progressPercent);
-      if (progressSurface) {
-        progressSurface.style.setProperty('--compare-progress-percent', progressPercent);
-        progressSurface.setAttribute('aria-valuenow', String(Math.round(clampedValue)));
-      }
     }
 
     function syncControlState() {
@@ -920,9 +846,6 @@ function initSceneShowcase() {
       }
 
       isScrubbing = true;
-      if (progressSurface) {
-        progressSurface.classList.add('is-scrubbing');
-      }
       resumeAfterScrub = !sourceVideo.paused;
       clearScrubPreviewTimer();
       pendingScrubTime = null;
@@ -954,9 +877,6 @@ function initSceneShowcase() {
       }
 
       isScrubbing = false;
-      if (progressSurface) {
-        progressSurface.classList.remove('is-scrubbing');
-      }
       clearScrubPreviewTimer();
       if (pendingScrubTime !== null) {
         flushScrubPreview();
@@ -968,37 +888,6 @@ function initSceneShowcase() {
         return;
       }
       maybeResumeAfterScrub();
-    }
-
-    function dispatchProgressInputValue(progressValue, shouldCommit) {
-      var clampedValue = Math.max(0, Math.min(1000, progressValue));
-
-      if (progressInput.disabled) {
-        return;
-      }
-
-      progressInput.value = String(Math.round(clampedValue));
-      progressInput.dispatchEvent(new Event('input', { bubbles: true }));
-      if (shouldCommit) {
-        progressInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    }
-
-    function getProgressValueFromClientX(clientX) {
-      var rect;
-      var ratio;
-
-      if (!progressSurface) {
-        return parseFloat(progressInput.value) || 0;
-      }
-
-      rect = progressSurface.getBoundingClientRect();
-      if (!rect.width) {
-        return parseFloat(progressInput.value) || 0;
-      }
-
-      ratio = (clientX - rect.left) / rect.width;
-      return Math.max(0, Math.min(1000, ratio * 1000));
     }
 
     playToggle.addEventListener('click', function() {
@@ -1021,66 +910,6 @@ function initSceneShowcase() {
       }
       seekToProgress(parseFloat(progressInput.value) || 0);
     });
-    if (progressSurface) {
-      progressSurface.addEventListener('pointerdown', function(event) {
-        if (progressInput.disabled) {
-          return;
-        }
-
-        event.preventDefault();
-        progressSurface.classList.add('is-scrubbing');
-        if (progressSurface.setPointerCapture) {
-          progressSurface.setPointerCapture(event.pointerId);
-        }
-        dispatchProgressInputValue(getProgressValueFromClientX(event.clientX), false);
-      });
-      progressSurface.addEventListener('pointermove', function(event) {
-        if (!isScrubbing || progressInput.disabled) {
-          return;
-        }
-
-        dispatchProgressInputValue(getProgressValueFromClientX(event.clientX), false);
-      });
-      progressSurface.addEventListener('pointerup', function(event) {
-        if (progressSurface.hasPointerCapture && progressSurface.hasPointerCapture(event.pointerId)) {
-          progressSurface.releasePointerCapture(event.pointerId);
-        }
-        dispatchProgressInputValue(getProgressValueFromClientX(event.clientX), true);
-      });
-      progressSurface.addEventListener('pointercancel', function(event) {
-        if (progressSurface.hasPointerCapture && progressSurface.hasPointerCapture(event.pointerId)) {
-          progressSurface.releasePointerCapture(event.pointerId);
-        }
-        endScrub();
-      });
-      progressSurface.addEventListener('keydown', function(event) {
-        var currentValue = parseFloat(progressInput.value) || 0;
-        var nextValue = currentValue;
-
-        if (progressInput.disabled) {
-          return;
-        }
-
-        if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
-          nextValue = currentValue - 25;
-        } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
-          nextValue = currentValue + 25;
-        } else if (event.key === 'PageDown') {
-          nextValue = currentValue - 100;
-        } else if (event.key === 'PageUp') {
-          nextValue = currentValue + 100;
-        } else if (event.key === 'Home') {
-          nextValue = 0;
-        } else if (event.key === 'End') {
-          nextValue = 1000;
-        } else {
-          return;
-        }
-
-        event.preventDefault();
-        dispatchProgressInputValue(nextValue, true);
-      });
-    }
     fullscreenToggle.addEventListener('click', function() {
       if (isFrameFullscreen()) {
         exitCardFullscreen();
