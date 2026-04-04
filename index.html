@@ -385,7 +385,7 @@
             <div class="results-selector">
               <div class="results-selector__viewport">
                 <div class="results-selector__track">
-                  <button class="results-selector__item" type="button" data-results-item data-results-default
+                  <button class="results-selector__item results-selector__item--overview" type="button" data-results-item data-results-default
                     data-display-type="template" data-template-id="results-tradeoff-template"
                     data-display-title="Quality-Speed and Time-Memory Trade-offs"
                     data-caption="Paired trade-off plots compare quality versus speed and training time versus VRAM, highlighting the efficiency balance of different methods across benchmark datasets.">
@@ -396,7 +396,7 @@
                     </span>
                     <span class="is-sr-only">Quality-Speed and Time-Memory Trade-Offs</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item
+                  <button class="results-selector__item results-selector__item--efficiency" type="button" data-results-item
                     data-display-title="Per-Scene Training Time"
                     data-full-src="./static/images/results/per_scene_train_time.png"
                     data-caption="Per-scene training time across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
@@ -407,7 +407,7 @@
                     </span>
                     <span class="is-sr-only">Per-Scene Training Time Results</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item
+                  <button class="results-selector__item results-selector__item--efficiency" type="button" data-results-item
                     data-display-title="Per-Scene FPS" data-full-src="./static/images/results/per_scene_fps.png"
                     data-caption="Per-scene FPS across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (higher is better).">
                     <span class="results-selector__card" aria-hidden="true">
@@ -417,7 +417,7 @@
                     </span>
                     <span class="is-sr-only">Per-Scene FPS Results</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item
+                  <button class="results-selector__item results-selector__item--efficiency" type="button" data-results-item
                     data-display-title="Per-Scene Gaussians"
                     data-full-src="./static/images/results/per_scene_gaussian_count.png"
                     data-caption="Per-scene Gaussian counts across representative benchmark scenes, comparing Ours with 3DGS and Speedy-Splat (lower is better).">
@@ -428,7 +428,7 @@
                     </span>
                     <span class="is-sr-only">Per-Scene Gaussians Results</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                  <button class="results-selector__item results-selector__item--benchmark" type="button" data-results-item data-display-type="template"
                     data-template-id="results-table-mip-template"
                     data-display-title="Mip-NeRF360 Quantitative Comparison"
                     data-caption="Average quantitative results on the Mip-NeRF360 dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
@@ -439,7 +439,7 @@
                     </span>
                     <span class="is-sr-only">Mip-NeRF360 Quantitative Table</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                  <button class="results-selector__item results-selector__item--benchmark" type="button" data-results-item data-display-type="template"
                     data-template-id="results-table-tnt-template"
                     data-display-title="Tanks and Temples Quantitative Comparison"
                     data-caption="Average quantitative results on the Tanks and Temples dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
@@ -450,7 +450,7 @@
                     </span>
                     <span class="is-sr-only">Tanks and Temples Quantitative Table</span>
                   </button>
-                  <button class="results-selector__item" type="button" data-results-item data-display-type="template"
+                  <button class="results-selector__item results-selector__item--benchmark" type="button" data-results-item data-display-type="template"
                     data-template-id="results-table-db-template"
                     data-display-title="Deep Blending Quantitative Comparison"
                     data-caption="Average quantitative results on the Deep Blending dataset, covering efficiency, compactness, memory usage, and reconstruction-quality metrics.">
