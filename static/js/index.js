@@ -579,7 +579,8 @@ function initSceneShowcase() {
     }
 
     function resizeCanvas(canvas) {
-      var devicePixelRatio = window.devicePixelRatio || 1;
+      var maxPixelRatio = isFrameFullscreen() ? 2 : 1.5;
+      var devicePixelRatio = Math.min(window.devicePixelRatio || 1, maxPixelRatio);
       var targetWidth = Math.max(1, Math.round(wrapper.clientWidth * devicePixelRatio));
       var targetHeight = Math.max(1, Math.round(wrapper.clientHeight * devicePixelRatio));
 
@@ -617,9 +618,6 @@ function initSceneShowcase() {
       videoWidth = sourceVideo.videoWidth;
       videoHeight = sourceVideo.videoHeight;
       halfWidth = Math.floor(videoWidth / 2);
-
-      clearCanvas(leftContext, leftCanvas);
-      clearCanvas(rightContext, rightCanvas);
 
       leftContext.drawImage(sourceVideo, 0, 0, halfWidth, videoHeight, 0, 0, leftCanvas.width, leftCanvas.height);
       rightContext.drawImage(sourceVideo, halfWidth, 0, halfWidth, videoHeight, 0, 0, rightCanvas.width, rightCanvas.height);

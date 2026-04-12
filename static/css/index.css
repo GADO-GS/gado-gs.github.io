@@ -1601,8 +1601,10 @@ body {
 }
 
 .method-stage-gallery__item img {
+  aspect-ratio: 20 / 13;
   display: block;
   width: 100%;
+  height: auto;
   border-radius: 0.82rem 0.82rem 0 0;
   border: 1px solid rgba(110, 123, 145, 0.15);
   border-bottom: 0;
