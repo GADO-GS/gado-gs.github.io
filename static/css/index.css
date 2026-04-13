@@ -3657,6 +3657,7 @@ body {
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - 4.1rem) / 6);
   align-items: start;
+  justify-content: start;
   justify-items: stretch;
   gap: 0.78rem 0.82rem;
   width: 100%;

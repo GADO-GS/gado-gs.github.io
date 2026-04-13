@@ -157,13 +157,6 @@ function attachCompareInteraction(wrapper, overlay, divider) {
     return !event.pointerType || event.pointerType === 'mouse';
   }
 
-  wrapper.addEventListener('pointerenter', function(event) {
-    if (!shouldFollowPointer(event)) {
-      return;
-    }
-    updateCompareFromClientX(event.clientX);
-  });
-
   wrapper.addEventListener('pointermove', function(event) {
     if (!shouldFollowPointer(event)) {
       return;
