@@ -1187,6 +1187,31 @@ function initImageComparisons() {
       return lastKnownRatio;
     }
 
+    function syncImageBox(image, boxWidth, boxHeight) {
+      var imageRatio;
+      var boxRatio;
+      var fittedWidth = boxWidth;
+      var fittedHeight = boxHeight;
+
+      if (!image || !boxWidth || !boxHeight) {
+        return;
+      }
+
+      if (image.naturalWidth && image.naturalHeight) {
+        imageRatio = image.naturalWidth / image.naturalHeight;
+        boxRatio = boxWidth / boxHeight;
+
+        if (imageRatio > boxRatio) {
+          fittedHeight = boxWidth / imageRatio;
+        } else {
+          fittedWidth = boxHeight * imageRatio;
+        }
+      }
+
+      image.style.width = fittedWidth + 'px';
+      image.style.height = fittedHeight + 'px';
+    }
+
     function updateWrapperSize() {
       var availableWidth = card.clientWidth;
       var ratio = getImageRatio();
@@ -1194,7 +1219,7 @@ function initImageComparisons() {
       var isMobile = window.innerWidth <= 768;
       var minWidth = Math.min(availableWidth, isMobile ? 265 : 360);
       var minHeight = isMobile ? 180 : 250;
-      var maxHeight = isMobile ? 290 : 450;
+      var maxHeight = isMobile ? 330 : 540;
       var width;
 
       if (!availableWidth || !ratio) {
@@ -1231,6 +1256,8 @@ function initImageComparisons() {
 
       wrapper.style.width = Math.round(width) + 'px';
       wrapper.style.height = Math.round(height) + 'px';
+      syncImageBox(leftImage, width, height);
+      syncImageBox(rightImage, width, height);
     }
 
     function scheduleWrapperSize() {
@@ -1315,15 +1342,17 @@ function initImageComparisons() {
       var currentLabel = currentOption ? currentOption.rightLabel || 'Method' : 'Method';
       var displayLabel = 'Ours <span class=\"visual-compare-selector__vs\">vs</span> ' + currentLabel;
       var hasMultipleOptions = enabledMethodIndexes.length > 1;
+      var currentEnabledIndex = enabledMethodIndexes.indexOf(activeMethodIndex);
 
       animateMethodText(displayLabel);
 
       if (prevMethodButton) {
-        prevMethodButton.disabled = !hasMultipleOptions;
+        prevMethodButton.disabled = !hasMultipleOptions || currentEnabledIndex <= 0;
       }
 
       if (nextMethodButton) {
-        nextMethodButton.disabled = !hasMultipleOptions;
+        nextMethodButton.disabled = !hasMultipleOptions || currentEnabledIndex === -1 ||
+          currentEnabledIndex >= enabledMethodIndexes.length - 1;
       }
     }
 
@@ -1341,7 +1370,12 @@ function initImageComparisons() {
         currentEnabledIndex = 0;
       }
 
-      nextEnabledIndex = (currentEnabledIndex + direction + enabledMethodIndexes.length) % enabledMethodIndexes.length;
+      nextEnabledIndex = currentEnabledIndex + direction;
+      if (nextEnabledIndex < 0 || nextEnabledIndex >= enabledMethodIndexes.length) {
+        setMethodSwitcher(methodOptions);
+        return;
+      }
+
       activeMethodIndex = enabledMethodIndexes[nextEnabledIndex];
       setMethodSwitcher(methodOptions);
       applyResolvedContent(methodOptions[activeMethodIndex]);
@@ -1428,8 +1462,8 @@ function initImageComparisons() {
   var prevScenePageButton = section.querySelector('[data-visual-scenes-prev]');
   var nextScenePageButton = section.querySelector('[data-visual-scenes-next]');
   var sceneSelectorLayoutFrame = null;
-  var currentScenePage = 0;
-  var maxScenePage = 0;
+  var currentSceneStartIndex = 0;
+  var maxSceneStartIndex = 0;
 
   if (!imageCards.length) {
     return;
@@ -1444,23 +1478,30 @@ function initImageComparisons() {
   }
 
   function updateSceneSelectorButtons() {
-    var isSinglePage = maxScenePage === 0;
+    var isSinglePage = maxSceneStartIndex === 0;
 
     if (sceneSelectorShell) {
       sceneSelectorShell.classList.toggle('is-single-page', isSinglePage);
     }
 
     if (prevScenePageButton) {
-      prevScenePageButton.disabled = isSinglePage || currentScenePage <= 0;
+      prevScenePageButton.disabled = isSinglePage || currentSceneStartIndex <= 0;
     }
 
     if (nextScenePageButton) {
-      nextScenePageButton.disabled = isSinglePage || currentScenePage >= maxScenePage;
+      nextScenePageButton.disabled = isSinglePage || currentSceneStartIndex >= maxSceneStartIndex;
     }
   }
 
+  function clampSceneSelectorStartIndex(index) {
+    return Math.max(0, Math.min(maxSceneStartIndex, index));
+  }
+
+  function getSceneSelectorAutoSlideStep() {
+    return Math.max(1, Math.floor(getSceneSelectorPageSize() / 2));
+  }
+
   function applySceneSelectorPage() {
-    var pageSize;
     var firstButtonOnPage;
     var targetOffset;
 
@@ -1468,23 +1509,48 @@ function initImageComparisons() {
       return;
     }
 
-    pageSize = getSceneSelectorPageSize();
-    firstButtonOnPage = buttons[currentScenePage * pageSize];
+    currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex);
+    firstButtonOnPage = buttons[currentSceneStartIndex];
     targetOffset = firstButtonOnPage ? firstButtonOnPage.offsetLeft : 0;
     sceneSelector.style.transform = 'translate3d(' + (-targetOffset) + 'px, 0, 0)';
     updateSceneSelectorButtons();
   }
 
-  function syncSceneSelectorPageToButton(button) {
+  function syncSceneSelectorPageToButton(button, autoSlide) {
     var buttonList = Array.prototype.slice.call(buttons);
     var buttonIndex = buttonList.indexOf(button);
     var pageSize = getSceneSelectorPageSize();
+    var pageRelativeIndex;
+    var autoSlideStep = getSceneSelectorAutoSlideStep();
+    var edgeTriggerCount = pageSize <= 3 ? 1 : 2;
 
     if (buttonIndex === -1) {
       return;
     }
 
-    currentScenePage = Math.floor(buttonIndex / pageSize);
+    if (!autoSlide) {
+      currentSceneStartIndex = clampSceneSelectorStartIndex(Math.floor(buttonIndex / pageSize) * pageSize);
+      applySceneSelectorPage();
+      return;
+    }
+
+    currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex);
+
+    if (buttonIndex < currentSceneStartIndex) {
+      currentSceneStartIndex = buttonIndex;
+    } else if (buttonIndex >= currentSceneStartIndex + pageSize) {
+      currentSceneStartIndex = buttonIndex - pageSize + 1;
+    }
+
+    pageRelativeIndex = buttonIndex - currentSceneStartIndex;
+
+    if (pageRelativeIndex >= pageSize - edgeTriggerCount) {
+      currentSceneStartIndex += autoSlideStep;
+    } else if (pageRelativeIndex < edgeTriggerCount) {
+      currentSceneStartIndex -= autoSlideStep;
+    }
+
+    currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex);
     applySceneSelectorPage();
   }
 
@@ -1501,8 +1567,8 @@ function initImageComparisons() {
       var pageSize = getSceneSelectorPageSize();
 
       sceneSelectorLayoutFrame = null;
-      maxScenePage = Math.max(0, Math.ceil(buttons.length / pageSize) - 1);
-      currentScenePage = Math.min(currentScenePage, maxScenePage);
+      maxSceneStartIndex = Math.max(0, buttons.length - pageSize);
+      currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex);
 
       if (syncToActiveButton && activeButton) {
         syncSceneSelectorPageToButton(activeButton);
@@ -1624,7 +1690,7 @@ function initImageComparisons() {
       item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
 
-    syncSceneSelectorPageToButton(button);
+    syncSceneSelectorPageToButton(button, !force);
     preloadSceneImages(button);
     imageCards.forEach(function(compareCard, index) {
       compareCard.setContent(compareConfigs[index] || compareConfigs[0]);
@@ -1641,6 +1707,11 @@ function initImageComparisons() {
 
   Array.prototype.forEach.call(buttons, function(button, index) {
     button.addEventListener('click', function() {
+      if (button === activeButton) {
+        syncSceneSelectorPageToButton(button, true);
+        return;
+      }
+
       activateScene(button);
     });
 
@@ -1676,14 +1747,14 @@ function initImageComparisons() {
 
   if (prevScenePageButton) {
     prevScenePageButton.addEventListener('click', function() {
-      currentScenePage = Math.max(0, currentScenePage - 1);
+      currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex - getSceneSelectorPageSize());
       applySceneSelectorPage();
     });
   }
 
   if (nextScenePageButton) {
     nextScenePageButton.addEventListener('click', function() {
-      currentScenePage = Math.min(maxScenePage, currentScenePage + 1);
+      currentSceneStartIndex = clampSceneSelectorStartIndex(currentSceneStartIndex + getSceneSelectorPageSize());
       applySceneSelectorPage();
     });
   }
